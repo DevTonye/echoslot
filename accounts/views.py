@@ -20,7 +20,7 @@ def send_verification_email(user, request):
     uid = urlsafe_base64_encode(force_bytes(user.pk))
 
     verification_link = request.build_absolute_uri(
-        reverse("account:verifyemail", kwargs={"uid64":uid, "token":token})
+        reverse("accounts:verifyemail", kwargs={"uidb64":uid, "token":token})
     )
 
     subject = "Verify your account"
@@ -60,7 +60,7 @@ def verify_email(request, uidb64, token):
         login(request, user)
 
         messages.success(request, "Your account have beem verified.")
-        return redirect('account:usertype') # to be change later
+        return redirect('echoslot:index') # to be change later
     else:
         return render(request, 'account/verification_failed.html')
     
@@ -76,7 +76,7 @@ def resend_verification_link(request):
             else:
                 send_verification_email(user, request) # Generate new token and send verification email
                 messages.success(request, 'A new verification email has been sent. Please check your index.')
-                return redirect('account:verification_pending') 
+                return redirect('accounts:verification_pending') 
         except ValidationError as e:
             messages.error(request, str(e))
 
@@ -112,24 +112,37 @@ def RegisterAccount(request):
         form = RegisterForm()
     return render(request, "account/register.html", {"form":form})
         
-# login users
 def LoginAccount(request):
     if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data.get("email")
             password = form.cleaned_data.get("password")
-            user = authenticate(username=email, password=password)
-            if user is not None:
-                if not user.is_active:
-                    messages.error(request, "Please verify your email address before logging in.")
-                    return redirect('account:verification_pending')
-                login(request, user)
-                messages.success(request, f"Welcome back, {user.username}")
-                return redirect('account:dashborad') # to be created
+            try:
+                user = User.objects.get(email=email)
+                if not user.check_password(password):
+                    raise User.DoesNotExist
+            except User.DoesNotExist:
+                messages.error(request, "Incorrect email address or password.")
+                return render(request, "account/login.html", {"form": form})
+
+            if not user.is_active:
+                messages.error(request, "Please verify your email address before logging in.")
+                return redirect('accounts:verification_pending')
+
+            user.backend = 'django.contrib.auth.backends.ModelBackend'  # required when bypassing authenticate()
+            login(request, user)
+
+            remember_me = form.cleaned_data.get("remember_me")
+            if remember_me:
+                request.session.set_expiry(0)  # session ends on browser close
             else:
-                messages.error(request, "Invalid email or password.")
+                request.session.set_expiry(60 * 60 * 24 * 30)  # 30 days
+
+            messages.success(request, f"Welcome back, {user.username}")
+            return redirect('echoslot:index') # will be changed 
         else:
+            # form is invalid
             for field, errors in form.errors.items():
                 for error in errors:
                     if field == "__all__":
@@ -138,7 +151,9 @@ def LoginAccount(request):
                         messages.error(request, f"{field.capitalize()}: {error}")
     else:
         form = LoginForm()
-    return render(request, "account/login.html", {"form": form}) # to be created
+
+    return render(request, "account/login.html", {"form": form})
+
 
 # logout users
 def LogoutAccount(request):

@@ -4,25 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Register</title>
-    <link rel="stylesheet" href="{% static 'account/register.css'%}">
+    <link rel="stylesheet" href="{% static 'account/test.css'%}">
 </head>
 <body>
     <div class="form-container">
-        <h2>Sign Up</h2>
+        <h2>Create your account</h2>
 
-        {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                    <li class="{{ message.tags }}">{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-
-        <form method="post">
+        <form method="post" class="signup-form">
             {% csrf_token %}
             
             <div class="form-group">
-                {{ form.email.label_tag }}
                 {{ form.email }}
                 {% for error in form.email.errors %}
                     <div class="field-error">{{ error }}</div>
@@ -30,7 +21,6 @@
             </div>
 
             <div class="form-group">
-                {{ form.username.label_tag }}
                 {{ form.username }}
                 {% for error in form.username.errors %}
                     <div class="field-error">{{ error }}</div>
@@ -38,7 +28,6 @@
             </div>
 
             <div class="form-group">
-                {{ form.password1.label_tag }}
                 {{ form.password1 }}
                 {% for error in form.password1.errors %}
                     <div class="field-error">{{ error }}</div>
@@ -46,17 +35,16 @@
             </div>
 
             <div class="form-group">
-                {{ form.password2.label_tag }}
                 {{ form.password2 }}
                 {% for error in form.password2.errors %}
                     <div class="field-error">{{ error }}</div>
                 {% endfor %}
             </div>
 
-            <button type="submit">Sign Up</button>
+            <button type="submit" class="btn btn-primary">Sign Up</button>
 
             <div class="login-link">
-                Already have an account? <a href="#">Log in</a>
+                <p>Already have an account? <a href="{% url 'accounts:login' %}">Login</a></p>
             </div>
         </form>
     </div>

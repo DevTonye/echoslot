@@ -41,23 +41,18 @@ class RegisterForm(UserCreationForm):
     
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.set_password(self.cleaned_data["password"])
+        user.set_password(self.cleaned_data["password1"])
         if commit:
             user.save()
         return user
     
 class LoginForm(forms.Form):
-    email = forms.EmailField(
-        required=True,
-        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'})
-    )
-    password = forms.CharField(
-        required=True,
-        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter password'})
-    )
+    email = forms.EmailField(max_length=255, required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'email'}))
+    password = forms.CharField(required=True, widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}))
+    remember_me = forms.BooleanField(required=False, initial=False, widget=forms.CheckboxInput())
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
         if not User.objects.filter(email=email).exists():
-            raise forms.ValidationError("This email does not exist.")
+            raise forms.ValidationError("An account with this email does not exist.")
         return email

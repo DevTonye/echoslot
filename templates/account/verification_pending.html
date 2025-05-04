@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'account/vp.css'%}"> <!--To be changed-->
+    <title>Email Verification Required</title>
+</head>
+<body>
+    <div class="container">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h4>Email Verification Required</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert">
+                    <h5>Almost there!</h5>
+                    <p>We've sent a verification link to <strong>{{ email }}</strong>.</p>
+                    <p>Please check your email and click the verification link to complete your registration.</p>
+                </div>
+                
+                <div class="mt-4">
+                    <h6>Didn't receive the email?</h6>
+                    <ul class="list-group">
+                        <li class="list-group-item">Check your spam folder</li>
+                        <li class="list-group-item">Make sure the email address you provided is correct</li>
+                        <li class="list-group-item">If you still haven't received the email, <a href="{% url 'accounts:resend_verification' %}">click here to resend</a></li>
+                    </ul>
+                </div>
+                
+                <div class="button-container">
+                    <a href="{% url 'accounts:login' %}" class="btn-login">
+                        Go to Login
+                    </a>
+                </div>
+            </div>
+            <div class="card-footer">
+                <small class="text-muted">Need help? Contact our support team at support@echoslot.com</small>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
