@@ -225,16 +225,18 @@ def LoginAccount(request):
             try:
                 user = User.objects.get(email=email)
                 if not user.check_password(password):
-                    raise User.DoesNotExist
+                    form.add_error("password", "Incorrect password.")
+                    return render(request, "account/login.html", {"form": form})
             except User.DoesNotExist:
-                messages.error(request, "Incorrect email address or password.")
+                # This should already be caught in clean_email, so this is a fallback
+                form.add_error("email", "No account found with this email.")
                 return render(request, "account/login.html", {"form": form})
 
             if not user.is_active:
                 messages.error(request, "Please verify your email address before logging in.")
                 return redirect('accounts:verification_pending')
 
-            user.backend = 'django.contrib.auth.backends.ModelBackend'  # required when bypassing authenticate()
+            user.backend = 'django.contrib.auth.backends.ModelBackend'
             login(request, user)
 
             remember_me = form.cleaned_data.get("remember_me")
@@ -244,15 +246,7 @@ def LoginAccount(request):
                 request.session.set_expiry(60 * 60 * 24 * 30)  # 30 days
 
             messages.success(request, f"Welcome back, {user.username}")
-            return redirect('echoslot:index') # will be changed 
-        else:
-            # form is invalid
-            for field, errors in form.errors.items():
-                for error in errors:
-                    if field == "__all__":
-                        messages.error(request, error)
-                    else:
-                        messages.error(request, f"{field.capitalize()}: {error}")
+            return redirect('echoslot:index')
     else:
         form = LoginForm()
 

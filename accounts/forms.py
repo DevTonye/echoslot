@@ -53,19 +53,22 @@ class LoginForm(forms.Form):
     password = forms.CharField(required=True, widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}))
     remember_me = forms.BooleanField(required=False, initial=False, widget=forms.CheckboxInput())
 
+
     def clean_email(self):
         email = self.cleaned_data.get('email')
         if not User.objects.filter(email=email).exists():
             raise forms.ValidationError("An account with this email does not exist.")
         return email
 
-class PasswordResetForm(forms.form):
+    
+
+class PasswordResetForm(forms.Form):
     # a form for requesting a password reset
     email = forms.EmailField(widget=forms.EmailInput(attrs={'class':'form-control', 'placeholder':'email address', 'autocomplete':'email'}))
 
     def clean_email(self):
         # Validate email format
-        email = self.clean_data('email')
+        email = self.cleaned_data['email']
         if email:
             email = email.lower()
         return email
@@ -85,9 +88,8 @@ class SetPasswordForm(DjangoSetPasswordForm):
     def clean(self):
         cleaned_data = super().clean()
         password1 = cleaned_data.get('password1')
-        password2 = cleaned_data.get(password2)
+        password2 = cleaned_data.get('password2')
 
         if password1 and password2 and password1 != password2:
             self.add_error('new_password2', "The two password fields didn't match.")
-
         return cleaned_data

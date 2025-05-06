@@ -1,0 +1,136 @@
+/* Black and white color scheme */
+:root {
+    --primary-color: #000000;
+    --secondary-color: #ffffff;
+    --accent-color: #f8f8f8;
+    --text-color: #000000;
+    --text-light: #ffffff;
+    --border-color: #000000;
+}
+
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: var(--text-color);
+    background-color: var(--secondary-color);
+    line-height: 1.6;
+}
+
+/* Card styles */
+.card {
+    border: 1px solid var(--border-color);
+    border-radius: 0;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    padding: 1rem;
+    border-radius: 0;
+    font-weight: 500;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* Form styles */
+.form-control {
+    border: 1px solid var(--border-color);
+    border-radius: 0;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.form-control:focus {
+    border-color: #333;
+    box-shadow: none;
+    outline: none;
+}
+
+label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+/* Button styles */
+button[type="submit"],
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--text-light);
+    border-radius: 0;
+    padding: 0.5rem 1.5rem;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+button[type="submit"]:hover,
+.btn-primary:hover {
+    background-color: #333;
+    border-color: #333;
+}
+
+/* Alert styles */
+.alert {
+    background-color: var(--accent-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    border-radius: 0;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Link styles */
+a {
+    color: var(--primary-color);
+    text-decoration: underline;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #333;
+    text-decoration: underline;
+}
+
+a.btn {
+    text-decoration: none;
+}
+
+/* Help text */
+small {
+    color: #555;
+    font-size: 0.85rem;
+    display: block;
+    margin-top: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+/* Error messages */
+.errorlist {
+    color: #000;
+    list-style: none;
+    padding-left: 0;
+    margin-top: 0.25rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.errorlist li {
+    background-color: var(--accent-color);
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card {
+        margin: 0 1rem 1.5rem;
+    }
+    
+    .container {
+        padding: 0;
+    }
+}
