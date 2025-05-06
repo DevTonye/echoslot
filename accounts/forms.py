@@ -1,5 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import PasswordResetForm as DjangoPasswordResetForm
+from django.contrib.auth.forms import SetPasswordForm  as DjangoSetPasswordForm
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 
@@ -56,3 +58,36 @@ class LoginForm(forms.Form):
         if not User.objects.filter(email=email).exists():
             raise forms.ValidationError("An account with this email does not exist.")
         return email
+
+class PasswordResetForm(forms.form):
+    # a form for requesting a password reset
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'class':'form-control', 'placeholder':'email address', 'autocomplete':'email'}))
+
+    def clean_email(self):
+        # Validate email format
+        email = self.clean_data('email')
+        if email:
+            email = email.lower()
+        return email
+    
+# a form to set new password
+class SetPasswordForm(DjangoSetPasswordForm):
+    new_password1 = forms.CharField(
+        label="New password",
+        widget=forms.PasswordInput(attrs={'class':'form-control', 'placeholder': 'enter new password', 'autocomplete':'new-password'}),
+        strip=False,
+    )
+    new_password2 = forms.CharField(
+        label="Confirm new password",
+        widget=forms.PasswordInput(attrs={'class':'form-control', 'placeholder': 'confirm password', 'autocomplete':'new-password'}),
+        strip=False,
+    )
+    def clean(self):
+        cleaned_data = super().clean()
+        password1 = cleaned_data.get('password1')
+        password2 = cleaned_data.get(password2)
+
+        if password1 and password2 and password1 != password2:
+            self.add_error('new_password2', "The two password fields didn't match.")
+
+        return cleaned_data

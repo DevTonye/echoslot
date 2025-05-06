@@ -107,24 +107,34 @@ input[type="password"] {
     border-radius: 5px;
 }
 
-/* Checkbox styling for remember me */
-.remember-me {
+/* Container for both remember me and forgot password */
+.remember-options {
     display: flex;
+    justify-content: space-between;
     align-items: center;
     margin-top: 16px;
     font-size: 15px;
     color: #333;
 }
 
+/* Existing checkbox styling */
 .remember-me input[type="checkbox"] {
-    width: auto;
     margin-right: 8px;
-    cursor: pointer;
     width: 16px;
     height: 16px;
     accent-color: #000000;
+    cursor: pointer;
 }
 
+/* New forgot password link style */
+.forgot-password a {
+    font-size: 14px;
+    color: #000000;
+}
+
+.forgot-password a:hover {
+    text-decoration: underline;
+}
 
 .login-link {
     text-align: center;

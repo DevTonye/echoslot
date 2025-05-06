@@ -27,8 +27,13 @@
             </div>
             <button type="submit" class="btn btn-primary">Login</button>
 
-            <div class="form-group remember-me">
-                {{ form.remember_me }} Remember me
+            <div class="form-group remember-options">
+                <label class="remember-me">
+                    {{ form.remember_me }} Remember me
+                </label>
+                <div class="forgot-password">
+                    <a href="#">Forgot your password?</a>
+                </div>
             </div>
             <div class="login-link">
                 <p>Don't have an account? <a href="{% url 'accounts:register' %}">Sign up here</a></p>

@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
-from .forms import RegisterForm, LoginForm
+from django.views.decorators.http import require_http_methods
+from .forms import RegisterForm, LoginForm, PasswordResetForm, SetPasswordForm
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import login, logout
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail, BadHeaderError
 from django.core.exceptions import ImproperlyConfigured, ValidationError
@@ -13,21 +14,16 @@ from django.urls import reverse
 from django.conf import settings
 import smtplib
 import socket # for network errors 
+import time
+import random
+import threading
+
 User = get_user_model()
 
-def send_verification_email(user, request):
-    token = default_token_generator.make_token(user)
-    uid = urlsafe_base64_encode(force_bytes(user.pk))
-
-    verification_link = request.build_absolute_uri(
-        reverse("accounts:verifyemail", kwargs={"uidb64":uid, "token":token})
-    )
-
-    subject = "Verify your account"
-    message = f"Hello {user.username},\n\nPlease verify your account by clicking the link below:\n\n{verification_link}"
-
+# Reusable function to safely send emails with standard error handling.
+def send_custom_email(subject, message, recipient_email):
     try:
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [recipient_email])
     except BadHeaderError:
         raise ValidationError("There was a problem with the email header. Please try again later.")
     except smtplib.SMTPRecipientsRefused:
@@ -43,6 +39,25 @@ def send_verification_email(user, request):
     except Exception:
         raise ValidationError("An unexpected error occurred. Please try again later.")
 
+
+def send_verification_email(user, request):
+    token = default_token_generator.make_token(user)
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
+
+    verification_link = request.build_absolute_uri(
+        reverse("accounts:verifyemail", kwargs={"uidb64":uid, "token":token})
+    )
+
+    subject = "Verify your account"
+    message = f"""Hello {user.username},
+
+    Thank you for registering. Please verify your email by clicking the link below:
+
+    {verification_link}
+
+    If you did not register, please ignore this email.
+"""
+    send_custom_email(subject, message, user.email)
 
 # verify user's email
 def verify_email(request, uidb64, token):
@@ -64,7 +79,8 @@ def verify_email(request, uidb64, token):
     else:
         return render(request, 'account/verification_failed.html')
     
-# resend verification link
+
+# resend email verification link
 def resend_verification_link(request):
     if request.method == "POST":
         email = request.POST.get('email')
@@ -84,6 +100,94 @@ def resend_verification_link(request):
 
 def verification_pending(request):
     return render(request, 'account/verification_pending.html') # to be created
+
+# send password reset link email with a secure token
+def send_password_reset_email(user, request):
+    token = default_token_generator.make_token(user)
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
+
+    reset_link = request.build_absolute_uri(
+        reverse('accounts:password_reset_confirm', kwargs={"uidb64":uid, "token":token})
+    )
+
+    subject = "Password Reset Request"
+    message = f"""Hello{user.username}
+    You requested a password reset for your account. Please click the link below to reset your password:
+
+    {reset_link}
+
+    If you didn't request this, you can safely ignore this email.
+
+    This link will expire in 24 hours.
+"""
+    send_custom_email(subject, message, user.email)
+
+def delayed_send_email(user, request):
+    """Send email in a separate thread after a random delay"""
+    def _send_with_delay():
+        # Random delay between 1-2 seconds
+        time.sleep(random.uniform(1.0, 2.0))
+        try:
+            if user is not None:
+                send_password_reset_email(user, request)
+        except ValidationError:
+            # Silently handle errors in background thread
+            pass   
+    thread = threading.Thread(target=_send_with_delay)
+    thread.daemon = True
+    thread.start()
+
+# handle password reset request form
+@require_http_methods(["GET", "POST"])
+def password_reset_request(request):
+    if request.method == "POST":
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            # Find user with this email - don't reveal if user exists
+            try:
+                user = User.objects.get(email=email)
+                delayed_send_email(user, request)
+            except User.DoesNotExist:
+                delayed_send_email(None, request)
+            messages.success(request, "If an account with that email exists, a password reset link has been sent.")
+            return redirect("accounts:password_reset_done")
+    else:
+        form = PasswordResetForm()
+    return render(request, "account/password_reset_form.html", {"form": form})
+
+@require_http_methods(["GET"])
+def password_reset_done(request):
+    # Show password reset email sent confirmation page
+    return render(request, 'account/password_reset_done.html')
+
+# handle password reset confirmation
+@require_http_methods(["GET", "POST"])
+def password_reset_confirm(request, uidb64, token):
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    # Check if the token is valid
+    if user is not None and default_token_generator.check_token(user, token):
+        if request.method == "POST":
+            form = SetPasswordForm(user, request.POST)
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Your password has been reset successfully. You can now log in with your new password.")
+                return redirect("accounts:login")
+        else:
+            form = SetPasswordForm(user)
+        return render(request, "account/password_reset_confirm.html", {"form": form})
+    else:
+        messages.error(request, "The password reset link is invalid or has expired.")
+        return render(request, "account/password_reset_invalid.html")
+
+@require_http_methods(["GET"])
+def password_reset_complete(request):
+    messages.success(request, "Your password has been reset successfully.")
+    return redirect("accounts:login")
 
 # register users
 def RegisterAccount(request):
@@ -161,3 +265,6 @@ def LogoutAccount(request):
     logout(request)
     messages.success(request, f'{username} logged out')
     return redirect("echoslot:index")
+
+
+ 
