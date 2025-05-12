@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
-from .forms import RegisterForm, LoginForm, PasswordResetForm, SetPasswordForm
+from django.contrib.auth.decorators import login_required
+from .forms import RegisterForm, LoginForm, PasswordResetForm, SetPasswordForm, SelectUserForm
+from .models import CustomUser
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth import get_user_model
@@ -75,11 +77,10 @@ def verify_email(request, uidb64, token):
         login(request, user)
 
         messages.success(request, "Your account have beem verified.")
-        return redirect('echoslot:index') # to be change later
+        return redirect('accounts:select_role')
     else:
         return render(request, 'account/verification_failed.html')
     
-
 # resend email verification link
 def resend_verification_link(request):
     if request.method == "POST":
@@ -252,7 +253,6 @@ def LoginAccount(request):
 
     return render(request, "account/login.html", {"form": form})
 
-
 # logout users
 def LogoutAccount(request):
     username = request.user.username  # Get the username before logging out
@@ -260,5 +260,21 @@ def LogoutAccount(request):
     messages.success(request, f'{username} logged out')
     return redirect("echoslot:index")
 
+@login_required
+def select_user_role(request):
+    if request.method == 'POST':
+        role = request.POST.get('role')
 
- 
+        if role in [CustomUser.UserRole.CLIENT, CustomUser.UserRole.SERVICE_PROVIDER]:
+            request.user.role = role
+            request.user.save()
+
+            if role == CustomUser.UserRole.SERVICE_PROVIDER:
+                messages.success(request, "Your role has been set to Service Provider.")
+                return redirect('echoslot:index')  # Replace with your actual view name
+            else:
+                messages.success(request, "Your role has been set to Client.")
+                return redirect('echoslot:index')  # Replace with your actual view name
+        else:
+            messages.error(request, 'Invalid role selected.')
+    return render(request, 'account/usertype.html')

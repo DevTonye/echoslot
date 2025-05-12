@@ -14,4 +14,5 @@ urlpatterns = [
     path('register/', views.RegisterAccount, name='register'),
     path('login/', views.LoginAccount, name='login'),
     path('logout/', views.LogoutAccount, name='logout'), 
+    path('select-role/', views.select_user_role, name='select_role'),
 ]

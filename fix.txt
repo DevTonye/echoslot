@@ -1,0 +1,9 @@
+messages on the password reset page
+work on the sytling 
+
+
+When a user registers a account 
+- I want it to take the user to a verification page
+- After that take the user to the usertype page where user will
+either select the type of user that user want to be service provider or client
+- then redirect them to the next page

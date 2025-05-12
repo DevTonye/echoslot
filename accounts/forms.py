@@ -4,7 +4,7 @@ from django.contrib.auth.forms import PasswordResetForm as DjangoPasswordResetFo
 from django.contrib.auth.forms import SetPasswordForm  as DjangoSetPasswordForm
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-
+from .models import CustomUser
 
 User = get_user_model() # return current active users 
 
@@ -53,15 +53,12 @@ class LoginForm(forms.Form):
     password = forms.CharField(required=True, widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}))
     remember_me = forms.BooleanField(required=False, initial=False, widget=forms.CheckboxInput())
 
-
     def clean_email(self):
         email = self.cleaned_data.get('email')
         if not User.objects.filter(email=email).exists():
             raise forms.ValidationError("An account with this email does not exist.")
         return email
-
     
-
 class PasswordResetForm(forms.Form):
     # a form for requesting a password reset
     email = forms.EmailField(widget=forms.EmailInput(attrs={'class':'form-control', 'placeholder':'email address', 'autocomplete':'email'}))
@@ -93,3 +90,11 @@ class SetPasswordForm(DjangoSetPasswordForm):
         if password1 and password2 and password1 != password2:
             self.add_error('new_password2', "The two password fields didn't match.")
         return cleaned_data
+    
+class SelectUserForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ['role']
+        widgets = {
+            'role': forms.HiddenInput()
+        }

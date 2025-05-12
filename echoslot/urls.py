@@ -5,4 +5,5 @@ app_name = 'echoslot'
 
 urlpatterns = [
     path('', views.index, name='index'), 
+    path('', views.dashborad, name='dashborad'),
 ]
