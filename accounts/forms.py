@@ -3,7 +3,6 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.forms import PasswordResetForm as DjangoPasswordResetForm
 from django.contrib.auth.forms import SetPasswordForm  as DjangoSetPasswordForm
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ValidationError
 from .models import CustomUser
 
 User = get_user_model() # return current active users 
@@ -24,6 +23,7 @@ class RegisterForm(UserCreationForm):
         if User.objects.filter(email__iexact=email).exists():
             raise forms.ValidationError("A user with this email already exists.")
         return email
+    
     # check if a username already exists
     def clean_username(self):
         username = self.cleaned_data.get("username")

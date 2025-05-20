@@ -1,0 +1,424 @@
+{% extends "echoslot/base.html" %}
+{% load static %}
+
+{% block title %}Book Appointment with {{ provider.service_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .service-card {
+        transition: all 0.2s ease;
+    }
+    .service-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .service-card.selected {
+        border: 2px solid #0d6efd;
+        background-color: rgba(13, 110, 253, 0.05);
+    }
+    .time-slot {
+        width: 100px;
+        margin: 5px;
+    }
+    .calendar-container {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+    }
+    .appointment-summary {
+        background-color: #f8f9fa;
+        border-left: 4px solid #0d6efd;
+        padding: 15px;
+        border-radius: 4px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'echoslot:index' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="#">Service Providers</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Book Appointment</li>
+                </ol>
+            </nav>
+            
+            <h1 class="mb-4">Book an Appointment</h1>
+            
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-2 text-center">
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto" style="width: 80px; height: 80px;">
+                                <i class="fas fa-user-md fa-2x"></i>
+                            </div>
+                        </div>
+                        <div class="col-md-10">
+                            <h3>{{ provider.service_name }}</h3>
+                            <p class="text-muted mb-2">{{ provider.first_name }} {{ provider.last_name }}</p>
+                            <p>{{ provider.description }}</p>
+                            <div>
+                                <span class="badge bg-light text-dark me-2"><i class="fas fa-map-marker-alt me-1"></i> {{ provider.address }}</span>
+                                <span class="badge bg-light text-dark"><i class="fas fa-phone me-1"></i> {{ provider.phone }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" id="appointment-form" novalidate>
+        {% csrf_token %}
+        
+        <div class="row">
+            <!-- Service Selection Section -->
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">1. Select a Service</h4>
+                    </div>
+                    <div class="card-body">
+                        {% if form.service.errors %}
+                            <div class="alert alert-danger">{{ form.service.errors }}</div>
+                        {% endif %}
+                        
+                        <div class="row" id="service-options">
+                            {% for service in services %}
+                            <div class="col-md-6 mb-3">
+                                <div class="card service-card h-100" data-service-id="{{ service.id }}" data-duration="{{ service.duration }}">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ service.name }}</h5>
+                                        <h6 class="card-subtitle mb-2 text-muted">${{ service.price }}</h6>
+                                        <p class="card-text">{{ service.description }}</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="badge bg-light text-dark">
+                                                <i class="far fa-clock me-1"></i> {{ service.duration }} mins
+                                            </span>
+                                            <div class="form-check">
+                                                <input class="form-check-input service-radio" type="radio" 
+                                                       name="{{ form.service.name }}" 
+                                                       value="{{ service.id }}" 
+                                                       id="service_{{ service.id }}"
+                                                       {% if form.service.value|stringformat:"i" == service.id|stringformat:"i" %}checked{% endif %}>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    No services available for this provider.
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Date & Time Selection Section -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">2. Select Date & Time</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3 calendar-container">
+                                    <label for="{{ form.appointment_date.id_for_label }}" class="form-label">Appointment Date</label>
+                                    {{ form.appointment_date.errors }}
+                                    <input type="date" name="{{ form.appointment_date.name }}" 
+                                           id="{{ form.appointment_date.id_for_label }}" 
+                                           class="form-control {% if form.appointment_date.errors %}is-invalid{% endif %}"
+                                           value="{{ form.appointment_date.value|date:'Y-m-d'|default:'' }}"
+                                           min="{% now 'Y-m-d' %}">
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">Available Time Slots</label>
+                                {{ form.start_time.errors }}
+                                <div id="time-slots-container" class="d-flex flex-wrap">
+                                    <div class="alert alert-info w-100">
+                                        Please select a service and date to see available time slots.
+                                    </div>
+                                </div>
+                                <input type="hidden" name="{{ form.start_time.name }}" id="{{ form.start_time.id_for_label }}" value="{{ form.start_time.value|time:'H:i'|default:'' }}">
+                                <small class="form-text text-muted">{{ form.start_time.help_text }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Appointment Summary Section -->
+            <div class="col-lg-4">
+                <div class="card shadow-sm mb-4 sticky-top" style="top: 20px;">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Appointment Summary</h4>
+                    </div>
+                    <div class="card-body">
+                        <div id="summary-content">
+                            <div class="text-center py-4">
+                                <i class="fas fa-calendar-plus fa-3x mb-3 text-muted"></i>
+                                <p class="mb-0">Select a service and time to see your appointment summary.</p>
+                            </div>
+                        </div>
+                        
+                        <div id="complete-summary" class="d-none">
+                            <div class="appointment-summary mb-4">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="flex-shrink-0">
+                                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-check"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h5 class="mb-0" id="summary-service-name">Service Name</h5>
+                                        <p class="text-muted mb-0" id="summary-service-duration">0 minutes</p>
+                                    </div>
+                                </div>
+                                
+                                <hr>
+                                
+                                <div class="mb-2">
+                                    <div class="d-flex">
+                                        <div class="text-muted" style="width: 80px;"><i class="far fa-calendar me-2"></i>Date:</div>
+                                        <div class="fw-bold" id="summary-date">Not selected</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-2">
+                                    <div class="d-flex">
+                                        <div class="text-muted" style="width: 80px;"><i class="far fa-clock me-2"></i>Time:</div>
+                                        <div class="fw-bold" id="summary-time">Not selected</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-2">
+                                    <div class="d-flex">
+                                        <div class="text-muted" style="width: 80px;"><i class="fas fa-user me-2"></i>With:</div>
+                                        <div class="fw-bold">{{ provider.first_name }} {{ provider.last_name }}</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-0">
+                                    <div class="d-flex">
+                                        <div class="text-muted" style="width: 80px;"><i class="fas fa-tag me-2"></i>Price:</div>
+                                        <div class="fw-bold" id="summary-price">$0.00</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-info small">
+                                <i class="fas fa-bell me-2"></i> You'll receive reminders 1 day and 2 hours before your appointment.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary btn-lg w-100" id="book-button" disabled>
+                            Book Appointment
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const serviceCards = document.querySelectorAll('.service-card');
+        const dateInput = document.getElementById('{{ form.appointment_date.id_for_label }}');
+        const timeInput = document.getElementById('{{ form.start_time.id_for_label }}');
+        const bookButton = document.getElementById('book-button');
+        const timeSlotsContainer = document.getElementById('time-slots-container');
+        
+        // Service selection
+        serviceCards.forEach(card => {
+            card.addEventListener('click', function() {
+                // Update radio button
+                const radio = this.querySelector('.service-radio');
+                radio.checked = true;
+                
+                // Update UI
+                serviceCards.forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                
+                // Update summary
+                updateServiceSummary(this.dataset.serviceId);
+                
+                // Reset time slots when service changes
+                updateTimeSlots();
+            });
+        });
+        
+        // Initialize selected service
+        const checkedService = document.querySelector('.service-radio:checked');
+        if (checkedService) {
+            checkedService.closest('.service-card').classList.add('selected');
+            updateServiceSummary(checkedService.value);
+        }
+        
+        // Date change handler
+        dateInput.addEventListener('change', function() {
+            updateTimeSlots();
+            document.getElementById('summary-date').textContent = formatDate(this.value);
+            checkFormValidity();
+        });
+        
+        // Initialize date if present
+        if (dateInput.value) {
+            document.getElementById('summary-date').textContent = formatDate(dateInput.value);
+        }
+        
+        // Format date for display
+        function formatDate(dateString) {
+            if (!dateString) return 'Not selected';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        }
+        
+        // Update service summary
+        function updateServiceSummary(serviceId) {
+            const selectedService = document.querySelector(`.service-card[data-service-id="${serviceId}"]`);
+            if (selectedService) {
+                const serviceName = selectedService.querySelector('.card-title').textContent;
+                const servicePrice = selectedService.querySelector('.card-subtitle').textContent;
+                const serviceDuration = selectedService.dataset.duration;
+                
+                document.getElementById('summary-service-name').textContent = serviceName;
+                document.getElementById('summary-service-duration').textContent = `${serviceDuration} minutes`;
+                document.getElementById('summary-price').textContent = servicePrice;
+                
+                document.getElementById('summary-content').classList.add('d-none');
+                document.getElementById('complete-summary').classList.remove('d-none');
+            }
+            checkFormValidity();
+        }
+        
+        // Generate time slots (this would be replaced with actual available slots from backend)
+        function updateTimeSlots() {
+            const selectedService = document.querySelector('.service-radio:checked');
+            const selectedDate = dateInput.value;
+            
+            if (!selectedService || !selectedDate) {
+                timeSlotsContainer.innerHTML = `
+                    <div class="alert alert-info w-100">
+                        Please select a service and date to see available time slots.
+                    </div>
+                `;
+                return;
+            }
+            
+            // In a real implementation, you would fetch available slots from the server
+            // For now, we'll generate mock time slots
+            const serviceId = selectedService.value;
+            const mockTimeSlots = generateMockTimeSlots();
+            
+            let timeSlotsHTML = '';
+            if (mockTimeSlots.length > 0) {
+                mockTimeSlots.forEach(slot => {
+                    timeSlotsHTML += `
+                        <button type="button" class="btn btn-outline-primary time-slot m-1" 
+                                data-time="${slot.value}" onclick="selectTimeSlot(this)">
+                            ${slot.label}
+                        </button>
+                    `;
+                });
+            } else {
+                timeSlotsHTML = `
+                    <div class="alert alert-warning w-100">
+                        No available time slots for this date.
+                    </div>
+                `;
+            }
+            
+            timeSlotsContainer.innerHTML = timeSlotsHTML;
+            
+            // Clear time selection
+            timeInput.value = '';
+            document.getElementById('summary-time').textContent = 'Not selected';
+            checkFormValidity();
+        }
+        
+        // Mock time slot generator
+        function generateMockTimeSlots() {
+            const slots = [];
+            const now = new Date();
+            const selectedDate = new Date(dateInput.value);
+            
+            // If selected date is today, show only future times
+            const startHour = (selectedDate.toDateString() === now.toDateString()) 
+                ? now.getHours() + 1 
+                : 9;
+            
+            for (let hour = startHour; hour < 18; hour++) {
+                ['00', '30'].forEach(minute => {
+                    const timeValue = `${hour.toString().padStart(2, '0')}:${minute}`;
+                    const timeLabel = formatTimeLabel(hour, minute);
+                    slots.push({ value: timeValue, label: timeLabel });
+                });
+            }
+            
+            return slots;
+        }
+        
+        // Format time for display
+        function formatTimeLabel(hour, minute) {
+            const period = hour >= 12 ? 'PM' : 'AM';
+            const displayHour = hour % 12 || 12;
+            return `${displayHour}:${minute} ${period}`;
+        }
+        
+        // Check if all required fields are filled
+        function checkFormValidity() {
+            const serviceSelected = document.querySelector('.service-radio:checked');
+            const dateSelected = dateInput.value;
+            const timeSelected = timeInput.value;
+            
+            if (serviceSelected && dateSelected && timeSelected) {
+                bookButton.disabled = false;
+            } else {
+                bookButton.disabled = true;
+            }
+        }
+        
+        // Time slot selection handler
+        window.selectTimeSlot = function(element) {
+            const timeValue = element.dataset.time;
+            const timeLabel = element.textContent.trim();
+            
+            // Update hidden input
+            timeInput.value = timeValue;
+            
+            // Update UI
+            document.querySelectorAll('.time-slot').forEach(btn => {
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-outline-primary');
+            });
+            element.classList.remove('btn-outline-primary');
+            element.classList.add('btn-primary');
+            
+            // Update summary
+            document.getElementById('summary-time').textContent = timeLabel;
+            
+            checkFormValidity();
+        };
+        
+        // Initialize with any pre-filled values
+        if (timeInput.value) {
+            const timeSlot = document.querySelector(`.time-slot[data-time="${timeInput.value}"]`);
+            if (timeSlot) {
+                selectTimeSlot(timeSlot);
+            }
+        }
+    });
+</script>
+{% endblock %}

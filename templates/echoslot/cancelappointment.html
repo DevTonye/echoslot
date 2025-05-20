@@ -1,0 +1,66 @@
+{% extends "echoslot/base.html" %}
+{% load static %}
+
+{% block title %}Cancel Appointment{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">Cancel Appointment</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <h5>Are you sure you want to cancel this appointment?</h5>
+                        <p>This action cannot be undone.</p>
+                    </div>
+                    
+                    <div class="appointment-details mb-4">
+                        <h5>Appointment Details:</h5>
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>Appointment ID</th>
+                                <td>{{ appointment.appointment_id }}</td>
+                            </tr>
+                            <tr>
+                                <th>Date</th>
+                                <td>{{ appointment.date }}</td>
+                            </tr>
+                            <tr>
+                                <th>Time</th>
+                                <td>{{ appointment.time }}</td>
+                            </tr>
+                            <tr>
+                                <th>Service</th>
+                                <td>{{ appointment.service.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Provider</th>
+                                <td>{{ appointment.provider.get_full_name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Status</th>
+                                <td><span class="badge bg-primary">{{ appointment.status|title }}</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <form method="post" action="{% url 'echoslot:cancel_appointment' appointment.appointment_id %}">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'echoslot:viewappointments' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Go Back
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-times-circle"></i> Confirm Cancellation
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

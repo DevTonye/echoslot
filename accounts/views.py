@@ -264,14 +264,13 @@ def LogoutAccount(request):
 def select_user_role(request):
     if request.method == 'POST':
         role = request.POST.get('role')
-
         if role in [CustomUser.UserRole.CLIENT, CustomUser.UserRole.SERVICE_PROVIDER]:
             request.user.role = role
             request.user.save()
 
             if role == CustomUser.UserRole.SERVICE_PROVIDER:
-                messages.success(request, "Your role has been set to Service Provider.")
-                return redirect('echoslot:index')  # Replace with your actual view name
+                messages.success(request, "Your role has been set to Service Provider, please create a profile")
+                return redirect('echoslot:completeprofile')  # Replace with your actual view name
             else:
                 messages.success(request, "Your role has been set to Client.")
                 return redirect('echoslot:index')  # Replace with your actual view name

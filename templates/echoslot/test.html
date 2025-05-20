@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Service Provider Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Provider Profile Section -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-2 text-center">
+                            <div class="avatar-circle">
+                                {% if provider.profile_picture %}
+                                    <img src="{{ provider.profile_picture.url }}" class="img-fluid rounded-circle" alt="{{ provider.user.get_full_name }}">
+                                {% else %}
+                                    <i class="fas fa-user-circle fa-5x text-primary"></i>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h2 class="mb-1">{{ provider.user.get_full_name }}</h2>
+                            <p class="text-muted mb-1"><i class="fas fa-briefcase"></i> {{ provider.profession }}</p>
+                            <p class="text-muted mb-1"><i class="fas fa-map-marker-alt"></i> {{ provider.location }}</p>
+                            <p class="mb-2">{{ provider.bio|truncatechars:150 }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stats-container">
+                                <div class="row">
+                                    <div class="col-6 text-center mb-3">
+                                        <h3 class="mb-0 text-primary">{{ services.count }}</h3>
+                                        <small class="text-muted">Total Services</small>
+                                    </div>
+                                    <div class="col-6 text-center mb-3">
+                                        <h3 class="mb-0 text-primary">{{ today_appointments.count }}</h3>
+                                        <small class="text-muted">Today's Appointments</small>
+                                    </div>
+                                    <div class="col-6 text-center">
+                                        <a href="{% url 'echoslot:add_service' %}" class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-plus-circle"></i> Add Service
+                                        </a>
+                                    </div>
+                                    <div class="col-6 text-center">
+                                        <a href="#" class="btn btn-outline-secondary btn-sm">
+                                            <i class="fas fa-cog"></i> Settings
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Today's Appointments -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-calendar-day"></i> Today's Appointments</h5>
+                    <span class="badge bg-light text-dark">{{ today_appointments.count }} Appointments</span>
+                </div>
+                <div class="card-body">
+                    {% if today_appointments %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Client</th>
+                                    <th>Service</th>
+                                    <th>Duration</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for appointment in today_appointments %}
+                                <tr>
+                                    <td>{{ appointment.start_time|time:"h:i A" }}</td>
+                                    <td>{{ appointment.client.get_full_name }}</td>
+                                    <td>{{ appointment.service.name }}</td>
+                                    <td>{{ appointment.service.duration }} min</td>
+                                    <td>
+                                        {% if appointment.status == 'scheduled' %}
+                                            <span class="badge bg-warning text-dark">Scheduled</span>
+                                        {% elif appointment.status == 'confirmed' %}
+                                            <span class="badge bg-success">Confirmed</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{% url 'echoslot:updateAppointment_status' appointment.appointment_id %}" class="btn btn-outline-primary">
+                                                <i class="fas fa-pen"></i> Update Status
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-calendar-times text-muted fa-3x mb-3"></i>
+                        <p class="mb-0">No appointments scheduled for today</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upcoming Appointments -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-calendar-alt"></i> Upcoming Appointments</h5>
+                    <span class="badge bg-light text-dark">{{ upcoming_appointments.count }} Appointments</span>
+                </div>
+                <div class="card-body">
+                    {% if upcoming_appointments %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Client</th>
+                                    <th>Service</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for appointment in upcoming_appointments %}
+                                <tr>
+                                    <td>{{ appointment.appointment_date|date:"M d, Y" }}</td>
+                                    <td>{{ appointment.start_time|time:"h:i A" }}</td>
+                                    <td>{{ appointment.client.get_full_name }}</td>
+                                    <td>{{ appointment.service.name }}</td>
+                                    <td>
+                                        {% if appointment.status == 'scheduled' %}
+                                            <span class="badge bg-warning text-dark">Scheduled</span>
+                                        {% elif appointment.status == 'confirmed' %}
+                                            <span class="badge bg-success">Confirmed</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{% url 'echoslot:updateAppointment_status' appointment.appointment_id %}" class="btn btn-outline-primary">
+                                                <i class="fas fa-pen"></i> Update Status
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-calendar-week text-muted fa-3x mb-3"></i>
+                        <p class="mb-0">No upcoming appointments scheduled</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Services Section -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-list-alt"></i> Your Services</h5>
+                    <a href="{% url 'echoslot:add_service' %}" class="btn btn-light btn-sm">
+                        <i class="fas fa-plus"></i> Add New Service
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if services %}
+                    <div class="row">
+                        {% for service in services %}
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ service.name }}</h5>
+                                    <h6 class="card-subtitle mb-2 text-muted">{{ service.duration }} minutes | ${{ service.price }}</h6>
+                                    <p class="card-text">{{ service.description|truncatechars:100 }}</p>
+                                </div>
+                                <div class="card-footer bg-transparent border-0">
+                                    <a href="#" class="btn btn-sm btn-outline-primary">Edit</a>
+                                    <a href="#" class="btn btn-sm btn-outline-danger">Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-clipboard-list text-muted fa-3x mb-3"></i>
+                        <p class="mb-0">You haven't added any services yet</p>
+                        <a href="{% url 'echoslot:add_service' %}" class="btn btn-outline-success mt-3">
+                            <i class="fas fa-plus-circle"></i> Add Your First Service
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

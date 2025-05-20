@@ -8,7 +8,7 @@ User = get_user_model()
 
 # service provider profile model
 class ServiceProvider(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='service_provider')
     first_name = models.CharField(max_length=50, blank=False, null=False)
     last_name = models.CharField(max_length=50, blank=False, null=False)
     service_name = models.CharField(max_length=100, null=False, blank=False)
@@ -21,6 +21,7 @@ class ServiceProvider(models.Model):
 
 # services a serviceprovider offers
 class Service(models.Model):
+    #service_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     provider = models.ForeignKey(ServiceProvider, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, blank=False, null=False)
     description = models.TextField()
