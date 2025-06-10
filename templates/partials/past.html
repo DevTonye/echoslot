@@ -1,0 +1,155 @@
+<div class="card-header">
+    <h5><i class="fas fa-history"></i> Past Appointments</h5>
+    <span class="badge badge-info">{{ past_appointments.count }} Appointment{{ past_appointments.count|pluralize }}</span>
+</div>
+<div class="card-body">
+    {% if past_appointments %}
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Client</th>
+                    <th>Service</th>
+                    <th>Duration</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in past_appointments %}
+                <tr>
+                    <td>
+                        <strong>{{ appointment.appointment_date|date:"M d, Y" }}</strong>
+                        <br>
+                        <small class="text-muted">{{ appointment.appointment_date|date:"l" }}</small>
+                    </td>
+                    <td>
+                        <strong>{{ appointment.start_time|time:"h:i A" }}</strong>
+                    </td>
+                    <td>
+                        <div>
+                            <strong>{{ appointment.client.get_full_name }}</strong>
+                        </div>
+                    </td>
+                    <td>{{ appointment.service.name }}</td>
+                    <td>{{ appointment.service.duration }} min</td>
+                    <td>
+                        {% if appointment.status == 'completed' %}
+                            <span class="badge badge-success">Completed</span>
+                        {% elif appointment.status == 'cancelled' %}
+                            <span class="badge badge-danger">Cancelled</span>
+                        {% elif appointment.status == 'no_show' %}
+                            <span class="badge badge-warning">No Show</span>
+                        {% else %}
+                            <span class="badge badge-secondary">{{ appointment.status|title }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="d-flex" style="gap: 8px;">
+                            <button class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            {% if appointment.status == 'completed' %}
+                            <button class="btn btn-sm btn-outline-success">
+                                <i class="fas fa-redo"></i> Rebook
+                            </button>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination for past appointments if you have many -->
+    {% if past_appointments.count > 10 %}
+    <div class="d-flex justify-content-center mt-3">
+        <nav>
+            <ul class="pagination pagination-sm">
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-calendar-times"></i>
+        <p>No past appointments found</p>
+        <p class="text-muted">Your appointment history will appear here once you have completed appointments.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!--
+<style>
+.badge-danger {
+    background-color: #ffebee;
+    color: #c62828;
+}
+
+.badge-secondary {
+    background-color: #f5f5f5;
+    color: #666;
+}
+
+.pagination {
+    display: flex;
+    padding-left: 0;
+    list-style: none;
+    border-radius: 0.25rem;
+}
+
+.pagination .page-item {
+    margin: 0 2px;
+}
+
+.pagination .page-link {
+    position: relative;
+    display: block;
+    padding: 0.375rem 0.75rem;
+    margin-left: -1px;
+    line-height: 1.25;
+    color: var(--primary);
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    text-decoration: none;
+    border-radius: 0.25rem;
+    transition: var(--transition);
+}
+
+.pagination .page-link:hover {
+    z-index: 2;
+    color: #fff;
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.pagination .page-item.active .page-link {
+    z-index: 1;
+    color: #fff;
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.pagination-sm .page-link {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+</style>
+-->

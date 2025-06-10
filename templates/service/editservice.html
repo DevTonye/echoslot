@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Service</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Smooth Modern Theme */
+        :root {
+            --primary-color: #333333;
+            --secondary-color: #ffffff;
+            --accent-color: #f9f9f9;
+            --border-color: #e5e5e5;
+            --text-color: #222222;
+            --placeholder-color: #999999;
+            --success-color: #2c2c2c;
+            --hover-color: #f5f5f5;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            --transition: all 0.25s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .service-container {
+            max-width: 900px;
+            margin: 3rem auto;
+            padding: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 500;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .service-intro {
+            margin-bottom: 2.5rem;
+            color: var(--text-color);
+            font-size: 1.1rem;
+            max-width: 700px;
+            line-height: 1.7;
+        }
+
+        .form-section {
+            margin-bottom: 3rem;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -1rem;
+        }
+
+        .form-col {
+            flex: 1 0 100%;
+            padding: 0 1rem;
+            margin-bottom: 1.75rem;
+        }
+
+        @media (min-width: 768px) {
+            .form-col-half {
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.625rem;
+            font-weight: 500;
+            color: var(--text-color);
+            letter-spacing: 0.3px;
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.9rem 1.15rem;
+            font-size: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--secondary-color);
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(85, 85, 85, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: var(--placeholder-color);
+        }
+
+        textarea.form-control {
+            min-height: 140px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: calc(100% - 1rem) center;
+            padding-right: 2.5rem;
+        }
+
+        .form-text {
+            display: block;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: #777;
+        }
+
+        .alert {
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.75rem;
+            border-radius: 8px;
+            font-weight: 400;
+            font-size: 0.95rem;
+            background-color: #f8f8f8;
+            border-left: 3px solid #ddd;
+        }
+
+        .alert-danger {
+            background-color: #fff8f8;
+            color: #d44950;
+            border-left-color: #d44950;
+        }
+
+        .alert-success {
+            background-color: #f8fff8;
+            color: #4caf50;
+            border-left-color: #4caf50;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 2.5rem;
+            gap: 1rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.85rem 1.75rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+            letter-spacing: 0.3px;
+        }
+
+        .btn i {
+            margin-right: 0.625rem;
+            font-size: 0.95rem;
+        }
+
+        .btn-back {
+            background-color: #f0f0f0;
+            color: #222;
+            border: 1px solid #ddd;
+        }
+
+        .btn-back:hover {
+            background-color: #e5e5e5;
+        }
+
+        .btn-save {
+            background-color: #222;
+            color: var(--secondary-color);
+        }
+
+        .btn-save:hover {
+            background-color: #000;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-delete {
+            background-color: #fff;
+            color: #d44950;
+            border: 1px solid #d44950;
+        }
+
+        .btn-delete:hover {
+            background-color: #fff8f8;
+            color: #c53030;
+            border-color: #c53030;
+        }
+
+        .tips-section {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .tips-title {
+            font-size: 1.3rem;
+            font-weight: 500;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .tips-list {
+            padding-left: 1.5rem;
+            margin: 0;
+        }
+
+        .tips-list li {
+            margin-bottom: 0.875rem;
+            color: #555555;
+            position: relative;
+            padding-left: 0.5rem;
+        }
+
+        .tips-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Input field focus animation */
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 0.5rem;
+        }
+
+        .input-wrapper::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease, left 0.3s ease;
+        }
+
+        .input-wrapper:focus-within::after {
+            width: 100%;
+            left: 0;
+        }
+
+        /* Section headings */
+        .section-heading {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        /* Fade-in animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-section, .tips-section {
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .tips-section {
+            animation-delay: 0.2s;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 767px) {
+            .service-container {
+                padding: 1.5rem;
+            }
+            
+            .btn-container {
+                justify-content: center;
+                flex-direction: column-reverse;
+                gap: 1rem;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Messages display */
+        .messages {
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="service-container">
+        <h1 class="page-title">Edit Service</h1>
+        <p class="service-intro">Update the details of your service to keep your offering accurate and up to date.</p>
+       
+        
+        <!-- Messages section (populated by backend) for only error messages from the edit form -->
+        <div class="messages">
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    Please fix the errors below before submitting.
+                </div>
+            {% endif %}
+            {% if messages %}
+                {% for message in messages %}
+                    {% if message.tags == 'error' %}
+                        <div class="alert alert-danger">
+                            {{ message }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </div>
+        
+        <div class="form-section">
+            <form method="post">
+                {% csrf_token %}
+                <!-- Form errors would appear here -->
+                {% if form.errors %}
+                <div class="alert alert-danger">
+                    Please fix the errors below before submitting.
+                </div>
+                {% endif %}
+
+                <div class="section-heading">Service Information</div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <label class="form-label" for="service_name">Service Name</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="service_name" name="name" class="form-control" value="{{ form.name.value }}" placeholder="e.g. Haircut & Styling" required>
+                        </div>
+                        {% if form.name.errors %}
+                        <small class="form-text" style="color: #d44950;">{{ form.name.errors }}</small>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-col">
+                        <label class="form-label" for="service_description">Description</label>
+                        <div class="input-wrapper">
+                            <textarea id="service_description" name="description" class="form-control" placeholder="Provide a detailed description of what this service includes..." required>{{ form.description.value }}</textarea>
+                        </div>
+                        <small class="form-text">Be specific about what clients will receive and what to expect</small>
+                        {% if form.description.errors %}
+                        <small class="form-text" style="color: #d44950;">{{ form.description.errors }}</small>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-col form-col-half">
+                        <label class="form-label" for="service_duration">Duration (minutes)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="service_duration" name="duration" class="form-control" value="{{ form.duration.value }}" placeholder="30" min="5" required>
+                        </div>
+                        {% if form.duration.errors %}
+                        <small class="form-text" style="color: #d44950;">{{ form.duration.errors }}</small>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-col form-col-half">
+                        <label class="form-label" for="service_price">Price</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="service_price" name="price" class="form-control" value="{{ form.price.value }}" placeholder="49.99" min="0" step="0.01" required>
+                        </div>
+                        {% if form.price.errors %}
+                        <small class="form-text" style="color: #d44950;">{{ form.price.errors }}</small>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="btn-container">
+                    <a href="{% url 'serviceapp:dashboard' %}" class="btn btn-back">
+                        <i class="fas fa-arrow-left"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-save">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="tips-section">
+            <h3 class="tips-title">Tips for Updating Services</h3>
+            <ul class="tips-list">
+                <li>Regularly review and update your service details to ensure they remain accurate</li>
+                <li>Communicate clearly if there are any changes to what clients will receive</li>
+                <li>Consider adjusting your prices periodically to reflect your growing expertise</li>
+                <li>If your service has significantly changed, consider creating a new service instead</li>
+            </ul>
+        </div>
+    </div>
+
+</body>
+</html>

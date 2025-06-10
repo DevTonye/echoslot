@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Provider Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #000000;
+            --secondary: #333333;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --border-radius: 8px;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: var(--dark);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 260px;
+            background-color: var(--primary);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            transition: var(--transition);
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-menu {
+            padding: 1rem 0;
+        }
+
+        .menu-item {
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left: 3px solid white;
+        }
+
+        .menu-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 2rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        /* Cards */
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--light-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h5 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Provider Profile Card */
+        .provider-card {
+            padding: 1.5rem;
+        }
+
+        .avatar-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .avatar-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .provider-info h2 {
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-container .row > div {
+            padding: 0.75rem;
+        }
+
+        .stats-item {
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stats-item h3 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th, table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        table th {
+            text-align: left;
+            font-weight: 600;
+            background-color: #f8f9fa;
+        }
+
+        table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.35em 0.65em;
+            font-size: 0.75em;
+            font-weight: 600;
+            border-radius: 50rem;
+        }
+
+        .badge-warning {
+            background-color: #fff8e1;
+            color: #f57f17;
+        }
+
+        .badge-success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .badge-info {
+            background-color: #e0f7fa;
+            color: #006064;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: var(--border-radius);
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #333;
+        }
+
+        .btn-outline-primary {
+            background-color: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-outline-danger {
+            background-color: transparent;
+            color: #dc3545;
+            border: 1px solid #dc3545;
+        }
+
+        .btn-outline-danger:hover {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-light {
+            background-color: white;
+            color: var(--primary);
+        }
+
+        .btn-light:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Service Cards */
+        .service-card {
+            height: 100%;
+            transition: transform 0.2s ease;
+            border: 1px solid var(--light-gray);
+            border-radius: var(--border-radius);
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .service-card-body {
+            padding: 1.25rem;
+        }
+
+        .service-card-footer {
+            padding: 1rem;
+            border-top: 1px solid var(--light-gray);
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Empty states */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 0;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--gray);
+            margin-bottom: 1rem;
+        }
+
+        .empty-state p {
+            margin-bottom: 1rem;
+            color: var(--gray);
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 80px;
+                overflow: hidden;
+            }
+            
+            .sidebar .sidebar-logo span,
+            .sidebar .menu-item span,
+            .sidebar .user-info span {
+                display: none;
+            }
+            
+            .sidebar .menu-item {
+                justify-content: center;
+                padding: 0.75rem;
+            }
+            
+            .main-content {
+                margin-left: 80px;
+            }
+            
+            .provider-card .row {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .stats-container .row {
+                flex-wrap: wrap;
+            }
+            
+            .stats-container .col-6 {
+                width: 50%;
+            }
+        }
+
+        /* Utilities */
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-right: -0.75rem;
+            margin-left: -0.75rem;
+        }
+
+        .col-md-2, .col-md-4, .col-md-6, .col-md-10, .col-md-12 {
+            padding-right: 0.75rem;
+            padding-left: 0.75rem;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .col-md-2 {
+                flex: 0 0 16.666667%;
+                max-width: 16.666667%;
+            }
+            .col-md-4 {
+                flex: 0 0 33.333333%;
+                max-width: 33.333333%;
+            }
+            .col-md-6 {
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+            .col-md-10 {
+                flex: 0 0 83.333333%;
+                max-width: 83.333333%;
+            }
+            .col-md-12 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+        }
+
+        .d-flex {
+            display: flex;
+        }
+
+        .align-items-center {
+            align-items: center;
+        }
+
+        .justify-content-between {
+            justify-content: space-between;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mb-0 {
+            margin-bottom: 0;
+        }
+
+        .mb-1 {
+            margin-bottom: 0.25rem;
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
+
+        .mb-3 {
+            margin-bottom: 1rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 1.5rem;
+        }
+
+        .mt-3 {
+            margin-top: 1rem;
+        }
+
+        .text-muted {
+            color: var(--gray);
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <i class="fas fa-calendar-check"></i>
+                <span>EchoSlot</span>
+            </div>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="echoslot:dashboard" class="menu-item active">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Appointments</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-list-alt"></i>
+                <span>Services</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-users"></i>
+                <span>Clients</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-chart-line"></i>
+                <span>Analytics</span>
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span>{{provider.user.username}}</span> <!-- Will be change later-->
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Dashboard</h1>
+            <div class="actions">
+                <a href="#" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Quick Add
+                </a>
+            </div>
+        </div>
+
+        <!-- Provider Profile Section -->
+        <div class="card mb-4">
+            <div class="card-body provider-card">
+                <div class="row align-items-center">
+                    <div class="col-md-2 text-center">
+                        <div class="avatar-circle">
+                            <i class="fas fa-user-circle fa-4x"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-6 provider-info">
+                        <h2 class="mb-1">{{provider.user.username}}</h2>
+                        <p class="text-muted mb-1"><i class="fas fa-briefcase"></i> {{ provider.service_name}}</p>
+                        <p class="text-muted mb-1"><i class="fas fa-map-marker-alt"></i> {{ provider.location }}</p> <!--Will add a location later -->
+                        <p class="mb-2">{{ provider.description|truncatechars:150}}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stats-container">
+                            <div class="row">
+                                <div class="col-6 text-center mb-3">
+                                    <div class="stats-item">
+                                        <h3>{{services.count}}</h3>
+                                        <small class="text-muted">Total Services</small>
+                                    </div>
+                                </div>
+                                <div class="col-6 text-center mb-3">
+                                    <div class="stats-item">
+                                        <h3>{{ today_appointments.count }}</h3>
+                                        <small class="text-muted">Today's Appointments</small>
+                                    </div>
+                                </div>
+                                <div class="col-6 text-center">
+                                    <a href="{% url 'serviceapp:addservice' %}" class="btn btn-outline-primary w-100">
+                                        <i class="fas fa-plus-circle"></i> Add Service
+                                    </a>
+                                </div>
+                                <div class="col-6 text-center">
+                                    <button class="btn btn-outline-primary w-100">
+                                        <i class="fas fa-cog"></i> Settings
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Today's Appointments -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5><i class="fas fa-calendar-day"></i> Today's Appointments</h5>
+                <span class="badge badge-info">{{today_appointments.count}} Appointment{{today_appointments.count | pluralize }}</span> <!-- to be chacked -->
+            </div>
+            <div class="card-body">
+                {% if today_appointments %}
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Client</th>
+                                <th>Service</th>
+                                <th>Duration</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>`
+                        </thead>
+                        <tbody>
+                            {% for appointment in today_appointments %}
+                            <tr>
+                                <td>{{ appointment.start_time|time:"h:i A"}}</td>
+                                <td>{{ appointment.client.get_full_name }}</td>
+                                <td>{{ appointment.service.name }}</td>
+                                <td>{{ appointment.service.duration }} min</td>
+                                <td>
+                                    {% if appointment.status == 'scheduled' %}
+                                            <span class="badge badge-warning">Scheduled</span>
+                                    {% elif appointment.status == 'confirmed' %}
+                                            <span class="badge bg-success">Confirmed</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <a href="{% url 'echoslot:updatestatus' appointment.appointment_id %}" class="btn btn-outline-primary">
+                                            <i class="fas fa-pen"></i> Update Status
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-calendar-times text-muted fa-3x mb-3"></i>
+                    <p class="mb-0">No appointments scheduled for today</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Upcoming Appointments -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5><i class="fas fa-calendar-alt"></i> Upcoming Appointments</h5>
+                <span class="badge badge-info">{{ upcoming_appointments.count }} Appointment{{ upcoming_appointments.count|pluralize }}</span>
+            </div>
+            <div class="card-body">
+                {% if upcoming_appointments %}
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Client</th>
+                                <th>Service</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appointment in upcoming_appointments %}
+                            <tr>
+                                <td>{{ appointment.appointment_date|date:"M d, Y" }}</td>
+                                <td>{{ appointment.start_time|time:"h:i A" }}</td>
+                                <td>{{ appointment.client.get_full_name }}</td>
+                                <td>{{ appointment.service.name }}</td>
+                                <td>
+                                    {% if appointment.status == 'scheduled' %}
+                                        <span class="badge badge-warning">Scheduled</span>
+                                    {% elif appointment.status == 'confirmed' %}
+                                        <span class="badge bg-success">Confirmed</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <a href="#" class="btn btn-outline-primary">
+                                            <i class="fas fa-pen"></i> Update Status
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-calendar-week text-muted fa-3x mb-3"></i>
+                        <p class="mb-0">No upcoming appointments scheduled</p>
+                    </div>
+                    {% endif %}
+            </div>
+        </div>
+
+        <!-- Services Section -->
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-list-alt"></i> Your Services</h5>
+                <a href="{% url 'serviceapp:addservice' %}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus"></i> Add New Service
+                </a>
+            </div>
+            <div class="card-body">
+                {% if services %}
+                <div class="row">
+                    {% for service in services %}
+                    <div class="col-md-4 mb-4">
+                        <div class="service-card">
+                            <div class="service-card-body">
+                                <h5 class="card-title">{{ service.name}}</h5>
+                                <h6 class="text-muted mb-2">{{ service.duration}} minutes | ${{ service.price }} </h6>
+                                <p>{{ service.description|truncatechars:100 }}</p>
+                            </div>
+                            <div class="service-card-footer">
+                               <a href="{% url 'serviceapp:editservice' service.service_id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+                               <a href="{% url 'serviceapp:deleteservice' service.service_id%}" class="btn btn-sm btn-outline-danger">Delete</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-clipboard-list text-muted fa-3x mb-3"></i>
+                        <p class="mb-0">You haven't added any services yet</p>
+                        <a href="#" class="btn btn-outline-success mt-3">
+                            <i class="fas fa-plus-circle"></i> Add Your First Service
+                        </a>
+                    </div>
+                    {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

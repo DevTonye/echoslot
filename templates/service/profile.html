@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Your Provider Profile</title>
+     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            color: #1a1a1a;
+        }
+
+        .profile-container {
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h2 {
+            font-size: 28px;
+            font-weight: 300;
+            color: #000;
+            margin-bottom: 12px;
+            letter-spacing: -0.3px;
+        }
+
+        .header p {
+            color: #949494;
+            font-size: 16px;
+            font-weight: 300;
+        }
+
+        .form-section {
+            margin-bottom: 32px;
+        }
+
+        .input-group {
+            margin-bottom: 28px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .input-row .input-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            color: #2a2a2a;
+            margin-bottom: 10px;
+            font-weight: 500;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 16px 0;
+            border: none;
+            border-bottom: 1px solid #e0e0e0;
+            background: transparent;
+            font-size: 17px;
+            color: #000;
+            transition: border-color 0.3s ease;
+            resize: vertical;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-bottom-color: #000;
+        }
+
+        .input-field.error {
+            border-bottom-color: #d32f2f;
+        }
+
+        .input-field.error:focus {
+            border-bottom-color: #d32f2f;
+        }
+
+        .field-error {
+            font-size: 12px;
+            color: #d32f2f;
+            margin-top: 6px;
+            font-weight: 400;
+            display: block;
+        }
+
+        .input-field::placeholder {
+            color: #c0c0c0;
+            font-weight: 300;
+        }
+
+        .form-text {
+            font-size: 13px;
+            color: #666;
+            margin-top: 8px;
+            font-weight: 400;
+            line-height: 1.4;
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 18px;
+            background: #000;
+            color: white;
+            border: none;
+            font-size: 15px;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            border-radius: 2px;
+            margin-bottom: 20px;
+        }
+
+        .action-btn:hover {
+            background: #2a2a2a;
+        }
+
+        .secondary-link {
+            text-align: center;
+        }
+
+        .secondary-link a {
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .secondary-link a:hover {
+            color: #000;
+        }
+
+        .message {
+            padding: 16px;
+            background: #f9f9f9;
+            border-left: 3px solid #000;
+            margin-bottom: 24px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .message.error {
+            border-left-color: #d32f2f;
+            background: #ffeaea;
+        }
+
+        .message.success {
+            border-left-color: #388e3c;
+            background: #e8f5e8;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 20px;
+            }
+            
+            .header h2 {
+                font-size: 24px;
+            }
+            
+            .profile-container {
+                max-width: 100%;
+            }
+
+            .input-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .input-row .input-group {
+                margin-bottom: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <div class="header">
+            <h2>Complete Your Service Profile</h2>
+            <p>Please provide the details below to set up your service account.</p>
+        </div>
+
+        <div class="message">
+            Welcome! Please fill out all required fields to complete your profile.
+        </div>
+
+        <form method="post">
+            {% csrf_token %} 
+            <div class="form-section">
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="first_name">First Name</label>
+                        <input type="text" name="first_name" id="first_name" class="input-field" placeholder="Enter your first name">
+                        {% if form.first_name.errors %}
+                            <span class="field-error">{{ form.first_name.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="last_name">Last Name</label>
+                        <input type="text" name="last_name" id="last_name" class="input-field" placeholder="Enter your last name">
+                        {% if form.last_name.errors %}
+                            <span class="field-error">{{ form.last_name.errors.0}}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="service_name">Service Name</label>
+                    <input type="text" name="service_name" id="service_name" class="input-field" placeholder="Your service or business name">
+                     {% if form.service_name.errors %}
+                     <span class="field-error">{{ form.service_name.errors.0 }}</span>
+                    {% endif %}
+                    <div class="form-text">The name of your service or business</div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="description">Description</label>
+                    <textarea name="description" id="description" class="input-field" rows="4" placeholder="Describe your services, expertise, and what clients can expect"></textarea>
+                    <div class="form-text">Describe your services, expertise, and what clients can expect</div>
+                    {% if form.description.errors %}
+                        <span class="field-error">{{ form.description.errors.0}}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="input-group">
+                    <label for="address">Address</label>
+                    <textarea name="address" id="address" class="input-field" rows="2" placeholder="Your business address"></textarea>
+                    {% if form.address.errors %}
+                        <span class="field-error">{{ form.address.errors.0}}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="input-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" name="phone" id="phone" class="input-field" placeholder="Your contact number">
+                    {% if form.phone.errors %}
+                        <span class="field-error">{{ form.phone.errors.0}}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <button type="submit" class="action-btn">Create Profile</button>
+        </form>
+
+        <div class="secondary-link">
+            <a href="{% url 'echoslot:index' %}">Cancel</a>
+        </div>
+    </div>
+</body>
+</html>

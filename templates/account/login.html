@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="{% static 'accounts/ts.css'%}">
+</head>
+<body>
+    <div class="form-container">
+        <h2>Login to Echoslot</h2>
+
+        <form method="post" class="login-form">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.email }}
+                {% for error in form.email.errors %}
+                    <div class="field-error">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                {{ form.password }}
+                {% for error in form.password.errors %}
+                    <div class="field-error">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+
+            <div class="form-group remember-options">
+                <label class="remember-me">
+                    {{ form.remember_me }} Remember me
+                </label>
+                <div class="forgot-password">
+                    <a href="{% url 'accounts:passwordrest' %}">Forgot your password?</a>
+                </div>
+            </div>
+            <div class="login-link">
+                <p>Don't have an account? <a href="{% url 'accounts:register' %}">Sign up here</a></p>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
