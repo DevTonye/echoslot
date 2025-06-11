@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
     <style>
-       :root {
+        :root {
             --primary: #000000;
             --secondary: #333333;
             --light: #f8f9fa;
@@ -17,6 +17,10 @@
             --border-radius: 8px;
             --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             --transition: all 0.3s ease;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #17a2b8;
         }
 
         * {
@@ -127,12 +131,92 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .page-title {
             font-size: 1.75rem;
             font-weight: 700;
+        }
+
+        .filter-bar {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid var(--light-gray);
+            border-radius: var(--border-radius);
+            font-size: 0.875rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        .filter-select {
+            padding: 0.75rem;
+            border: 1px solid var(--light-gray);
+            border-radius: var(--border-radius);
+            background-color: white;
+            min-width: 150px;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-card i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .stat-number {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.875rem;
         }
 
         /* Cards */
@@ -208,7 +292,121 @@
             margin-bottom: 0.25rem;
         }
 
-        /* Tables */
+        /* Service Grid - UNIQUE TO FIRST FILE */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .service-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: 1px solid var(--light-gray);
+            height: 100%;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .service-card-header {
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .service-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .service-price {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .service-duration {
+            color: var(--gray);
+            font-size: 0.875rem;
+        }
+
+        .service-card-body {
+            padding: 1.25rem;
+        }
+
+        .service-description {
+            color: var(--gray);
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .service-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .service-stat {
+            text-align: center;
+        }
+
+        .service-stat-number {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .service-stat-label {
+            color: var(--gray);
+            font-size: 0.75rem;
+        }
+
+        .service-card-footer {
+            padding: 1rem 1.25rem;
+            background-color: #f8f9fa;
+            display: flex;
+            gap: 0.5rem;
+            justify-content: space-between;
+            border-top: 1px solid var(--light-gray);
+        }
+        /*
+
+        .service-card-footer {
+            padding: 1rem;
+            border-top: 1px solid var(--light-gray);
+            display: flex;
+            gap: 8px;
+        }
+
+*/
+        .service-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-active {
+            background-color: var(--success);
+        }
+
+        .status-inactive {
+            background-color: var(--gray);
+        }
+
         .table-container {
             overflow-x: auto;
         }
@@ -233,7 +431,6 @@
             background-color: #f8f9fa;
         }
 
-        /* Badges */
         .badge {
             display: inline-block;
             padding: 0.35em 0.65em;
@@ -263,7 +460,7 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            padding: 0.375rem 0.75rem;
+            padding: 0.5rem 1rem;
             font-size: 0.875rem;
             font-weight: 500;
             border-radius: var(--border-radius);
@@ -274,7 +471,7 @@
         }
 
         .btn-sm {
-            padding: 0.25rem 0.5rem;
+            padding: 0.375rem 0.75rem;
             font-size: 0.75rem;
         }
 
@@ -300,12 +497,23 @@
 
         .btn-outline-danger {
             background-color: transparent;
-            color: #dc3545;
-            border: 1px solid #dc3545;
+            color: var(--danger);
+            border: 1px solid var(--danger);
         }
 
         .btn-outline-danger:hover {
-            background-color: #dc3545;
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-outline-success {
+            background-color: transparent;
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .btn-outline-success:hover {
+            background-color: var(--success);
             color: white;
         }
 
@@ -318,30 +526,106 @@
             background-color: #f0f0f0;
         }
 
-        /* Service Cards */
-        .service-card {
+        /* Modal Styles - UNIQUE TO FIRST FILE */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
             height: 100%;
-            transition: transform 0.2s ease;
+            background-color: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--light-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
             border: 1px solid var(--light-gray);
             border-radius: var(--border-radius);
+            font-size: 0.875rem;
         }
 
-        .service-card:hover {
-            transform: translateY(-5px);
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
         }
 
-        .service-card-body {
-            padding: 1.25rem;
+        textarea.form-input {
+            min-height: 80px;
+            resize: vertical;
         }
 
-        .service-card-footer {
-            padding: 1rem;
+        .modal-footer {
+            padding: 1rem 1.5rem;
             border-top: 1px solid var(--light-gray);
             display: flex;
-            gap: 8px;
+            gap: 0.5rem;
+            justify-content: flex-end;
         }
 
-        /* Empty states */
+        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 3rem 0;
@@ -399,6 +683,35 @@
             animation: spin 1s linear infinite;
         }
 
+        .no-services-message {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        padding: 3rem 2rem;
+        text-align: center;
+        grid-column: 1 / -1; 
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        border: 1px dashed var(--light-gray);
+    }
+
+    .no-services-message p {
+        font-size: 1.1rem;
+        color: var(--gray);
+        margin-bottom: 0;
+    }
+
+    .no-services-message .btn {
+        padding: 0.75rem 1.5rem;
+        font-size: 0.875rem;
+    }
+
+    .no-services-message .btn i {
+        margin-right: 0.5rem;
+    }
         @keyframes spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
@@ -452,6 +765,23 @@
             
             .sidebar {
                 transform: translateX(-100%);
+            }
+            
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                min-width: auto;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
             }
             
             .appointment-tabs {
@@ -568,7 +898,7 @@
                 <i class="fas fa-calendar-alt"></i>
                 <span>Appointments</span>
             </a>
-            <a href="#" class="menu-item {% if active_tab == 'services' %}active{% endif %}">
+            <a href="{% url 'serviceapp:service'%}" class="menu-item {% if active_tab == 'services' %}active{% endif %}">
                 <i class="fas fa-list-alt"></i>
                 <span>Services</span>
             </a>

@@ -179,7 +179,7 @@
     <div class="card-body">
         {% if services %}
         <div class="row">
-            {% for service in services %}
+            {% for service in services|slice:":3" %}
             <div class="col-md-4 mb-4">
                 <div class="service-card">
                     <div class="service-card-body">
@@ -199,7 +199,7 @@
             <div class="text-center py-4">
                 <i class="fas fa-clipboard-list text-muted fa-3x mb-3"></i>
                 <p class="mb-0">You haven't added any services yet</p>
-                <a href="#" class="btn btn-outline-success mt-3">
+                <a href="{% url 'serviceapp:addservice' %}" class="btn btn-outline-success mt-3">
                     <i class="fas fa-plus-circle"></i> Add Your First Service
                 </a>
             </div>

@@ -4,6 +4,7 @@ from .forms import ServiceProviderForm, ServiceForm
 from django.contrib import messages
 from django.utils import timezone
 import datetime
+from functools import wraps
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from accounts.models import CustomUser
@@ -11,6 +12,21 @@ from django.db.models import Q
 
 # service provider views
 User = get_user_model()
+
+def service_provider_required(view_func):
+    @wraps(view_func)
+    def wrapper(request, *agrs, **kwargs):
+        user = request.user
+        if user.role != CustomUser.UserRole.SERVICE_PROVIDER:
+            messages.error(request, "You have no access to this page")
+            return redirect("accounts:selectrole")
+        try:
+            user.service_provider
+        except ServiceProvider.DoesNotExist:
+            messages.error(request, 'You need to register')
+            return redirect('accounts:register')
+        return view_func(request, *agrs, **kwargs)
+    return wrapper
 
 # service provider profile
 @login_required(login_url='accounts:login')
@@ -34,18 +50,9 @@ def serviceprovider_profile(request):
 
 # service provider dashboard
 @login_required(login_url='accounts:login')
+@service_provider_required
 def service_dashboard(request):
-    user = request.user
-
-    if user.role != CustomUser.UserRole.SERVICE_PROVIDER:
-        messages.error(request, 'unauthorized access')
-        return redirect('accounts:register')
-    try:
-        provider = user.service_provider
-    except ServiceProvider.DoesNotExist:
-        messages.error(request, "Please create a profile")
-        return redirect("serviceapp:profile")
-
+    provider = request.user.service_provider
     today = timezone.now().date()
 
     today_appointments = Appointment.objects.filter(
@@ -60,7 +67,7 @@ def service_dashboard(request):
         status__in=['scheduled', 'confirmed']
     ).order_by('appointment_date', 'start_time')
 
-    service = Service.objects.filter(provider=provider)
+    service = Service.objects.filter(provider=provider)[:3]
 
     context = {
         'provider':provider,
@@ -72,13 +79,9 @@ def service_dashboard(request):
     return render(request, 'service/dashboard.html', context)
 
 # add services views 
-def add_service(request):
-    user = request.user
-    try:
-        provider = user.service_provider
-    except ServiceProvider.DoesNotExist:
-        messages.error(request, "Create an account")
-        return redirect("accounts:register")
+@service_provider_required
+def add_service(request): 
+    provider = request.user.service_provider
     if request.method == "POST":
         form = ServiceForm(request.POST)
         if form.is_valid():
@@ -86,7 +89,7 @@ def add_service(request):
             service.provider = provider
             service.save()
             messages.success(request, "Service added successfully.")
-            return redirect("serviceapp:dashboard")
+            return redirect("serviceapp:service")
     else:
         form = ServiceForm()
     return render(request, "service/addservice.html", {"form": form})
@@ -101,7 +104,7 @@ def edit_service(request, service_id):
         if form.is_valid():
             form.save()
             messages.success(request, 'Service updated')
-            return redirect('serviceapp:dashboard')
+            return redirect('serviceapp:service')
         else:
             messages.error(request, "Fill the form correctly")
     else:
@@ -116,33 +119,19 @@ def delete_service(request, service_id):
     if request.method == "POST":
         service.delete()
         messages.success(request, "Service deleted.")
-        return redirect('serviceapp:dashboard')
+        return redirect('serviceapp:service')
     return render(request, 'service/confirmdelete.html', {'service': service})
 
 # make a request to get all, today, upcoming and past appointments
+@service_provider_required
 def appointments(request):
-    user = request.user
-    if user.role != CustomUser.UserRole.SERVICE_PROVIDER:
-        messages.error(request, "You have no access to this page")
-        return redirect("accounts:selectrole")
-    try:
-        provider = user.service_provider
-    except ServiceProvider.DoesNotExist:
-        messages.error(request, 'You need to register')
-        return redirect('accounts:register')
+    provider = request.user.service_provider
+    
     return render(request, "service/appointments.html", {"provider":provider})
 
+@service_provider_required
 def today_appointments(request):
-    user = request.user
-    if user.role != CustomUser.UserRole.SERVICE_PROVIDER:
-        messages.error(request, "You have no access to this page")
-        return redirect("accounts:selectrole")
-    try:
-        provider = user.service_provider
-    except ServiceProvider.DoesNotExist:
-        messages.error(request, 'You need to register')
-        return redirect('accounts:register')
-    
+    provider = request.user.service_provider
     today = timezone.now().date()
     
     today_appointments = Appointment.objects.filter(
@@ -161,17 +150,9 @@ def today_appointments(request):
     return render(request, "partials/today.html", context)
 
 # display upcoming appointments for a service provider
+@service_provider_required
 def upcoming_appointments(request):
-    user = request.user
-    if user.role != CustomUser.UserRole.SERVICE_PROVIDER:
-        messages.error(request, "You have no access to this page")
-        return redirect("accounts:selectrole")
-    try:
-        provider = user.service_provider
-    except ServiceProvider.DoesNotExist:
-        messages.error(request, 'You need to register')
-        return redirect('accounts:register')
-    
+    provider = request.user.service_provider
     today = timezone.now().date()
     
     upcoming_appointments = Appointment.objects.filter(
@@ -189,17 +170,9 @@ def upcoming_appointments(request):
     }
     return render(request, "partials/upcoming.html", context)
 
+@service_provider_required
 def past_appointments(request):
-    user = request.user
-    if user.role != CustomUser.UserRole.SERVICE_PROVIDER:
-        messages.error(request, "You have no access to this page")
-        return redirect("accounts:selectrole")
-    try:
-        provider = user.service_provider
-    except ServiceProvider.DoesNotExist:
-        messages.error(request, 'You need to register')
-        return redirect('accounts:register')
-    
+    provider = request.user.service_provider    
     today = timezone.now().date()
     
     past_appointments = Appointment.objects.filter(
@@ -223,3 +196,9 @@ def past_appointments(request):
         'services':service
     }
     return render(request, "partials/past.html", context)
+
+# view all services
+def services_all(request):
+    services = Service.objects.all()
+    context = {"services": services}
+    return render(request, 'service/allservice.html', context)
