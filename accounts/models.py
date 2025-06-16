@@ -30,7 +30,7 @@ class CustomUser(AbstractUser):
         SERVICE_PROVIDER = "service_provider", "Service Provider"
         ADMIN = "admin", "Admin"
     
-    role = models.CharField(max_length=20, choices=UserRole.choices, default=UserRole.SERVICE_PROVIDER)
+    role = models.CharField(max_length=20, choices=UserRole.choices)
 
     objects = CustomUserManager()
 

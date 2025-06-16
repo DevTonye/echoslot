@@ -6,7 +6,6 @@
     <title>Edit Service</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Smooth Modern Theme */
         :root {
             --primary-color: #333333;
             --secondary-color: #ffffff;
@@ -316,29 +315,17 @@
         <h1 class="page-title">Edit Service</h1>
         <p class="service-intro">Update the details of your service to keep your offering accurate and up to date.</p>
        
-        
-        <!-- Messages section (populated by backend) for only error messages from the edit form -->
         <div class="messages">
             {% if form.errors %}
                 <div class="alert alert-danger">
                     Please fix the errors below before submitting.
                 </div>
             {% endif %}
-            {% if messages %}
-                {% for message in messages %}
-                    {% if message.tags == 'error' %}
-                        <div class="alert alert-danger">
-                            {{ message }}
-                        </div>
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
         </div>
         
         <div class="form-section">
             <form method="post">
                 {% csrf_token %}
-                <!-- Form errors would appear here -->
                 {% if form.errors %}
                 <div class="alert alert-danger">
                     Please fix the errors below before submitting.

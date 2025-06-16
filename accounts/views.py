@@ -257,7 +257,7 @@ def loginaccount(request):
             
             if not user.is_active:
                 messages.error(request, "Please verify your email address before logging in.")
-                return redirect('accounts:verification_pending')
+                return redirect('accounts:verificationpending')
             
             if user.role == CustomUser.UserRole.SERVICE_PROVIDER:
                 if not ServiceProvider.objects.filter(user=user).exists():
@@ -284,6 +284,14 @@ def logoutuser(request):
 
 @login_required(login_url='accounts:login')
 def selectuser_role(request):
+    # Check if user already has a role selected
+    if request.user.role:
+        if request.user.role == CustomUser.UserRole.SERVICE_PROVIDER:
+            messages.info(request, "You have already selected your role as Service Provider.")
+            return redirect("serviceapp:dashboard")
+        elif request.user.role == CustomUser.UserRole.CLIENT:
+            messages.info(request, "You have already selected your role as Client.")
+            return redirect('clientapp:clientprofile') # set for now
     if request.method == "POST":
         role = request.POST.get("role")
         if role in [CustomUser.UserRole.CLIENT, CustomUser.UserRole.SERVICE_PROVIDER]:

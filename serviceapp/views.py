@@ -23,17 +23,14 @@ def service_provider_required(view_func):
         try:
             user.service_provider
         except ServiceProvider.DoesNotExist:
-            messages.error(request, 'You need to register')
-            return redirect('accounts:register')
+            messages.error(request, 'Please create a profile')
+            return redirect('serviceapp:profile')
         return view_func(request, *agrs, **kwargs)
     return wrapper
 
 # service provider profile
 @login_required(login_url='accounts:login')
 def serviceprovider_profile(request):
-    if request.user.role != CustomUser.UserRole.SERVICE_PROVIDER:
-        messages.error(request, "You have to sign in as a service provider")
-        return redirect('echoslot:index')
     if request.method == "POST":
         #print("POST data:", request.POST)
         form = ServiceProviderForm(request.POST)
@@ -126,10 +123,8 @@ def delete_service(request, service_id):
 @service_provider_required
 def appointments(request):
     provider = request.user.service_provider
-    
     return render(request, "service/appointments.html", {"provider":provider})
 
-@service_provider_required
 def today_appointments(request):
     provider = request.user.service_provider
     today = timezone.now().date()
@@ -150,7 +145,6 @@ def today_appointments(request):
     return render(request, "partials/today.html", context)
 
 # display upcoming appointments for a service provider
-@service_provider_required
 def upcoming_appointments(request):
     provider = request.user.service_provider
     today = timezone.now().date()
@@ -170,7 +164,6 @@ def upcoming_appointments(request):
     }
     return render(request, "partials/upcoming.html", context)
 
-@service_provider_required
 def past_appointments(request):
     provider = request.user.service_provider    
     today = timezone.now().date()
