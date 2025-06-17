@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import ServiceProvider, Service, Appointment, Notification
-from .forms import ServiceProviderForm, ServiceForm, AppointmentForm
+from .forms import ServiceProviderForm, ServiceForm, AppointmentForm, AvailabilityScheduleForm
 from django.contrib import messages
 from django.utils import timezone
 from django.core.mail import send_mail
@@ -44,7 +44,7 @@ def serviceprovider_profile(request):
             provider.user = request.user
             provider.save()
             messages.success(request, "Your service account has been created!")
-            return redirect("serviceapp:dashboard")
+            return redirect("serviceapp:set_availability")
     else:
         form = ServiceProviderForm()
     return render(request, "service/profile.html", {"form": form})
@@ -199,6 +199,23 @@ def services_all(request):
     services = Service.objects.all()
     context = {"services": services}
     return render(request, 'service/allservice.html', context)
+
+# service providers set availability
+@login_required(login_url='accounts:login')
+@service_provider_required
+def set_availability(request):
+    if request.method == "POST":
+        form = AvailabilityScheduleForm(request.POST, service_provider=request.user.service_provider)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Availability set successfully.")
+            return redirect("serviceapp:dashboard")
+    else:
+        form = AvailabilityScheduleForm(service_provider=request.user.service_provider)
+    
+    return render(request, 'service/set_availability.html', {'form': form})
+
+# view all ravailability set by a service provide
 
 # service provider finder 
 @login_required(login_url="accounts:login")

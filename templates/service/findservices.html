@@ -521,7 +521,7 @@
                             </div>
                         </div>
                         <div class="provider-bio">{{ provider.description|truncatewords:30 }}</div>
-                        <a href="#" class="book-btn">
+                        <a href="{% url 'serviceapp:book_appointment' provider.id %}" class="book-btn">
                             Book Appointment
                         </a>
                     </div>
