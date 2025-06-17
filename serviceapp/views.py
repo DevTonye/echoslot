@@ -1,14 +1,18 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import ServiceProvider, Service, Appointment
-from .forms import ServiceProviderForm, ServiceForm
+from .models import ServiceProvider, Service, Appointment, Notification
+from .forms import ServiceProviderForm, ServiceForm, AppointmentForm
 from django.contrib import messages
 from django.utils import timezone
+from django.core.mail import send_mail
 import datetime
 from functools import wraps
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from accounts.models import CustomUser
 from django.db.models import Q
+import random
+from celery import shared_task
+
 
 # service provider views
 User = get_user_model()
@@ -195,3 +199,75 @@ def services_all(request):
     services = Service.objects.all()
     context = {"services": services}
     return render(request, 'service/allservice.html', context)
+
+# service provider finder 
+@login_required(login_url="accounts:login")
+def find_services(request):
+    service_provider = list(ServiceProvider.objects.all())
+    random_providers = random.sample(service_provider, min(len(service_provider), 6)) if service_provider else []
+    return render(request, "service/findservices.html", {'providers': random_providers})
+
+# book appointments
+@login_required(login_url="accounts:login")
+def book_appointments(request, provider_id):
+    provider = get_object_or_404(ServiceProvider, pk=provider_id)
+    if request.method == 'POST':
+        form = AppointmentForm(request.POST, provider_id=provider_id)
+        if form.is_valid():
+            appointment = form.save(commit=False)
+            appointment.client = request.user
+            appointment.end_time = form.cleaned_data['end_time']
+            appointment.save()
+
+            # create notification
+            appt_date = appointment.appointment_date
+            appt_time = appointment.start_time
+            appt_datetime = timezone.make_aware(
+                datetime.datetime.combine(appt_date, appt_time)
+            )
+
+            # Notification 1 day before
+            reminder_time = appt_datetime - datetime.timedelta(days=1)
+            Notification.objects.create(
+                appointment=appointment, 
+                notification_type='email',
+                scheduled_for=reminder_time,
+                 message=f"Reminder: You have an appointment for {appointment.service.name} tomorrow at {appointment.start_time}."
+            )
+
+            # notification 1 hour before
+            reminder_time = appt_datetime - datetime.timedelta(hours=1)
+            Notification.objects.create(
+                appointment=appointment,
+                notification_type='sms',
+                scheduled_for=reminder_time,
+                message=f"Reminder: Your appointment for {appointment.service.name} is in 1 hour at {appointment.start_time}."
+            )
+
+            messages.success(request, 'Appointment booked successfully!')
+            return redirect('serviceapp:appointment_success', appointment_id=appointment.appointment_id)
+    else:
+        form = AppointmentForm(provider_id=provider_id)
+    context = {
+        'provider': provider,
+        'form': form,
+        'services': Service.objects.filter(provider=provider)
+    }
+    return render(request, 'service/bookappointment.html', context)
+
+@login_required(login_url="accounts:login")
+def appointment_success(request, appointment_id):
+    appointment = get_object_or_404(Appointment, appointment_id=appointment_id, client=request.user)
+    return render(request, 'service/appointmentsuccess.html', {'appointment': appointment})
+
+'''
+@shared_task
+def send_due_notifications():
+    notifications = Notification.objects.filter(scheduled_for__lte=timezone.now(), is_sent=False)
+    for n in notifications:
+        if n.notification_type == 'email':
+            send_mail( subject="Appointment Reminder", message=n.message, from_email="teetobin31@gmail.com", recipient_list=[n.appointment.client.email], fail_silently=False)
+            n.is_sentsent = True
+            n.sent_at = timezone.now()
+            n.save()
+'''

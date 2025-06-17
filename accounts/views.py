@@ -83,6 +83,7 @@ def verify_email(request, uidb64, token):
 def verification_pending(request):
     return render(request, 'account/verification_pending.html')
     
+# for email verification
 def resend_verification_link(request):
     if request.method == "POST":
         email = request.POST.get('email')
@@ -97,7 +98,6 @@ def resend_verification_link(request):
                 return redirect('accounts:verificationpending')
         except ValidationError as e:
             messages.error(request, str(e))
-
     return render(request, 'account/resend_verification.html') 
 
 # send password reset link email

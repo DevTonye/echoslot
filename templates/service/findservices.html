@@ -1,0 +1,559 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find & Book Service Providers</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000000;
+            color: #ffffff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            padding: 20px 0;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff, #cccccc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            padding: 12px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-width: 300px;
+        }
+
+        .search-bar input {
+            background: none;
+            border: none;
+            color: #ffffff;
+            outline: none;
+            flex: 1;
+            font-size: 16px;
+        }
+
+        .search-bar input::placeholder {
+            color: #888888;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 60px 0;
+            text-align: center;
+            background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffffff, #888888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: #cccccc;
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 50px;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: #ffffff;
+            color: #000000;
+            transform: translateY(-2px);
+        }
+
+        /* Provider Grid */
+        .providers-section {
+            padding: 40px 0 80px;
+        }
+
+        .providers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .provider-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .provider-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 40px rgba(255, 255, 255, 0.1);
+        }
+
+        .provider-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .provider-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffffff, #cccccc);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: #000000;
+            margin-right: 15px;
+        }
+
+        .provider-info h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #ffffff;
+        }
+
+        .provider-specialty {
+            color: #cccccc;
+            font-size: 0.9rem;
+        }
+
+        .provider-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .stars {
+            color: #ffffff;
+        }
+
+        .rating-text {
+            color: #cccccc;
+            font-size: 0.9rem;
+        }
+
+        .provider-details {
+            margin-bottom: 20px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: #cccccc;
+            font-size: 0.9rem;
+        }
+
+        .detail-value {
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .provider-bio {
+            color: #cccccc;
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .book-btn {
+            width: 100%;
+            padding: 15px;
+            background: #ffffff;
+            color: #000000;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .book-btn:hover {
+            background: #cccccc;
+            transform: translateY(-2px);
+        }
+
+        .availability-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .available {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+            border: 1px solid rgba(0, 255, 0, 0.3);
+        }
+
+        .busy {
+            background: rgba(255, 255, 0, 0.2);
+            color: #ffff00;
+            border: 1px solid rgba(255, 255, 0, 0.3);
+        }
+
+        /* Booking Form Styles */
+        .booking-form {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 600px;
+            margin: 40px auto;
+        }
+
+        .booking-form h2 {
+            margin-bottom: 30px;
+            color: #ffffff;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #ffffff;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #888888;
+        }
+
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .time-slot {
+            position: relative;
+        }
+
+        .time-slot input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .time-slot label {
+            display: block;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .time-slot label:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .time-slot input[type="radio"]:checked + label {
+            background: #ffffff;
+            color: #000000;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: #ffffff;
+            color: #000000;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            background: #cccccc;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .search-bar {
+                min-width: 250px;
+            }
+
+            .providers-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .booking-form {
+                padding: 30px 20px;
+                margin: 20px;
+            }
+
+            .time-slots {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .provider-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .provider-card:nth-child(2) { animation-delay: 0.1s; }
+        .provider-card:nth-child(3) { animation-delay: 0.2s; }
+        .provider-card:nth-child(4) { animation-delay: 0.3s; }
+        .provider-card:nth-child(5) { animation-delay: 0.4s; }
+        .provider-card:nth-child(6) { animation-delay: 0.5s; }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo">Echoslot</div>
+            <div class="search-bar">
+                <form method="GET">
+                    <input type="text" name="search" placeholder="Search providers..." 
+                           value="{{ request.GET.search }}">
+                </form>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Find Your Perfect Service Provider</h1>
+                <p>Browse through our network of verified professionals and book appointments instantly</p>
+                
+                <div class="filters">
+                    <a href="?" 
+                       class="filter-btn {% if not request.GET.category %}active{% endif %}">All Providers</a>
+                    <a href="?category=medical" 
+                       class="filter-btn {% if request.GET.category == 'medical' %}active{% endif %}">Medical</a>
+                    <a href="?category=wellness" 
+                       class="filter-btn {% if request.GET.category == 'wellness' %}active{% endif %}">Wellness</a>
+                    <a href="?category=beauty" 
+                       class="filter-btn {% if request.GET.category == 'beauty' %}active{% endif %}">Beauty</a>
+                    <a href="?category=consulting" 
+                       class="filter-btn {% if request.GET.category == 'consulting' %}active{% endif %}">Consulting</a>
+                    <a href="?category=fitness" 
+                       class="filter-btn {% if request.GET.category == 'fitness' %}active{% endif %}">Fitness</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="providers-section">
+            <div class="container">
+                <div class="providers-grid">
+                    {% for provider in providers %}
+                    <div class="provider-card">
+                        <div class="availability-badge {{ provider.availability_status }}">
+                            {% if provider.is_available %}
+                                Available
+                            {% else %}
+                                Busy
+                            {% endif %}
+                        </div>
+                        <div class="provider-header">
+                            <div class="provider-avatar">
+                                {% if provider.avatar %}
+                                    <img src="{{ provider.avatar.url }}" alt="{{ provider.name }}" 
+                                         style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                {% else %}
+                                    {{ provider.get_initials }}
+                                {% endif %}
+                            </div>
+                            <div class="provider-info">
+                                <h3>{{ provider.first_name }} {{ provider.last_name}}</h3>
+                                <div class="provider-specialty">{{ provider.service_name }}</div>
+                            </div>
+                        </div>
+                        <div class="provider-rating">
+                            <div class="stars">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= provider.rating %}★{% else %}☆{% endif %}
+                                {% endfor %}
+                            </div>
+                            <div class="rating-text">{{ provider.rating }} ({{ provider.review_count }} reviews)</div>
+                        </div>
+                        <div class="provider-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Experience:</span>
+                                <span class="detail-value">{{ provider.experience_years }} years</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Rate:</span>  
+                                <span class="detail-value">${{ provider.price}}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Location:</span>
+                                <span class="detail-value">{{ provider.address }}</span>
+                            </div>
+                        </div>
+                        <div class="provider-bio">{{ provider.description|truncatewords:30 }}</div>
+                        <a href="#" class="book-btn">
+                            Book Appointment
+                        </a>
+                    </div>
+                    {% empty %}
+                    <div style="grid-column: 1 / -1; text-align: center; color: #cccccc; padding: 40px;">
+                        <h3>No providers found</h3>
+                        <p>Try adjusting your search criteria or browse all providers.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                {% if providers.has_other_pages %}
+                <div style="text-align: center; margin-top: 40px;">
+                    <div style="display: inline-flex; gap: 10px; align-items: center;">
+                        {% if providers.has_previous %}
+                            <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}page={{ providers.previous_page_number }}" 
+                               style="color: #ffffff; text-decoration: none; padding: 10px 15px; background: rgba(255, 255, 255, 0.1); border-radius: 5px;">Previous</a>
+                        {% endif %}
+                        
+                        <span style="color: #cccccc;">
+                            Page {{ providers.number }} of {{ providers.paginator.num_pages }}
+                        </span>
+                        
+                        {% if providers.has_next %}
+                            <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}page={{ providers.next_page_number }}" 
+                               style="color: #ffffff; text-decoration: none; padding: 10px 15px; background: rgba(255, 255, 255, 0.1); border-radius: 5px;">Next</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </section>
+    </main>
+</body>
+</html>
