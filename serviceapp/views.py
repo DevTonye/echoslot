@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import ServiceProvider, Service, Appointment, Notification
+from .models import ServiceProvider, Service, Appointment, Notification, AvailabilitySchedule
 from .forms import ServiceProviderForm, ServiceForm, AppointmentForm, AvailabilityScheduleForm
 from django.contrib import messages
 from django.utils import timezone
@@ -12,7 +12,7 @@ from accounts.models import CustomUser
 from django.db.models import Q
 import random
 from celery import shared_task
-
+from django.db import IntegrityError
 
 # service provider views
 User = get_user_model()
@@ -200,22 +200,55 @@ def services_all(request):
     context = {"services": services}
     return render(request, 'service/allservice.html', context)
 
-# service providers set availability
-@login_required(login_url='accounts:login')
+# allow service providers to set and view their availability
+@login_required(login_url="accounts:login")
 @service_provider_required
-def set_availability(request):
+def myavailability(request):
+    availability_success = False
     if request.method == "POST":
         form = AvailabilityScheduleForm(request.POST, service_provider=request.user.service_provider)
         if form.is_valid():
             form.save()
-            messages.success(request, "Availability set successfully.")
-            return redirect("serviceapp:dashboard")
+            availability_success = True
+            return redirect("serviceapp:my_availability")
+        else:
+            messages.error(request, "Please correct the errors below.")
     else:
         form = AvailabilityScheduleForm(service_provider=request.user.service_provider)
-    
-    return render(request, 'service/set_availability.html', {'form': form})
+    # display all availability by a service proivder
+    all_availability = AvailabilitySchedule.objects.filter(
+        service_provider = request.user.service_provider
+    ).order_by('day_of_week', 'start_time')
+    return render(request, 'service/myavailability.html', { 'form': form, 'availabilities': all_availability, 'availability_success': availability_success,})
 
-# view all ravailability set by a service provide
+# edit availability function 
+@login_required(login_url="accounts:login")
+@service_provider_required
+def edit_availability(request, pk):
+    availability = get_object_or_404(AvailabilitySchedule, pk=pk, service_provider=request.user.service_provider)
+    if request.method == "POST":
+        form = AvailabilityScheduleForm(request.POST, instance=availability, service_provider=request.user.service_provider)
+        if form.is_valid():
+            try:
+                form.save()
+                messages.success(request, "Availability updated successfully.")
+                return redirect("serviceapp:my_availability")
+            except IntegrityError:
+                form.add_error(None, "This availability would create a duplicate day entry. Please choose another day.")
+    else:
+        form = AvailabilityScheduleForm(instance=availability, service_provider=request.user.service_provider)
+    return render(request, "service/editavailability.html", {'form':form, 'availability':availability})
+    
+@login_required(login_url="accounts:login")
+@service_provider_required
+def delete_availability(request, pk):
+    availability = get_object_or_404(AvailabilitySchedule, pk=pk, service_provider=request.user.service_provider)
+
+    if request.method == 'POST':
+        availability.delete()
+        messages.success(request, "Availability deleted successfully.")
+        return redirect('serviceapp:my_availability')
+    return render(request, 'service/delete_availability_confirm.html', {'availability': availability})
 
 # service provider finder 
 @login_required(login_url="accounts:login")
@@ -276,6 +309,8 @@ def book_appointments(request, provider_id):
 def appointment_success(request, appointment_id):
     appointment = get_object_or_404(Appointment, appointment_id=appointment_id, client=request.user)
     return render(request, 'service/appointmentsuccess.html', {'appointment': appointment})
+
+
 
 '''
 @shared_task

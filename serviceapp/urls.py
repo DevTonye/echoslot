@@ -15,7 +15,9 @@ urlpatterns = [
     path('upcoming-appointments/', views.upcoming_appointments, name="upcoming_appointments"),
     path('past-appointments/', views.past_appointments, name='past_appointments'),
     path('service-providers/', views.find_services, name='find_service'),
-    path('set-availability/', views.set_availability, name='set_availability'),
+    path('my-availability/', views.myavailability, name='my_availability'),
     path('book/<int:provider_id>/', views.book_appointments, name='book_appointment'),
     path('appointments/success/<uuid:appointment_id>/', views.appointment_success, name='appointment_success'),
+    path('availability-edit/<int:pk>/', views.edit_availability, name='editavailability'),
+    path('delete-availability/<int:pk>/', views.delete_availability, name='deleteavailability'),
 ]

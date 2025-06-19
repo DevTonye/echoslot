@@ -44,7 +44,7 @@ class AvailabilityScheduleForm(forms.ModelForm):
                 raise forms.ValidationError("End time must be after start time.")
 
         if self.service_provider:
-            day = cleaned_data('day_of_week')
+            day = cleaned_data.get('day_of_week')
             # Check if provider already has availability for this day (if creating)
             if not self.instance.pk and AvailabilitySchedule.objects.filter(service_provider=self.service_provider, day_of_week=day).exists():
                 raise forms.ValidationError("You have already set availability for this day.")

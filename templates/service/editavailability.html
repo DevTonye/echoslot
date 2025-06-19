@@ -6,15 +6,18 @@
         <div class="page-header">
             <div class="page-title">
                 <i class="fas fa-clock"></i>
-                <span>Availability Schedule</span>
+                <span>Edit Availability</span>
             </div>
+            <a href="{% url 'serviceapp:my_availability' %}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left"></i> Back to My Availability
+            </a>
         </div>
 
         <div class="card">
             <div class="card-header">
                 <h5>
-                    <i class="fas fa-plus-circle"></i>
-                    Add New Availability
+                    <i class="fas fa-edit"></i>
+                    Edit Availability Schedule
                 </h5>
             </div>
             <div class="card-body">
@@ -24,7 +27,7 @@
                     {% if form.non_field_errors %}
                         <div class="alert alert-danger mb-3">
                             {% for error in form.non_field_errors %}
-                                <p class="mb-0">{{ error }}</p>
+                                <p class="field-error">{{ error }}</p>
                             {% endfor %}
                         </div>
                     {% endif %}
@@ -73,12 +76,20 @@
                         </div>
                     </div>
                     
-                    <div class="d-flex justify-content-end mt-3">
-                        <a href="{% url 'serviceapp:set_availability' %}" class="btn btn-primary mt-3"><i class="fas fa-save"></i> Save Availability</a>
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                        
+                        <a href="{% url 'serviceapp:deleteavailability' availability.pk %}" class="btn btn-outline-danger">
+                            <i class="fas fa-trash-alt"></i> Delete Availability
+                        </a>
                     </div>
                 </form>
+                
             </div>
         </div>
     </div>
 </div>
+
 {% endblock %}

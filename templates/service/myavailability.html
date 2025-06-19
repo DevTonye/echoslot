@@ -13,35 +13,39 @@
         <!-- Add New Availability Card -->
         <div class="card mb-4">
             <div class="card-header">
-                <h5>
-                    <i class="fas fa-plus-circle"></i>
-                    Add New Availability
-                </h5>
+        {% if availability_success %}
+            <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                Availability saved successfully!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
             </div>
             <div class="card-body">
                 <form method="post" class="availability-form">
                     {% csrf_token %}
                     
                     {% if form.non_field_errors %}
-                        <div class="alert alert-danger mb-3">
-                            {% for error in form.non_field_errors %}
-                                <p class="mb-0">{{ error }}</p>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                            <p class="field-error">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
                     
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="form-label" for="{{ form.day_of_week.id_for_label }}">Day of Week</label>
                                 {{ form.day_of_week }}
-                                {% if form.day_of_errors %}
-                                    <div class="text-danger mt-1">
-                                        {% for error in form.day_of_week.errors %}
-                                            <p class="mb-0">{{ error }}</p>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
+                               {% if form.day_of_week.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.day_of_week.errors %}
+                                        <p class="field-error">{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                        {% endif %}
+
                             </div>
                         </div>
                         
@@ -52,7 +56,7 @@
                                 {% if form.start_time.errors %}
                                     <div class="text-danger mt-1">
                                         {% for error in form.start_time.errors %}
-                                            <p class="mb-0">{{ error }}</p>
+                                            <p class="field-error">{{ error }}</p>
                                         {% endfor %}
                                     </div>
                                 {% endif %}
@@ -65,9 +69,8 @@
                                 {{ form.end_time }}
                                 {% if form.end_time.errors %}
                                     <div class="text-danger mt-1">
-                                        {% for error in form.end_time.errors %}
-                                            <p class="mb-0">{{ error }}</p>
-                                        {% endfor %}
+                                        <span class="field-error">{{ form.end_time.errors.0}}</span>
+                        
                                     </div>
                                 {% endif %}
                             </div>
@@ -100,7 +103,6 @@
                                     <th>Day</th>
                                     <th>Start Time</th>
                                     <th>End Time</th>
-                                    <th>Duration</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -110,21 +112,19 @@
                                     <td>{{ availability.get_day_of_week_display }}</td>
                                     <td>{{ availability.start_time|time:"H:i" }}</td>
                                     <td>{{ availability.end_time|time:"H:i" }}</td>
+                                    <!--
                                     <td>
                                         {% with duration=availability.duration %}
                                             {{ duration.hours }}h {{ duration.minutes }}m
                                         {% endwith %}
                                     </td>
+                                    -->
                                     <td>
                                         <div class="d-flex gap-2">
-                                            <a href="#" 
+                                            <a href="{% url 'serviceapp:editavailability'  availability.pk  %}" 
                                                class="btn btn-sm btn-outline-primary">
                                                 <i class="fas fa-edit"></i> Edit
                                             </a>
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                <i class="fas fa-trash-alt"></i> Delete
-                                            </button>
-
                                         </div>
                                     </td>
                                 </tr>
