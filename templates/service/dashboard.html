@@ -4,11 +4,6 @@
 {% block content %}
 <div class="page-header">
     <h1 class="page-title">Dashboard</h1>
-    <div class="actions">
-        <a href="#" class="btn btn-primary">
-            <i class="fas fa-plus"></i> Quick Add
-        </a>
-    </div>
 </div>
 
 <!-- Provider Profile Section -->
@@ -40,11 +35,6 @@
                                 <h3>{{ today_appointments.count }}</h3>
                                 <small class="text-muted">Today's Appointments</small>
                             </div>
-                        </div>
-                        <div class="col-6 text-center">
-                            <a href="{% url 'serviceapp:addservice' %}" class="btn btn-outline-primary w-100">
-                                <i class="fas fa-plus-circle"></i> Add Service
-                            </a>
                         </div>
                         <div class="col-6 text-center">
                             <button class="btn btn-outline-primary w-100">
@@ -82,7 +72,7 @@
                     {% for appointment in today_appointments %}
                     <tr>
                         <td>{{ appointment.start_time|time:"h:i A"}}</td>
-                        <td>{{ appointment.client.get_full_name }}</td>
+                        <td>{{ appointment.first_name }} {{ appointment.last_name }}</td>
                         <td>{{ appointment.service.name }}</td>
                         <td>{{ appointment.service.duration }} min</td>
                         <td>
@@ -94,7 +84,7 @@
                         </td>
                         <td>
                             <div class="d-flex gap-2">
-                                <a href="{% url 'echoslot:updatestatus' appointment.appointment_id %}" class="btn btn-outline-primary">
+                                <a href="#" class="btn btn-outline-primary">
                                     <i class="fas fa-pen"></i> Update Status
                                 </a>
                             </div>
@@ -138,7 +128,7 @@
                     <tr>
                         <td>{{ appointment.appointment_date|date:"M d, Y" }}</td>
                         <td>{{ appointment.start_time|time:"h:i A" }}</td>
-                        <td>{{ appointment.client.get_full_name }}</td>
+                        <td>{{ appointment.first_name }} {{ appointment.last_name }}</td>
                         <td>{{ appointment.service.name }}</td>
                         <td>
                             {% if appointment.status == 'scheduled' %}
@@ -171,10 +161,12 @@
 <!-- Services Section -->
 <div class="card">
     <div class="card-header">
-        <h5><i class="fas fa-list-alt"></i> Your Services</h5>
-        <a href="{% url 'serviceapp:addservice' %}" class="btn btn-primary btn-sm">
-            <i class="fas fa-plus"></i> Add New Service
-        </a>
+        <h5><i class="fas fa-list-alt"></i> Your Service</h5>
+        <!--
+            <a href="{% url 'serviceapp:addservice' %}" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus"></i> Add New Service
+            </a>
+        -->
     </div>
     <div class="card-body">
         {% if services %}

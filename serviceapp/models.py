@@ -11,7 +11,6 @@ class ServiceProvider(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='service_provider')
     first_name = models.CharField(max_length=50, blank=False, null=False)
     last_name = models.CharField(max_length=50, blank=False, null=False)
-    service_name = models.CharField(max_length=100, blank=False, null=False)
     description = models.TextField(blank=True, null=True)
     address = models.CharField(max_length=255, blank=False, null=False)
     phone = models.CharField(max_length=20, blank=False, null=False)
@@ -21,12 +20,12 @@ class ServiceProvider(models.Model):
 # services models
 class Service(models.Model):
     service_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    provider = models.ForeignKey(ServiceProvider, on_delete=models.CASCADE)
+    provider = models.OneToOneField(ServiceProvider, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, blank=False, null=False)
     description = models.TextField()
     duration = models.IntegerField(help_text='Duration in minutes')
     price = models.DecimalField(max_digits=10, decimal_places=2)
-
+    # need to add Experience
     def __str__(self):
         return self.name
     
@@ -67,10 +66,15 @@ class Appointment(models.Model):
     appointment_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
     client = models.ForeignKey(User, on_delete=models.CASCADE, related_name='appointments')
+    first_name = models.CharField(max_length=50, blank=True, null=True)
+    last_name = models.CharField(max_length=50, blank=True, null=True)
+    email = models.EmailField(unique=True, blank=True, null=True)
+    phone = models.CharField(max_length=30, blank=True, null=True)
     appointment_date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICE, default='scheduled') # track current state of an appointment
+    notes = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -57,27 +57,33 @@ class AvailabilityScheduleForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
-
+    
 class AppointmentForm(forms.ModelForm):
+    first_name = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'forms-control', 'placeholder':'enter your firstname'}))
+    last_name = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'forms-control', 'placeholder':'enter your lastname'}))
+    email = forms.EmailField(required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'your@gmail.com'}))
+    phone = forms.CharField(required=True, widget=forms.TextInput(attrs={'placeholder': '+234 812 345 6789'}))
     service = forms.ModelChoiceField(queryset=Service.objects.none())
     appointment_date = forms.DateField(
-        widget=forms.DateInput(attrs={'type':'date'}),
+        widget=forms.DateInput(attrs={'type': 'date'}),
         initial=datetime.date.today
     )
-
     start_time = forms.TimeField(
         widget=forms.Select(choices=[]),
         help_text="Select an available time slot"
     )
-
+    notes = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 4, 'placeholder': 'Please describe your symptoms or reason for the appointment...'}),
+        required=False
+    )
     class Meta:
         model = Appointment
-        fields = ['service', 'appointment_date', 'start_time']
+        fields = ['first_name', 'last_name', 'email', 'phone', 'service', 'appointment_date', 'start_time', 'notes']
 
     def __init__(self, *args, **kwargs):
-        provider_id = kwargs.pop('provider_id', None)
+        self.provider_id = kwargs.pop('provider_id', None)
         super().__init__(*args, **kwargs)
-        
+
         if self.provider_id:
             self.fields['service'].queryset = Service.objects.filter(provider_id=self.provider_id)
 
@@ -88,25 +94,25 @@ class AppointmentForm(forms.ModelForm):
         start_time = cleaned_data.get('start_time')
 
         if service and appointment_date and start_time:
-            # calculate end time based on service duration
-            hour, minute = start_time.hour, start_time.minute
-            minute_to_add = service.duration
-            end_time_minutes = (minute + minute_to_add) % 60
-            end_time_hours = ( hour + (minute + minute_to_add) // 60) % 24
-            end_time = datetime.time(end_time_hours, end_time_minutes)
+            # Calculate end time using timedelta
+            start_datetime = datetime.datetime.combine(appointment_date, start_time)
+            end_datetime = start_datetime + datetime.timedelta(minutes=service.duration)
+            end_time = end_datetime.time()
 
-            # Check if this time slot is available
+            # Check for overlapping appointments
             overlapping_appointments = Appointment.objects.filter(
                 service__provider=service.provider,
                 appointment_date=appointment_date,
-                status__in = ['scheduled', 'confirmed'],
-            ).exclude(pk=self.instance.pk if self.instance.pk else None)
+                status__in=['scheduled', 'confirmed']
+            )
 
-            for existing_appointment in overlapping_appointments:
-                if (start_time < existing_appointment.end_time and end_time > existing_appointment.start_time):
+            if self.instance.pk:
+                overlapping_appointments = overlapping_appointments.exclude(pk=self.instance.pk)
+
+            for existing in overlapping_appointments:
+                if start_time < existing.end_time and end_time > existing.start_time:
                     raise forms.ValidationError("This time slot is already booked.")
-                
-            # add end_time to cleaned_data for saving
-            cleaned_data['end_time'] = end_time
-        return cleaned_data
 
+            cleaned_data['end_time'] = end_time
+
+        return cleaned_data

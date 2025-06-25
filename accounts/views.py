@@ -110,7 +110,7 @@ def send_password_reset_link(user, request):
     )
 
     subject = "Password Reset"
-    message = f"""Hello{user.username}
+    message = f"""Hello {user.username}
     You requested a password reset for your account. Please click the link below to reset your password:
 
     {reset_link}
@@ -297,13 +297,13 @@ def selectuser_role(request):
         if role in [CustomUser.UserRole.CLIENT, CustomUser.UserRole.SERVICE_PROVIDER]:
             request.user.role = role
             request.user.save()
-
+        
             if role == CustomUser.UserRole.SERVICE_PROVIDER:
                 messages.success(request, "Your role has been set to Service Provider, please create a profile")
                 return redirect("serviceapp:profile")
             else:
-                messages.success(request, "Your role has been set to Client.")
-                return redirect('echoslot:index')
+                messages.success(request, "Your role has been set to Client. Please create a profile.")
+                return redirect("clientapp:clientprofile")
         else:
             messages.error(request, "Invalid role selected.")
     return render(request, 'account/selectrole.html')

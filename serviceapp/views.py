@@ -13,6 +13,8 @@ from django.db.models import Q
 import random
 from celery import shared_task
 from django.db import IntegrityError
+from django.db import transaction
+
 
 # service provider views
 User = get_user_model()
@@ -86,11 +88,15 @@ def add_service(request):
     if request.method == "POST":
         form = ServiceForm(request.POST)
         if form.is_valid():
-            service = form.save(commit=False)
-            service.provider = provider
-            service.save()
-            messages.success(request, "Service added successfully.")
-            return redirect("serviceapp:service")
+            try:
+                service = form.save(commit=False)
+                service.provider = provider
+                service.save()
+                messages.success(request, "Service added successfully.")
+                return redirect("serviceapp:service")
+            except IntegrityError: 
+                messages.error(request, 'You already have a service. You can only have one service per account.')
+                return redirect("serviceapp:service")
     else:
         form = ServiceForm()
     return render(request, "service/addservice.html", {"form": form})
@@ -261,49 +267,57 @@ def find_services(request):
 @login_required(login_url="accounts:login")
 def book_appointments(request, provider_id):
     provider = get_object_or_404(ServiceProvider, pk=provider_id)
+    services = Service.objects.filter(provider=provider)
+    availability_schedule = AvailabilitySchedule.objects.filter(service_provider=provider).order_by('day_of_week', 'start_time')
+    
     if request.method == 'POST':
         form = AppointmentForm(request.POST, provider_id=provider_id)
         if form.is_valid():
             appointment = form.save(commit=False)
             appointment.client = request.user
             appointment.end_time = form.cleaned_data['end_time']
-            appointment.save()
+            appointment.status = 'scheduled'
 
-            # create notification
-            appt_date = appointment.appointment_date
-            appt_time = appointment.start_time
-            appt_datetime = timezone.make_aware(
-                datetime.datetime.combine(appt_date, appt_time)
-            )
+            with transaction.atomic():
+                appointment.save()
 
-            # Notification 1 day before
-            reminder_time = appt_datetime - datetime.timedelta(days=1)
-            Notification.objects.create(
-                appointment=appointment, 
-                notification_type='email',
-                scheduled_for=reminder_time,
-                 message=f"Reminder: You have an appointment for {appointment.service.name} tomorrow at {appointment.start_time}."
-            )
+                appt_datetime = timezone.make_aware(
+                    datetime.datetime.combine(appointment.appointment_date, appointment.start_time)
+                )
 
-            # notification 1 hour before
-            reminder_time = appt_datetime - datetime.timedelta(hours=1)
-            Notification.objects.create(
-                appointment=appointment,
-                notification_type='sms',
-                scheduled_for=reminder_time,
-                message=f"Reminder: Your appointment for {appointment.service.name} is in 1 hour at {appointment.start_time}."
-            )
+                # Email reminder (1 day before)
+                reminder_day = appt_datetime - datetime.timedelta(days=1)
+                if reminder_day > timezone.now():
+                    Notification.objects.create(
+                        appointment=appointment,
+                        notification_type='email',
+                        scheduled_for=reminder_day,
+                        message=f"Reminder: You have an appointment for {appointment.service.name} tomorrow at {appointment.start_time}."
+                    )
+
+                # SMS reminder (1 hour before)
+                reminder_hour = appt_datetime - datetime.timedelta(hours=1)
+                if reminder_hour > timezone.now():
+                    Notification.objects.create(
+                        appointment=appointment,
+                        notification_type='sms',
+                        scheduled_for=reminder_hour,
+                        message=f"Reminder: Your appointment for {appointment.service.name} is in 1 hour at {appointment.start_time}."
+                    )
 
             messages.success(request, 'Appointment booked successfully!')
             return redirect('serviceapp:appointment_success', appointment_id=appointment.appointment_id)
+        else:
+            messages.error(request, "Please correct the errors below.")
     else:
         form = AppointmentForm(provider_id=provider_id)
-    context = {
+
+    return render(request, 'service/bookappointment.html', {
         'provider': provider,
         'form': form,
-        'services': Service.objects.filter(provider=provider)
-    }
-    return render(request, 'service/bookappointment.html', context)
+        'services': services,
+        'availability_schedule': availability_schedule
+    })
 
 @login_required(login_url="accounts:login")
 def appointment_success(request, appointment_id):
@@ -311,15 +325,3 @@ def appointment_success(request, appointment_id):
     return render(request, 'service/appointmentsuccess.html', {'appointment': appointment})
 
 
-
-'''
-@shared_task
-def send_due_notifications():
-    notifications = Notification.objects.filter(scheduled_for__lte=timezone.now(), is_sent=False)
-    for n in notifications:
-        if n.notification_type == 'email':
-            send_mail( subject="Appointment Reminder", message=n.message, from_email="teetobin31@gmail.com", recipient_list=[n.appointment.client.email], fail_silently=False)
-            n.is_sentsent = True
-            n.sent_at = timezone.now()
-            n.save()
-'''

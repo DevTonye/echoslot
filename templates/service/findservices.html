@@ -495,7 +495,9 @@
                             </div>
                             <div class="provider-info">
                                 <h3>{{ provider.first_name }} {{ provider.last_name}}</h3>
-                                <div class="provider-specialty">{{ provider.service_name }}</div>
+                                <div class="provider-specialty">
+                                    {{ provider.service.name }}
+                                </div>
                             </div>
                         </div>
                         <div class="provider-rating">
@@ -512,8 +514,12 @@
                                 <span class="detail-value">{{ provider.experience_years }} years</span>
                             </div>
                             <div class="detail-item">
-                                <span class="detail-label">Rate:</span>  
-                                <span class="detail-value">${{ provider.price}}</span>
+                                <span class="detail-label">Price:</span>  
+                                <span class="detail-value">₦ {{ provider.service.price }} </span>
+                            </div>
+                             <div class="detail-item">
+                                <span class="detail-label">Duration:</span>
+                                <span class="detail-value">{{ provider.service.duration }} mins</span>
                             </div>
                             <div class="detail-item">
                                 <span class="detail-label">Location:</span>
@@ -521,7 +527,7 @@
                             </div>
                         </div>
                         <div class="provider-bio">{{ provider.description|truncatewords:30 }}</div>
-                        <a href="{% url 'serviceapp:book_appointment' provider.id %}" class="book-btn">
+                        <a href="{% url 'serviceapp:book_appointment' provider.pk  %}" class="book-btn">
                             Book Appointment
                         </a>
                     </div>
