@@ -25,5 +25,6 @@ urlpatterns = [
     path('availability-edit/<int:pk>/', views.edit_availability, name='editavailability'),
     path('delete-availability/<int:pk>/', views.delete_availability, name='deleteavailability'),
     path('load-slots/<int:provider_id>/', views.load_slots, name='load_slots'),
-   
+    path('status-form/<uuid:appointment_id>/', views.status_form, name='status_form'),
+    path('update-status/<uuid:appointment_id>/', views.update_status, name='update_status'),
 ]

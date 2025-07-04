@@ -84,10 +84,15 @@
                         </td>
                         <td>
                             <div class="d-flex gap-2">
-                                <a href="#" class="btn btn-outline-primary">
+                                <button class="btn btn-outline-primary"
+                                hx-get="{% url 'serviceapp:status_form' appointment.id %}"
+                                hx-target="#status-form-{{ appointment.id}}"
+                                hx-swap="innerHTML"
+                                >
                                     <i class="fas fa-pen"></i> Update Status
-                                </a>
+                                </button>
                             </div>
+                            <div id="status-form-{{ appointment.id }}"></div>
                         </td>
                     </tr>
                     {% endfor %}
@@ -139,10 +144,15 @@
                         </td>
                         <td>
                             <div class="d-flex gap-2">
-                                <a href="#" class="btn btn-outline-primary">
+                                <button class="btn btn-outline-primary"
+                                    hx-get="{% url 'serviceapp:status_form' appointment.appointment_id %}"
+                                    hx-target="#status-form-{{ appointment.appointment_id}}"
+                                    hx-swap="innerHTML"
+                                >
                                     <i class="fas fa-pen"></i> Update Status
-                                </a>
+                                </button>
                             </div>
+                                <div id="status-form-{{ appointment.appointment_id }}"></div>
                         </td>
                     </tr>
                     {% endfor %}

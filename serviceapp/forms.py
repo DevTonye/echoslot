@@ -187,5 +187,9 @@ class AppointmentForm(forms.ModelForm):
         for existing in overlapping:
             if time < existing.end_time and end_time > existing.start_time:
                 return False
-        
         return True
+    
+class AppointmentStatusForm(forms.ModelForm):
+    class Meta:
+        model = Appointment
+        fields = ['status']

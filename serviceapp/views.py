@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import ServiceProvider, Service, Appointment, Notification, AvailabilitySchedule
-from .forms import ServiceProviderForm, ServiceForm, AppointmentForm, AvailabilityScheduleForm
+from .forms import ServiceProviderForm, ServiceForm, AppointmentForm, AvailabilityScheduleForm, AppointmentStatusForm
 from django.contrib import messages
 from django.utils import timezone
 import datetime
@@ -10,7 +10,7 @@ from django.contrib.auth import get_user_model
 from accounts.models import CustomUser
 from django.db.models import Q
 import random
-from celery import shared_task
+from django.http import HttpResponse
 from django.db import IntegrityError
 from django.db import transaction
 from datetime import datetime, timedelta
@@ -474,3 +474,21 @@ def load_slots(request, provider_id):
     return render(request, "service/partials/slot_options.html", {
         "available_slots": available_slots
     })
+
+# update appointment status
+def status_form(request, appointment_id):
+    appointment = get_object_or_404(Appointment, appointment_id=appointment_id)
+    form = AppointmentStatusForm(instance=appointment)
+    return render(request, 'partials/status_form.html', {'form': form, 'appointment': appointment})
+
+# update the status
+def update_status(request, appointment_id):
+    appointment = get_object_or_404(Appointment, appointment_id=appointment_id)
+    if request.method == "POST":
+        form = AppointmentStatusForm(request.POST, instance=appointment)
+        if form.is_valid():
+            form.save()
+            return HttpResponse(f"<span class='badge bg-success'>{appointment.status.title()}</span>")
+        else:
+            form = AppointmentStatusForm(instance=appointment)
+    return render(request, 'partials/status_form.html', {'form': form, 'appointment': appointment})
