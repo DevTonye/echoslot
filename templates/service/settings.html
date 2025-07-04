@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="fas fa-cog"></i>
+        Settings
+    </h1>
+</div>
+
+<!-- Settings tab -->
+
+<div class="settings-tabs">
+<button
+    class="settings-tab active"
+    hx-get="{% url 'serviceapp:settings-profile' %}"
+    hx-target="#setting-content"
+    hx-swap="innerHTML"
+    hx-trigger="click"
+    hx-on:click="document.querySelectorAll('.settings-tab').forEach(tab => tab.classList.remove('active')); this.classList.add('active')">
+    <i class="fas fa-user"></i>
+    Profile 
+</button>
+
+<button 
+    class="settings-tab"
+    hx-get="{% url 'serviceapp:security-settings' %}"
+    hx-target="#setting-content"
+    hx-swap="innerHTML"
+    hx-trigger="click"
+    hx-on:click="document.querySelectorAll('.settings-tab').forEach(tab => tab.classList.remove('active')); this.classList.add('active')">
+    <i class="fas fa-shield-alt"></i>
+    Security
+</button>
+
+<button 
+    class="settings-tab"
+    hx-get="{% url 'serviceapp:account-settings' %}"
+    hx-target="#setting-content"
+    hx-swap="innerHTML"
+    hx-trigger="click"
+    hx-on:click="document.querySelectorAll('.settings-tab').forEach(tab => tab.classList.remove('active')); this.classList.add('active')">
+    <i class="fas fa-user-cog"></i>
+    Account
+</button>
+</div>
+
+<div id="setting-content">
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Load profile by default when page loads
+    document.addEventListener('DOMContentLoaded', function () {
+        htmx.ajax('GET', "{% url 'serviceapp:settings-profile' %}", {
+            target: '#setting-content',
+            swap: 'innerHTML'
+        });
+    });
+
+    document.body.addEventListener('htmx:configRequest', function (event) {
+        event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+    });
+</script>
+    
+
+{% endblock %}

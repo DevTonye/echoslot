@@ -1,0 +1,26 @@
+{% if available_slots %}
+    <div class="time-slots-container">
+        {% for date, slots in available_slots.items %}
+            <div class="date-group">
+                <div class="date-header">{{ date|date:"l, F j, Y" }}</div>
+                <div class="time-slots">
+                    {% for slot in slots %}
+                        {% if slot.available %}
+                            <div class="time-slot">
+                                <input type="radio"
+                                       id="slot_{{ date|date:'Y-m-d' }}_{{ slot.time|time:'H:i' }}"
+                                       name="start_time"
+                                       value="{{ date|date:'Y-m-d' }}|{{ slot.time|time:'H:i' }}">
+                                <label for="slot_{{ date|date:'Y-m-d' }}_{{ slot.time|time:'H:i' }}">
+                                    {{ slot.display }}
+                                </label>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p><strong>No available time slots.</strong></p>
+{% endif %}

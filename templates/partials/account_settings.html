@@ -1,0 +1,59 @@
+<div id="account-section" class="settings-section">
+    <div class="card">
+        <div class="card-header">
+            <h5>
+                <i class="fas fa-user-cog"></i>
+                Account Management
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="security-item">
+                <div class="security-info">
+                    <h6>Download Your Data</h6>
+                    <p>Export all your account data and information</p>
+                </div>
+                <button class="btn btn-outline-primary">
+                    <i class="fas fa-download"></i>
+                    Export Data
+                </button>
+            </div>
+            <div class="security-item">
+                <div class="security-info">
+                    <h6>Account Status</h6>
+                    <p>Your account is active and in good standing</p>
+                </div>
+                <span class="badge" style="background-color: #e8f5e9; color: #2e7d32; padding: 0.35em 0.65em; font-size: 0.75em; border-radius: 50rem;">
+                    Active
+                </span>
+            </div>
+            <div class="security-item">
+                <div class="security-info">
+                    <h6>Sign Out</h6>
+                    <p>Sign out of your account on this device</p>
+                </div>
+                <a href="{% url 'accounts:logout'%}" class="btn btn-outline-primary">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Sign Out
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="card">
+        <div class="card-body">
+            <div class="danger-zone">
+                <h6>
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Danger Zone
+                </h6>
+                <p>Once you delete your account, there is no going back. Please be certain.</p>
+                <a href="{% url 'accounts:delete_account' %}" class="btn btn-danger">
+                    <i class="fas fa-trash"></i>
+                    Delete Account
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+</main>

@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Appointment - Dr. Sarah Johnson</title>
+    <title>Book Appointment - {{provider.first_name}} {{provider.last_name}}</title>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
@@ -157,65 +158,38 @@
             color: #ffffff;
         }
 
-        /* Time slots styling */
-        .time-slots {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .time-slot {
-            position: relative;
-        }
-
-        .time-slot input[type="radio"] {
-            position: absolute;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-        }
-
-        .time-slot label {
-            display: block;
-            padding: 12px 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 6px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: #ffffff;
-            font-size: 14px;
-            margin-bottom: 0;
-        }
-
-        .time-slot label:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .time-slot input[type="radio"]:checked + label {
-            background: #ffffff;
-            color: #000000;
-        }
-
-        .time-slot label.unavailable {
-            background: rgba(255, 107, 107, 0.2);
-            color: #ff6b6b;
-            cursor: not-allowed;
-        }
-
-        .time-slot input[type="radio"]:disabled {
-            cursor: not-allowed;
-        }
-
         .availability-info {
             background: rgba(255, 255, 255, 0.03);
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 15px;
             border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .availability-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .availability-slot {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            border-radius: 6px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .availability-day {
+            color: #00ff00;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .availability-time {
+            color: #cccccc;
+            font-size: 0.8rem;
         }
 
         .form-group input:focus,
@@ -346,6 +320,18 @@
             margin-bottom: 5px;
         }
 
+        /* Loading indicator */
+        .loading {
+            display: none;
+            text-align: center;
+            color: #cccccc;
+            padding: 10px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .provider-info,
@@ -369,8 +355,8 @@
                 gap: 10px !important;
             }
 
-            .time-slots {
-                grid-template-columns: repeat(2, 1fr);
+            .availability-grid {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -397,7 +383,9 @@
         <!-- Provider Information -->
         <section class="provider-info">
             <div class="provider-header">
-                <div class="provider-avatar">SJ</div> <!-- I will work on this --> 
+                <div class="provider-avatar">
+                    {{provider.first_name.0}}{{provider.last_name.0}}
+                </div>
                 <div class="provider-details">
                     <h1>{{provider.first_name}} {{provider.last_name}}</h1>
                     <div class="provider-specialty">{{provider.service.name}}</div>
@@ -405,23 +393,36 @@
                         <div class="stars">★★★★★</div>
                         <span class="rating-text">4.9 (127 reviews)</span>
                     </div>
-                    
                 </div>
             </div>
             <div class="provider-bio">
-                        {{provider.description}}
-                    </div>
+                {{provider.description}}
+            </div>
             <div class="provider-location">
                 <span>📍</span>
                 <span>{{provider.address}}</span>
             </div>
+
+            <!-- Provider Availability Display -->
+            {% if availability_schedule %}
+            <div class="availability-info">
+                <h4 style="color: #ffffff; margin-bottom: 10px; font-size: 1rem;">Provider Availability:</h4>
+                <div class="availability-grid">
+                    {% for schedule in availability_schedule %}
+                    <div class="availability-slot">
+                        <div class="availability-day">{{ schedule.get_day_of_week_display }}</div>
+                        <div class="availability-time">{{ schedule.start_time|time:"g:i A" }} - {{ schedule.end_time|time:"g:i A" }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
         </section>
 
         <!-- Booking Form -->
         <section class="booking-form">
             <h2>Book Your Appointment</h2>
             
-            <!-- This is where Django non-field errors would appear -->
             {% if form.non_field_errors %}
             <div class="non-field-errors">
                 {{ form.non_field_errors }}
@@ -438,7 +439,7 @@
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
                         <div class="form-group {% if form.first_name.errors %}error{% endif %}">
                             <label for="{{ form.first_name.id_for_label }}">
-                                First Name
+                                First Name 
                             </label>
                             {{ form.first_name }}
                             {{ form.first_name.errors }}
@@ -462,7 +463,7 @@
                         </div>
                         <div class="form-group {% if form.phone.errors %}error{% endif %}">
                             <label for="{{ form.phone.id_for_label }}">
-                                Phone Number
+                                Phone Number 
                             </label>
                             {{ form.phone }}
                             {{ form.phone.errors }}
@@ -477,152 +478,53 @@
                     <!-- Service Field -->
                     <div class="form-group {% if form.service.errors %}error{% endif %}">
                         <label for="{{ form.service.id_for_label }}">
-                            Service
+                            Service 
                         </label>
-                        {{ form.service }}
-                        {% if form.service.help_text %}
-                            <div class="helptext">{{ form.service.help_text }}</div>
-                        {% endif %}
-                        {{ form.service.errors }}
-                    </div>
+                        <select name="service" id="id_service"
+        hx-get="{% url 'serviceapp:load_slots' provider.id %}"
+        hx-target="#slot-container"
+        hx-trigger="change"
+        name="{{ form.service.html_name }}">
+    {% for service in services %}
+        <option value="{{ service.id }}" {% if form.service.value == service.id %}selected{% endif %}>
+            {{ service.name }}
+        </option>
+    {% endfor %}
+</select>
 
-                    <!-- Appointment Date Field -->
-                    <div class="form-group {% if form.appointment_date.errors %}error{% endif %}">
-                        <label for="{{ form.appointment_date.id_for_label }}">
-                            Appointment Date 
-                        </label>
-                        {{ form.appointment_date }}
-                        {% if form.appointment_date.help_text %}
-                            <div class="helptext">{{ form.appointment_date.help_text }}</div>
-                        {% endif %}
-                        {{ form.appointment_date.errors }}
-                    </div>
+        {% if form.service.help_text %}
+            <div class="helptext">{{ form.service.help_text }}</div>
+        {% endif %}
+        {{ form.service.errors }}
+    </div>
+<div class="form-group {% if form.start_time.errors %}error{% endif %}">
+    <label for="{{ form.start_time.id_for_label }}">
+        Available Time Slots
+    </label>
+    
+    <!-- This is where HTMX will inject updated slots -->
+    <div id="slot-container">
+        {% include 'partials/slot_options.html' %}
+    </div>
 
-                    <!-- Available Time Slots Display 
-                    <div class="form-group {% if form.start_time.errors %}error{% endif %}">
-                        <label>Available Time Slots
-                        <div class="availability-info" style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-                            <h4 style="color: #ffffff; margin-bottom: 10px; font-size: 1rem;">Provider Availability:</h4>
-                            {% if availability_schedule %}
-                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
-                                    {% for schedule in availability_schedule %}
-                                    <div style="background: rgba(0,255,0,0.1); border: 1px solid rgba(0,255,0,0.3); border-radius: 6px; padding: 10px; text-align: center;">
-                                        <div style="color: #00ff00; font-weight: 600;">{{ schedule.get_day_of_week_display }}</div>
-                                        <div style="color: #cccccc; font-size: 0.9rem;">{{ schedule.start_time|time:"g:i A" }} - {{ schedule.end_time|time:"g:i A" }}</div>
-                                    </div>
-                                    {% endfor %}
-                                </div>
-                            {% else %}
-                                <div style="color: #ff6b6b; text-align: center; padding: 10px;">
-                                    No availability schedule set by provider
-                                </div>
-                            {% endif %}
-                        </div>
-                        -->
-                        <p>Select a time slot:</p>
-                            {% for schedule in availability_schedule %}
-                            <div>
-                                <input type="radio" id="slot_{{ forloop.counter }}" name="start_time" 
-                                    value="{{ schedule.start_time|time:'H:i' }}" required>
-                                <label for="slot_{{ forloop.counter }}">
-                                {{ schedule.get_day_of_week_display }}: 
-                                {{ schedule.start_time|time:"g:i A" }} - {{ schedule.end_time|time:"g:i A" }}
-                                </label>
-                            </div>
-                            {% endfor %}
-
-                            {% if form.start_time.errors %}
-                            <div class="error">
-                                {{ form.start_time.errors }}
-                            </div>
-                            {% endif %}
-                    </div>
-
-                    <!-- Reason for Visit -->
-                    <div class="form-group {% if form.reason.errors %}error{% endif %}">
-                        <label for="{{ form.reason.id_for_label }}">Reason for Visit</label>
-                        {{ form.reason }}
-                        {% if form.reason.help_text %}
-                            <div class="helptext">{{ form.reason.help_text }}</div>
-                        {% endif %}
-                        {{ form.reason.errors }}
-                    </div>
-                </div>
-
-                <!-- Service Summary (populated via JavaScript) -->
-                <div class="service-summary" id="serviceSummary">
-                    <h3>Appointment Summary</h3>
-                    <div class="summary-item">
-                        <span class="summary-label">Service:</span>
-                        <span class="summary-value" id="summaryService">-</span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="summary-label">Duration:</span>
-                        <span class="summary-value" id="summaryDuration">-</span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="summary-label">Date:</span>
-                        <span class="summary-value" id="summaryDate">-</span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="summary-label">Time:</span>
-                        <span class="summary-value" id="summaryTime">-</span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="summary-label">Total Cost:</span>
-                        <span class="summary-value cost-estimate" id="summaryCost">-</span>
-                    </div>
-                </div>
-
-                <button type="submit" class="submit-btn">
-                    Book Appointment
-                </button>
-            </form>
-        </section>
-    </main>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const serviceSelect = document.getElementById('{{ form.service.id_for_label }}');
-            const dateInput = document.getElementById('{{ form.appointment_date.id_for_label }}');
-            const serviceSummary = document.getElementById('serviceSummary');
-
-            function updateSummary() {
-                const service = serviceSelect.options[serviceSelect.selectedIndex];
-                const date = dateInput.value;
-                const timeInputs = document.querySelectorAll('input[name="start_time"]:checked');
-                const time = timeInputs.length > 0 ? timeInputs[0].value : '';
-
-                if (service.value && date && time) {
-                    serviceSummary.style.display = 'block';
-                    
-                    document.getElementById('summaryService').textContent = service.text;
-                    document.getElementById('summaryDate').textContent = new Date(date).toLocaleDateString();
-                    document.getElementById('summaryTime').textContent = time;
-                    
-                    // Extract duration and cost from service option data attributes if available
-                    const duration = service.getAttribute('data-duration') || 'N/A';
-                    const cost = service.getAttribute('data-cost') || 'N/A';
-                    
-                    document.getElementById('summaryDuration').textContent = duration ? duration + ' min' : 'N/A';
-                    document.getElementById('summaryCost').textContent = cost ? '₦' + new Intl.NumberFormat().format(cost) : 'N/A';
-                } else {
-                    serviceSummary.style.display = 'none';
-                }
-            }
-
-            // Update summary when form fields change
-            serviceSelect.addEventListener('change', updateSummary);
-            dateInput.addEventListener('change', updateSummary);
-            
-            // Add event listeners to time slots
-            document.querySelectorAll('input[name="start_time"]').forEach(input => {
-                input.addEventListener('change', updateSummary);
-            });
-
-            // Initial update
-            updateSummary();
-        });
-    </script>
+    {{ form.start_time.errors }}
+</div>
+        <!-- Notes/Reason for Visit -->
+        <div class="form-group {% if form.notes.errors %}error{% endif %}">
+            <label for="{{ form.notes.id_for_label }}">Notes/Reason for Visit</label>
+            {{ form.notes }}
+            {% if form.notes.help_text %}
+                <div class="helptext">{{ form.notes.help_text }}</div>
+            {% endif %}
+            {{ form.notes.errors }}
+        </div>
+    </div>
+    <input type="hidden" name="appointment_date" id="id_appointment_date" value="{{ selected_date }}">
+    <button type="submit" class="submit-btn" id="submitBtn">
+        Book Appointment
+    </button>
+        </form>
+    </section>
+</main>
 </body>
 </html>

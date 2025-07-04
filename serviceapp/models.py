@@ -17,6 +17,7 @@ class ServiceProvider(models.Model):
 
     def __str__(self):
         return self.user.username
+    
 # services models
 class Service(models.Model):
     service_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
@@ -68,7 +69,7 @@ class Appointment(models.Model):
     client = models.ForeignKey(User, on_delete=models.CASCADE, related_name='appointments')
     first_name = models.CharField(max_length=50, blank=True, null=True)
     last_name = models.CharField(max_length=50, blank=True, null=True)
-    email = models.EmailField(unique=True, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
     phone = models.CharField(max_length=30, blank=True, null=True)
     appointment_date = models.DateField()
     start_time = models.TimeField()

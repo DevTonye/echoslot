@@ -20,6 +20,7 @@ import time
 import random
 import threading
 from serviceapp.models import ServiceProvider
+from django.db import transaction
 
 User = get_user_model()
 
@@ -308,4 +309,17 @@ def selectuser_role(request):
             messages.error(request, "Invalid role selected.")
     return render(request, 'account/selectrole.html')
 
+# delete account
+@login_required(login_url='accounts:login')
+@transaction.atomic
+def delete_account(request):
+    user = request.user
+    if request.method == "POST":
+        username = user.username
+        user.delete()
+        messages.success(request, f"Account '{username}' has been deleted.")
+        return redirect("accounts:register")
+    else:
+        messages.error(request, "Invalid request method.")
+    return render(request, 'account/delete_account.html')
             

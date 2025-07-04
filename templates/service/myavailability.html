@@ -111,14 +111,7 @@
                                 <tr>
                                     <td>{{ availability.get_day_of_week_display }}</td>
                                     <td>{{ availability.start_time|time:"H:i" }}</td>
-                                    <td>{{ availability.end_time|time:"H:i" }}</td>
-                                    <!--
-                                    <td>
-                                        {% with duration=availability.duration %}
-                                            {{ duration.hours }}h {{ duration.minutes }}m
-                                        {% endwith %}
-                                    </td>
-                                    -->
+                                    <td>{{ availability.end_time|time:"H:i" }}</td>                             
                                     <td>
                                         <div class="d-flex gap-2">
                                             <a href="{% url 'serviceapp:editavailability'  availability.pk  %}" 

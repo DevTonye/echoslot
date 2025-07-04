@@ -3,7 +3,6 @@ from .models import ServiceProvider, Service, Appointment, Notification, Availab
 from .forms import ServiceProviderForm, ServiceForm, AppointmentForm, AvailabilityScheduleForm
 from django.contrib import messages
 from django.utils import timezone
-from django.core.mail import send_mail
 import datetime
 from functools import wraps
 from django.contrib.auth.decorators import login_required
@@ -14,7 +13,7 @@ import random
 from celery import shared_task
 from django.db import IntegrityError
 from django.db import transaction
-
+from datetime import datetime, timedelta
 
 # service provider views
 User = get_user_model()
@@ -46,7 +45,7 @@ def serviceprovider_profile(request):
             provider.user = request.user
             provider.save()
             messages.success(request, "Your service account has been created!")
-            return redirect("serviceapp:set_availability")
+            return redirect("serviceapp:dashboard")
     else:
         form = ServiceProviderForm()
     return render(request, "service/profile.html", {"form": form})
@@ -58,6 +57,7 @@ def service_dashboard(request):
     provider = request.user.service_provider
     today = timezone.now().date()
 
+    # display user appointments 
     today_appointments = Appointment.objects.filter(
         service__provider=provider,
         appointment_date=today,
@@ -81,9 +81,43 @@ def service_dashboard(request):
 
     return render(request, 'service/dashboard.html', context)
 
-# add services views 
+@login_required(login_url="accounts:login")
+def settings(request):
+    provider = request.user.service_provider
+    return render(request, "service/settings.html", {"provider":provider})
+
+@login_required(login_url="accounts:login")
 @service_provider_required
-def add_service(request): 
+def settings_profile(request):
+    sp_profile = get_object_or_404(ServiceProvider, user=request.user)
+    if request.method == "POST":
+        form = ServiceProviderForm(request.POST, instance=sp_profile)
+        if form.is_valid():
+            print("DEBUG: Form is valid, saving...")
+            form.save()
+            messages.success(request, 'Profile updated successfully.')
+            form = ServiceProviderForm(instance=sp_profile)
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
+    else:
+        form = ServiceProviderForm(instance=sp_profile)
+    return render(request, 'partials/settingsprofile.html', {'form': form})
+    
+@login_required(login_url="accounts:login")
+@service_provider_required
+def security_settings(request):
+     return render(request, 'partials/security_settings.html')
+
+@login_required(login_url="accounts:login")
+def account_security(request):
+    return render(request, 'partials/account_settings.html')
+
+# add services views 
+@login_required(login_url="accounts:login")
+@service_provider_required
+def add_service(request):
     provider = request.user.service_provider
     if request.method == "POST":
         form = ServiceForm(request.POST)
@@ -129,7 +163,13 @@ def delete_service(request, service_id):
         return redirect('serviceapp:service')
     return render(request, 'service/confirmdelete.html', {'service': service})
 
-# make a request to get all, today, upcoming and past appointments
+# view all services
+def services_all(request):
+    services = Service.objects.all()
+    context = {"services": services}
+    return render(request, 'service/allservice.html', context)
+
+# make a request to get all, today, upcoming and past appointments 
 @service_provider_required
 def appointments(request):
     provider = request.user.service_provider
@@ -200,11 +240,6 @@ def past_appointments(request):
     }
     return render(request, "partials/past.html", context)
 
-# view all services
-def services_all(request):
-    services = Service.objects.all()
-    context = {"services": services}
-    return render(request, 'service/allservice.html', context)
 
 # allow service providers to set and view their availability
 @login_required(login_url="accounts:login")
@@ -256,22 +291,41 @@ def delete_availability(request, pk):
         return redirect('serviceapp:my_availability')
     return render(request, 'service/delete_availability_confirm.html', {'availability': availability})
 
-# service provider finder 
+# view all service provider 
 @login_required(login_url="accounts:login")
 def find_services(request):
     service_provider = list(ServiceProvider.objects.all())
     random_providers = random.sample(service_provider, min(len(service_provider), 6)) if service_provider else []
     return render(request, "service/findservices.html", {'providers': random_providers})
 
-# book appointments
 @login_required(login_url="accounts:login")
 def book_appointments(request, provider_id):
     provider = get_object_or_404(ServiceProvider, pk=provider_id)
     services = Service.objects.filter(provider=provider)
-    availability_schedule = AvailabilitySchedule.objects.filter(service_provider=provider).order_by('day_of_week', 'start_time')
+    availability_schedule = AvailabilitySchedule.objects.filter(
+        service_provider=provider
+    ).order_by('day_of_week', 'start_time')
+    
+    # Initialize available_slots and service
+    service_id = request.GET.get('service')
+    service = None
+
+    if service_id:
+        try:
+            service = Service.objects.get(pk=service_id, provider=provider)
+        except Service.DoesNotExist:
+            service = None
+
+    # Fallback to the first service
+    if not service:
+        service = services.first()
+
+    available_slots = {}
+    if service:
+        available_slots = get_available_time_slots(provider, service, days_ahead=30)
     
     if request.method == 'POST':
-        form = AppointmentForm(request.POST, provider_id=provider_id)
+        form = AppointmentForm(request.POST, provider_id=provider_id, available_slots=available_slots)
         if form.is_valid():
             appointment = form.save(commit=False)
             appointment.client = request.user
@@ -282,11 +336,11 @@ def book_appointments(request, provider_id):
                 appointment.save()
 
                 appt_datetime = timezone.make_aware(
-                    datetime.datetime.combine(appointment.appointment_date, appointment.start_time)
+                    datetime.combine(appointment.appointment_date, appointment.start_time)
                 )
 
                 # Email reminder (1 day before)
-                reminder_day = appt_datetime - datetime.timedelta(days=1)
+                reminder_day = appt_datetime - timedelta(days=1)
                 if reminder_day > timezone.now():
                     Notification.objects.create(
                         appointment=appointment,
@@ -296,7 +350,7 @@ def book_appointments(request, provider_id):
                     )
 
                 # SMS reminder (1 hour before)
-                reminder_hour = appt_datetime - datetime.timedelta(hours=1)
+                reminder_hour = appt_datetime - timedelta(hours=1)
                 if reminder_hour > timezone.now():
                     Notification.objects.create(
                         appointment=appointment,
@@ -308,20 +362,115 @@ def book_appointments(request, provider_id):
             messages.success(request, 'Appointment booked successfully!')
             return redirect('serviceapp:appointment_success', appointment_id=appointment.appointment_id)
         else:
+            print("Form errors:", form.errors)
             messages.error(request, "Please correct the errors below.")
     else:
-        form = AppointmentForm(provider_id=provider_id)
+        form = AppointmentForm(provider_id=provider_id, available_slots=available_slots)
 
     return render(request, 'service/bookappointment.html', {
         'provider': provider,
         'form': form,
         'services': services,
-        'availability_schedule': availability_schedule
+        'availability_schedule': availability_schedule,
+        'available_slots': available_slots,
+        'selected_date': request.POST.get('appointment_date') or timezone.now().date()
     })
+
+
+# generate available time slot for clients base on a service provider availability schedule
+def get_available_time_slots(provider, service, days_ahead=30):
+    available_slots = {}
+    today = timezone.now().date()
+    
+    # get service duration from the service
+    slot_duration = service.duration
+
+    # Get provider's availability schedule
+    availability_schedule = AvailabilitySchedule.objects.filter(
+        service_provider=provider
+    ).order_by('day_of_week', 'start_time')
+    
+    # Get existing appointments to exclude booked slots
+    existing_appointments = Appointment.objects.filter(
+        service__provider=provider,
+        appointment_date__gte=today,
+        appointment_date__lte=today + timedelta(days=days_ahead),
+        status__in=['scheduled', 'confirmed']
+    ).values_list('appointment_date', 'start_time', 'end_time')
+    
+    # Create a dictionary of booked slots for quick lookup
+    booked_slots = {}
+    for apt_date, start_time, end_time in existing_appointments:
+        if apt_date not in booked_slots:
+            booked_slots[apt_date] = []
+        booked_slots[apt_date].append((start_time, end_time))
+    
+    # Generate slots for each day
+    for i in range(days_ahead):
+        current_date = today + timedelta(days=i)
+        day_of_week = current_date.weekday()  # 0=Monday, 6=Sunday
+        
+        # Find availability for this day of week
+        day_availability = availability_schedule.filter(day_of_week=day_of_week)
+        
+        if day_availability:
+            date_slots = []
+            
+            for schedule in day_availability:
+                # Generate time slots within this availability window
+                current_time = datetime.combine(current_date, schedule.start_time)
+                end_time = datetime.combine(current_date, schedule.end_time)
+                
+                while current_time + timedelta(minutes=slot_duration) <= end_time:
+                    slot_start = current_time.time()
+                    slot_end = (current_time + timedelta(minutes=slot_duration)).time()
+                    
+                    # Check if this slot is available (not booked)
+                    is_available = True
+                    if current_date in booked_slots:
+                        for booked_start, booked_end in booked_slots[current_date]:
+                            # Check for overlap
+                            if slot_start < booked_end and slot_end > booked_start:
+                                is_available = False
+                                break
+                    
+                    # Only add if slot is in the future (for today)
+                    if current_date > today or (current_date == today and slot_start > timezone.now().time()):
+                        if is_available:
+                            date_slots.append({
+                                'time': slot_start,
+                                'display': slot_start.strftime('%I:%M %p'),
+                                'available': True
+                            })
+                    
+                    current_time += timedelta(minutes=slot_duration)
+            
+            if date_slots:
+                available_slots[current_date] = date_slots
+    
+    return available_slots
+
 
 @login_required(login_url="accounts:login")
 def appointment_success(request, appointment_id):
+    provider = get_object_or_404(ServiceProvider)
     appointment = get_object_or_404(Appointment, appointment_id=appointment_id, client=request.user)
-    return render(request, 'service/appointmentsuccess.html', {'appointment': appointment})
+    return render(request, 'service/appointmentsuccess.html', {'appointment': appointment, 'provider':provider})
 
+@login_required(login_url="accounts:login")
+def load_slots(request, provider_id):
+    provider = get_object_or_404(ServiceProvider, id=provider_id)
+    service_id = request.GET.get("service")
+    
+    if service_id:
+        try:
+            service = Service.objects.get(id=service_id, provider=provider)
+            available_slots = get_available_time_slots(provider, service)
+        except Service.DoesNotExist:
+            available_slots = {}
+    else:
+        available_slots = {}
 
+    return render(request, "service/partials/slot_options.html", {
+        "available_slots": available_slots
+    })

@@ -6,6 +6,7 @@
     <title>Confirm Delete</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Smooth Modern Theme - Black & White */
         :root {
             --primary-color: #333333;
             --secondary-color: #ffffff;
@@ -151,13 +152,15 @@
         <div class="warning-icon">
             <i class="fas fa-exclamation-triangle"></i>
         </div>
-        <h2 class="page-title">Confirm Delete</h2>
-        <p class="delete-message">Are you sure you want to delete <span class="service-name">"{{ service.name }}"</span>?<br>This action cannot be undone.</p>
+        <h2 class="page-title">Delete Your Account</h2>
+        <p class="delete-message">This will permanently delete your account and all associated data.
+            This action <strong>cannot be undone</strong>
+        </p>
 
         <form method="post">
             {% csrf_token %}
             <div class="btn-container">
-                <a href="{% url 'serviceapp:dashboard' %}" class="btn btn-secondary">
+                <a href="{% url 'serviceapp:account-settings' %}" class="btn btn-secondary">
                     <i class="fas fa-times"></i> Cancel
                 </a>
                 <button type="submit" class="btn btn-danger">

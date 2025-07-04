@@ -15,7 +15,7 @@ def create_clientprofile(request):
     # check if the user already has a profile
     if ClientProfile.objects.filter(user=request.user).exists():
         messages.error(request, "You already have a profile and cannot create another one")
-        return redirect('serviceapp:find_service')
+        return redirect('serviceapp:find_serviceproviders')
     if request.method == "POST":
         form = ClientProfileForm(request.POST, request.FILES)
         if form.is_valid():
@@ -24,7 +24,7 @@ def create_clientprofile(request):
                 client_profile.user = request.user
                 client_profile.save()
                 messages.success(request, f"Profile created {request.user.username}")
-                return redirect('serviceapp:find_service')
+                return redirect('serviceapp:find_serviceproviders')
             except Exception as e:
                 messages.error(request, f"An error occured: {e}")
         else:
