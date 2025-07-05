@@ -75,7 +75,7 @@
                         <td>{{ appointment.first_name }} {{ appointment.last_name }}</td>
                         <td>{{ appointment.service.name }}</td>
                         <td>{{ appointment.service.duration }} min</td>
-                        <td>
+                        <td id="status-form-{{ appointment.appointment_id }}">
                             {% if appointment.status == 'scheduled' %}
                                     <span class="badge badge-warning">Scheduled</span>
                             {% elif appointment.status == 'confirmed' %}
@@ -85,14 +85,13 @@
                         <td>
                             <div class="d-flex gap-2">
                                 <button class="btn btn-outline-primary"
-                                hx-get="{% url 'serviceapp:status_form' appointment.id %}"
-                                hx-target="#status-form-{{ appointment.id}}"
-                                hx-swap="innerHTML"
+                                    hx-get="{% url 'serviceapp:status_form' appointment.appointment_id %}"
+                                    hx-target="#status-form-{{ appointment.appointment_id}}"
+                                    hx-swap="innerHTML"
                                 >
                                     <i class="fas fa-pen"></i> Update Status
                                 </button>
                             </div>
-                            <div id="status-form-{{ appointment.id }}"></div>
                         </td>
                     </tr>
                     {% endfor %}
@@ -135,7 +134,7 @@
                         <td>{{ appointment.start_time|time:"h:i A" }}</td>
                         <td>{{ appointment.first_name }} {{ appointment.last_name }}</td>
                         <td>{{ appointment.service.name }}</td>
-                        <td>
+                        <td id="status-form-{{ appointment.appointment_id }}">
                             {% if appointment.status == 'scheduled' %}
                                 <span class="badge badge-warning">Scheduled</span>
                             {% elif appointment.status == 'confirmed' %}
@@ -152,7 +151,7 @@
                                     <i class="fas fa-pen"></i> Update Status
                                 </button>
                             </div>
-                                <div id="status-form-{{ appointment.appointment_id }}"></div>
+
                         </td>
                     </tr>
                     {% endfor %}

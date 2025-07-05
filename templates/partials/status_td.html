@@ -1,0 +1,10 @@
+<td id="status-td-{{ appointment.appointment_id }}">
+    {% if appointment.status == 'scheduled' %}
+        <span class="badge badge-warning">Scheduled</span>
+    {% elif appointment.status == 'confirmed' %}
+        <span class="badge bg-success">Confirmed</span>
+    {% else %}
+        <span class="badge bg-secondary">{{ appointment.status|capfirst }}</span>
+    {% endif %}
+    
+</td>

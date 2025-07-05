@@ -2,7 +2,7 @@
     method="post"
     hx-post="{% url 'serviceapp:update_status' appointment.appointment_id %}"
     hx-target="#status-form-{{ appointment.appointment_id }}"
-    hx-swap="outerHTML"
+    hx-swap="innerHTML"
 >
     {% csrf_token %}
     <div class="input-group">

@@ -14,7 +14,7 @@ from django.http import HttpResponse
 from django.db import IntegrityError
 from django.db import transaction
 from datetime import datetime, timedelta
-
+from django.template.loader import render_to_string
 # service provider views
 User = get_user_model()
 
@@ -228,6 +228,13 @@ def past_appointments(request):
     past_appointments = Appointment.objects.filter(
     Q(service__provider=provider) & 
         (Q(appointment_date__lt=today) | 
+        Q(appointment_date=today, status__in=['completed', 'cancelled', 'no_show']))
+    ).order_by('-appointment_date', '-start_time')[:50]
+
+    # will remove later
+    past_appointments = Appointment.objects.filter(
+    Q(service__provider=provider) & 
+        (Q(appointment_date__gt=today) | 
         Q(appointment_date=today, status__in=['completed', 'cancelled', 'no_show']))
     ).order_by('-appointment_date', '-start_time')[:50]
 
@@ -483,12 +490,13 @@ def status_form(request, appointment_id):
 
 # update the status
 def update_status(request, appointment_id):
-    appointment = get_object_or_404(Appointment, appointment_id=appointment_id)
-    if request.method == "POST":
-        form = AppointmentStatusForm(request.POST, instance=appointment)
-        if form.is_valid():
-            form.save()
-            return HttpResponse(f"<span class='badge bg-success'>{appointment.status.title()}</span>")
-        else:
-            form = AppointmentStatusForm(instance=appointment)
-    return render(request, 'partials/status_form.html', {'form': form, 'appointment': appointment})
+    appointment = Appointment.objects.get(appointment_id=appointment_id)
+    if request.method == 'POST':
+        new_status = request.POST.get('status')
+        appointment.status = new_status
+        appointment.save()
+        html = render_to_string('partials/status_td.html', {'appointment': appointment})
+        return HttpResponse(html)
+
+
+   
