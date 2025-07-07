@@ -64,6 +64,7 @@ class Appointment(models.Model):
         ('completed', 'Completed'),
         ('no_show', 'No Show'),
     ]
+    
     appointment_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
     client = models.ForeignKey(User, on_delete=models.CASCADE, related_name='appointments')

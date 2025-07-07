@@ -27,4 +27,5 @@ urlpatterns = [
     path('load-slots/<int:provider_id>/', views.load_slots, name='load_slots'),
     path('status-form/<uuid:appointment_id>/', views.status_form, name='status_form'),
     path('update-status/<uuid:appointment_id>/', views.update_status, name='update_status'),
+    path('client-details/', views.client_details, name='client_details'),
 ]

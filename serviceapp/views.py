@@ -499,4 +499,6 @@ def update_status(request, appointment_id):
         return HttpResponse(html)
 
 
-   
+# view client appointment details
+def client_details(request):
+    return render(request, 'service/client_details.html')

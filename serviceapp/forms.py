@@ -1,7 +1,7 @@
 from django import forms
 from .models import ServiceProvider, Service, AvailabilitySchedule, Appointment
 import datetime
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
 from django.core.exceptions import ValidationError
 
 class ServiceProviderForm(forms.ModelForm):
