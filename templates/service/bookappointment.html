@@ -481,10 +481,10 @@
                             Service 
                         </label>
                         <select name="service" id="id_service"
-        hx-get="{% url 'serviceapp:load_slots' provider.id %}"
-        hx-target="#slot-container"
-        hx-trigger="change"
-        name="{{ form.service.html_name }}">
+                            hx-get="{% url 'serviceapp:load_slots' provider.id %}"
+                            hx-target="#slot-container"
+                            hx-trigger="change"
+                            name="{{ form.service.html_name }}">
     {% for service in services %}
         <option value="{{ service.id }}" {% if form.service.value == service.id %}selected{% endif %}>
             {{ service.name }}

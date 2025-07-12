@@ -1,10 +1,10 @@
 <div id="profile-section" class="settings-section active">
     {% if messages %}
-        <div class="alert alert-success">
-            {% for message in messages %}
-                {{ message }}
-            {% endfor %}
-        </div>
+        {% for message in messages %}
+            {% if 'profile' in message.tags %}
+            <div class="alert alert-success">{{ message }}</div>
+            {% endif %}
+        {% endfor %}
     {% endif %}
     
     <div class="card">
@@ -15,11 +15,28 @@
             </h5>
         </div>
         <div class="card-body">
+            <div class="profile-section">
+                <div class="profile-avatar-section">
+                    <div class="profile-avatar">
+                        {% if form.instance.profile_image %}
+                            <img src="{{ form.instance.profile_image.url }}" 
+                                 alt="{{ form.instance.user.username }}'s profile" 
+                                 class="profile-image" id="imagePreview">
+                        {% else %}
+                            <img id="imagePreview" style="display: none;" class="profile-image">
+                            <i class="fas fa-user" id="imagePlaceholder"></i>
+                        {% endif %}
+                    </div>
+                    <button type="button" class="upload-btn" onclick="triggerFileInput()">
+                        <i class="fas fa-camera"></i>
+                        Change Photo
+                    </button>
+                </div>
                 <div class="profile-form">
-                    <form method="post" 
+                    <form method="post" enctype="multipart/form-data"
                           hx-post="{% url 'serviceapp:settings-profile' %}"
-                          hx-target="#setting-content"
-                          hx-swap="innerHTML">
+                          hx-target="#profile-section"
+                          hx-swap="outerHTML">
                         {% csrf_token %}
                         
                         {% if form.non_field_errors %}
@@ -27,6 +44,11 @@
                                 {{ form.non_field_errors }}
                             </div>
                         {% endif %}
+                        
+                        <!-- This is the key - include the actual form field -->
+                        <div style="display: none;">
+                            {{ form.profile_image }}
+                        </div>
                         
                         <div class="form-row">
                             <div class="form-group">
@@ -62,10 +84,10 @@
                         </div>
                         
                         <div class="form-group">
-                            <label class="form-label">{{ form.description.label }}</label>
-                            {{ form.description }}
-                            {% if form.description.errors %}
-                                <div class="form-error">{{ form.description.errors }}</div>
+                            <label class="form-label">{{ form.bio.label }}</label>
+                            {{ form.bio }}
+                            {% if form.bio.errors %}
+                                <div class="form-error">{{ form.bio.errors }}</div>
                             {% endif %}
                         </div>
                         
@@ -77,7 +99,6 @@
                             {% endif %}
                         </div>
                         
-                     
                         <div class="form-group">
                             <label class="form-label">{{ form.phone.label }}</label>
                             {{ form.phone }}
@@ -96,4 +117,20 @@
             </div>
         </div>
     </div>
+    
+    <script>
+        function triggerFileInput() {
+            // Get the actual form field (not the custom one)
+            const realFileInput = document.querySelector('input[name="profile_image"]');
+            realFileInput.click();
+        }
+
+        // Add event listener when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.querySelector('input[name="profile_image"]');
+            if (fileInput) {
+                fileInput.addEventListener('change', previewImage);
+            }
+        });
+    </script>
 </div>

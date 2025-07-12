@@ -15,6 +15,9 @@ from django.db import IntegrityError
 from django.db import transaction
 from datetime import datetime, timedelta
 from django.template.loader import render_to_string
+from django.http import HttpResponse
+from django.core.paginator import Paginator
+
 # service provider views
 User = get_user_model()
 
@@ -38,7 +41,7 @@ def service_provider_required(view_func):
 def serviceprovider_profile(request):
     if request.method == "POST":
         #print("POST data:", request.POST)
-        form = ServiceProviderForm(request.POST)
+        form = ServiceProviderForm(request.POST, request.FILES)
         #print(form.errors)
         if form.is_valid():
             provider = form.save(commit=False)
@@ -91,11 +94,12 @@ def settings(request):
 def settings_profile(request):
     sp_profile = get_object_or_404(ServiceProvider, user=request.user)
     if request.method == "POST":
-        form = ServiceProviderForm(request.POST, instance=sp_profile)
+        form = ServiceProviderForm(request.POST, request.FILES, instance=sp_profile)
         if form.is_valid():
-            print("DEBUG: Form is valid, saving...")
-            form.save()
-            messages.success(request, 'Profile updated successfully.')
+            saved_profile = form.save()
+
+            saved_profile.refresh_from_db()
+            messages.success(request, 'Profile updated successfully.', extra_tags='profile')
             form = ServiceProviderForm(instance=sp_profile)
         else:
             for field, errors in form.errors.items():
@@ -163,11 +167,14 @@ def delete_service(request, service_id):
         return redirect('serviceapp:service')
     return render(request, 'service/confirmdelete.html', {'service': service})
 
-# view all services
+# view all services and recent appointments
 def services_all(request):
+    provider = request.user.service_provider
     services = Service.objects.all()
-    context = {"services": services}
+    recent_appointemnt = Appointment.objects.filter(service__provider=provider).order_by('-appointment_date')[:5]
+    context = {"services": services, "provider":provider, 'recent_appointment':recent_appointemnt}
     return render(request, 'service/allservice.html', context)
+
 
 # make a request to get all, today, upcoming and past appointments 
 @service_provider_required
@@ -179,18 +186,23 @@ def today_appointments(request):
     provider = request.user.service_provider
     today = timezone.now().date()
     
-    today_appointments = Appointment.objects.filter(
+    today_appointments_quary = Appointment.objects.filter(
         service__provider=provider,
         appointment_date=today,
         status__in=['scheduled', 'confirmed']
     ).order_by('start_time')
 
+    paginator = Paginator(today_appointments_quary, 5) # for testing
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     service = Service.objects.filter(provider=provider)
 
     context = {
         'provider':provider,
-        'today_appointments':today_appointments,
-        'services':service
+        'today_appointments':today_appointments_quary,
+        'services':service,
+        'page_obj': page_obj
     }
     return render(request, "partials/today.html", context)
 
@@ -199,18 +211,22 @@ def upcoming_appointments(request):
     provider = request.user.service_provider
     today = timezone.now().date()
     
-    upcoming_appointments = Appointment.objects.filter(
+    upcoming_appointments_query = Appointment.objects.filter(
         service__provider=provider,
         appointment_date__gt=today,
         status__in=['scheduled', 'confirmed']
     ).order_by('appointment_date', 'start_time')
 
+    paginator = Paginator(upcoming_appointments_query, 5)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     service = Service.objects.filter(provider=provider)
 
     context = {
         'provider':provider,
-        'upcoming_appointments':upcoming_appointments,
-        'services':service
+        'upcoming_appointments':upcoming_appointments_query,
+        'services':service, 
+        'page_obj': page_obj
     }
     return render(request, "partials/upcoming.html", context)
 
@@ -218,40 +234,34 @@ def past_appointments(request):
     provider = request.user.service_provider    
     today = timezone.now().date()
     
-    past_appointments = Appointment.objects.filter(
-        service__provider=provider,
-        appointment_date__lt=today,
-        status__in=['scheduled', 'confirmed']
-    ).order_by('start_time')
-
-    # get appointments from today that are completed/cancelled
-    past_appointments = Appointment.objects.filter(
-    Q(service__provider=provider) & 
+    # Get appointments from today that are completed/cancelled and past appointments
+    past_appointments_query = Appointment.objects.filter(
+        Q(service__provider=provider) & 
         (Q(appointment_date__lt=today) | 
-        Q(appointment_date=today, status__in=['completed', 'cancelled', 'no_show']))
-    ).order_by('-appointment_date', '-start_time')[:50]
-
-    # will remove later
-    past_appointments = Appointment.objects.filter(
-    Q(service__provider=provider) & 
-        (Q(appointment_date__gt=today) | 
-        Q(appointment_date=today, status__in=['completed', 'cancelled', 'no_show']))
-    ).order_by('-appointment_date', '-start_time')[:50]
-
+         Q(appointment_date=today, status__in=['completed', 'cancelled', 'no_show']))
+    ).order_by('-appointment_date', '-start_time')
+    
+    # Set up pagination
+    paginator = Paginator(past_appointments_query, 5)   
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
     service = Service.objects.filter(provider=provider)
-
+    
     context = {
-        'provider':provider,
-        'past_appointments':past_appointments,
-        'services':service
+        'provider': provider,
+        'past_appointments': past_appointments_query,  # For the count
+        'services': service,
+        'page_obj': page_obj
     }
+    
     return render(request, "partials/past.html", context)
-
 
 # allow service providers to set and view their availability
 @login_required(login_url="accounts:login")
 @service_provider_required
 def myavailability(request):
+    provider = request.user.service_provider
     availability_success = False
     if request.method == "POST":
         form = AvailabilityScheduleForm(request.POST, service_provider=request.user.service_provider)
@@ -267,12 +277,13 @@ def myavailability(request):
     all_availability = AvailabilitySchedule.objects.filter(
         service_provider = request.user.service_provider
     ).order_by('day_of_week', 'start_time')
-    return render(request, 'service/myavailability.html', { 'form': form, 'availabilities': all_availability, 'availability_success': availability_success,})
+    return render(request, 'service/myavailability.html', { 'form': form, 'availabilities': all_availability, 'availability_success': availability_success, 'provider':provider})
 
 # edit availability function 
 @login_required(login_url="accounts:login")
 @service_provider_required
 def edit_availability(request, pk):
+    provider = request.user.service_provider
     availability = get_object_or_404(AvailabilitySchedule, pk=pk, service_provider=request.user.service_provider)
     if request.method == "POST":
         form = AvailabilityScheduleForm(request.POST, instance=availability, service_provider=request.user.service_provider)
@@ -285,7 +296,7 @@ def edit_availability(request, pk):
                 form.add_error(None, "This availability would create a duplicate day entry. Please choose another day.")
     else:
         form = AvailabilityScheduleForm(instance=availability, service_provider=request.user.service_provider)
-    return render(request, "service/editavailability.html", {'form':form, 'availability':availability})
+    return render(request, "service/editavailability.html", {'form':form, 'availability':availability, 'provider':provider})
     
 @login_required(login_url="accounts:login")
 @service_provider_required
@@ -482,7 +493,7 @@ def load_slots(request, provider_id):
         "available_slots": available_slots
     })
 
-# update appointment status
+# get all appointment status
 def status_form(request, appointment_id):
     appointment = get_object_or_404(Appointment, appointment_id=appointment_id)
     form = AppointmentStatusForm(instance=appointment)
@@ -500,5 +511,10 @@ def update_status(request, appointment_id):
 
 
 # view client appointment details
-def client_details(request):
-    return render(request, 'service/client_details.html')
+def appointment_details(request, appointment_id):
+    appointment = Appointment.objects.get(appointment_id=appointment_id)
+    context = {
+        'appointment': appointment,
+        'now': timezone.now()  # Useful for showing current datetime in template
+    }
+    return render(request, 'service/appointment_details.html', context)

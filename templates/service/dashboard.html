@@ -8,18 +8,26 @@
 
 <!-- Provider Profile Section -->
 <div class="card mb-4">
-    <div class="card-body provider-card">
+     <div class="card-body provider-card">
         <div class="row align-items-center">
             <div class="col-md-2 text-center">
                 <div class="avatar-circle">
-                    <i class="fas fa-user-circle fa-4x"></i>
+                    {% if provider.profile_image %}
+                         <a href="{{ provider.profile_image.url }}" data-lightbox="profile" data-title="{{ provider.user.username }}">
+                            <img src="{{ provider.profile_image.url }}" 
+                                 alt="{{ provider.user.username }}'s profile" 
+                                 class="profile-image">
+                        </a>
+                    {% else %}
+                        <i class="fas fa-user-circle fa-4x"></i>
+                    {% endif %}
                 </div>
             </div>
             <div class="col-md-6 provider-info">
-                <h2 class="mb-1">{{provider.user.username}}</h2>
+                <h2 class="mb-1">{{provider.first_name}} {{provider.last_name}}</h2>
                 <p class="text-muted mb-1"><i class="fas fa-briefcase"></i> {{ provider.service.name}}</p>
                 <p class="text-muted mb-1"><i class="fas fa-map-marker-alt"></i> {{ provider.address }}</p>
-                <p class="mb-2">{{ provider.description|truncatechars:150}}</p>
+                <p class="mb-2">{{ provider.bio|truncatechars:150}}</p>
             </div>
             <div class="col-md-4">
                 <div class="stats-container">
@@ -35,11 +43,6 @@
                                 <h3>{{ today_appointments.count }}</h3>
                                 <small class="text-muted">Today's Appointments</small>
                             </div>
-                        </div>
-                        <div class="col-6 text-center">
-                            <button class="btn btn-outline-primary w-100">
-                                <i class="fas fa-cog"></i> Settings
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -61,6 +64,7 @@
                 <thead>
                     <tr>
                         <th>Time</th>
+                        <th>Image</th>
                         <th>Client</th>
                         <th>Service</th>
                         <th>Duration</th>
@@ -72,6 +76,19 @@
                     {% for appointment in today_appointments %}
                     <tr>
                         <td>{{ appointment.start_time|time:"h:i A"}}</td>
+                        {% if appointment.client.clientprofile %}
+                            {% with profile=appointment.client.clientprofile %}
+                                <td>
+                                    <a href="{{ profile.profile_image.url }}" data-lightbox="client-{{ appointment.appointment_id }}">
+                                        <img src="{{ profile.profile_image.url }}" alt="{{ profile.first_name }}" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover; margin-right: 5px;">
+                                    </a>
+                                </td>
+                            {% endwith %}
+                        {% else %}
+                                <div class="client-avatar-placeholder">
+                                    <i class="fas fa-user"></i>
+                                </div>    
+                        {% endif %}
                         <td>{{ appointment.first_name }} {{ appointment.last_name }}</td>
                         <td>{{ appointment.service.name }}</td>
                         <td>{{ appointment.service.duration }} min</td>
@@ -121,10 +138,12 @@
                     <tr>
                         <th>Date</th>
                         <th>Time</th>
+                        <th>Image</th>
                         <th>Client</th>
                         <th>Service</th>
                         <th>Status</th>
                         <th>Actions</th>
+                        
                     </tr>
                 </thead>
                 <tbody>
@@ -132,13 +151,26 @@
                     <tr>
                         <td>{{ appointment.appointment_date|date:"M d, Y" }}</td>
                         <td>{{ appointment.start_time|time:"h:i A" }}</td>
-                        <td>{{ appointment.first_name }} {{ appointment.last_name }}</td>
-                        <td>{{ appointment.service.name }}</td>
+                       {% if appointment.client.clientprofile %}
+                        {% with profile=appointment.client.clientprofile %}
+                            <td>
+                                <a href="{{ profile.profile_image.url }}" data-lightbox="client-{{ appointment.appointment_id }}">
+                                    <img src="{{ profile.profile_image.url }}" alt="{{ profile.first_name }}" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover; margin-right: 5px;">
+                                </a>
+                            </td>
+                        {% endwith %}
+                    {% else %}
+                        <div class="client-avatar-placeholder">
+                            <i class="fas fa-user"></i>
+                        </div>    
+                {% endif %} 
+                <td>{{ appointment.first_name }} {{ appointment.last_name }}</td>      
+                    <td>{{ appointment.service.name }}</td>
                         <td id="status-form-{{ appointment.appointment_id }}">
                             {% if appointment.status == 'scheduled' %}
                                 <span class="badge badge-warning">Scheduled</span>
                             {% elif appointment.status == 'confirmed' %}
-                                <span class="badge bg-success">Confirmed</span>
+                                <span class="badge badge-info">Confirmed</span>
                             {% endif %}
                         </td>
                         <td>
@@ -151,7 +183,6 @@
                                     <i class="fas fa-pen"></i> Update Status
                                 </button>
                             </div>
-
                         </td>
                     </tr>
                     {% endfor %}

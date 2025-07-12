@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Appointment Details - {{ appointment.client_name }}{% endblock %}
+
+{% block content %}
+    <div class="main-contents">
+        <div class="page-header">
+            <div class="client-page-title">
+                <a href="{% url 'serviceapp:appointment' %}" class="back-btn">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                Appointment Details
+            </div>
+        
+        </div>
+
+        <!-- Appointment Details Card -->
+        <div class="client-cards">
+            <div class="client-card-header">
+                <h5>
+                    <i class="fas fa-calendar-alt"></i>
+                    Appointment Information
+                </h5>
+                <div class="status-badge {{ appointment.status }}">
+                    <div class="status-indicator"></div>
+                    {{ appointment.get_status_display }}
+                </div>
+            </div>
+            
+            <div class="client-card-body">
+                <div class="client-appointment-grid">
+                    <!-- Client Information -->
+                    <div class="client-appointment-section">
+                        <h6 class="client-section-title">
+                            <i class="fas fa-user"></i>
+                            Client Information
+                        </h6>
+                        <div class="detail-item">
+                            <span class="detail-label">Client Name</span>
+                            <span class="detail-value large">
+                                {{ appointment.first_name }} {{ appointment.last_name }}
+                            </span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Email</span>
+                            <span class="detail-value">{{ appointment.email }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Phone</span>
+                            <span class="detail-value">{{ appointment.phone }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Client Since</span>
+                            <span class="detail-value">
+                                {{ appointment.client.date_joined|date:"F j, Y" }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Appointment Details -->
+                    <div class="client-appointment-section">
+                        <h6 class="client-section-title">
+                            <i class="fas fa-calendar-day"></i>
+                            Appointment Details
+                        </h6>
+                        <div class="detail-item">
+                            <span class="detail-label">Service</span>
+                            <span class="detail-value large">{{ appointment.service.name }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Date & Time</span>
+                            <span class="detail-value">
+                                {{ appointment.appointment_date|date:"M d, Y" }} {{ appointment.appointment_date|date:"l" }} {{ appointment.start_time|time:"h:i A" }}
+                            </span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Duration</span>
+                            <span class="detail-value">
+                                {{ appointment.service.duration  }} min
+                            </span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Price</span>
+                            <span class="detail-value">
+                                ${{ appointment.service.price }}
+                            </span>
+                        </div>
+                    </div>
+                  
+                    <!-- Booking Information -->
+                    <div class="client-appointment-section">
+                        <h6 class="client-section-title">
+                            <i class="fas fa-bookmark"></i>
+                            Booking Information
+                        </h6>
+                        <div class="detail-item">
+                            <span class="detail-label">Booked On</span>
+                            <span class="detail-value">
+                                {{ appointment.created_at|date:"F j, Y" }} 
+                                at {{ appointment.created_at|time:"g:i A" }}
+                            </span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Confirmation Status</span>
+                            <span class="detail-value">
+                                {{ appointment.get_status_display }}
+                            </span>
+                        </div>
+                       
+                    </div>
+
+                    <!-- Notes Section -->
+                    <div class="notes-section">
+                        <div class="notes-title">
+                            <i class="fas fa-notes-medical"></i>
+                            Appointment Notes
+                        </div>
+                        <div class="notes-content">
+                            {% if appointment.notes %}
+                                {{ appointment.notes|linebreaks }}
+                            {% else %}
+                                <em>No notes available for this appointment.</em>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

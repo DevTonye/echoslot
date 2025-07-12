@@ -7,13 +7,16 @@ from django.core.exceptions import ValidationError
 class ServiceProviderForm(forms.ModelForm):
     first_name = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder':'enter your firstname'}))
     last_name = forms.CharField(required=True, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder': 'enter your lastname'}))
-    description = forms.CharField(required=True, widget=forms.Textarea(attrs={'class':'form-control', 'placeholder': 'tell us about your service', 'rows': 4}))
+    bio = forms.CharField(required=True, widget=forms.Textarea(attrs={'class':'form-control', 'placeholder': 'Share what you do, your experience, and how you help clients', 'rows': 4}))
     address = forms.CharField(required=True, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Enter your address'}))
     phone = forms.CharField(required=True, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Enter your phone number'}))
 
     class Meta:
         model = ServiceProvider
-        fields = ['first_name', 'last_name', 'description', 'address', 'phone']
+        fields = ['first_name', 'last_name', 'profile_image', 'bio', 'address', 'phone']
+        widgets = {
+            'profile_image':forms.ClearableFileInput(attrs={'multiple':False})
+        }
 
 class ServiceForm(forms.ModelForm):
     class Meta:

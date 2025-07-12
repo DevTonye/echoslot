@@ -11,7 +11,8 @@ class ServiceProvider(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='service_provider')
     first_name = models.CharField(max_length=50, blank=False, null=False)
     last_name = models.CharField(max_length=50, blank=False, null=False)
-    description = models.TextField(blank=True, null=True)
+    profile_image = models.ImageField(upload_to='provider/profile/', blank=False, null=False)
+    bio = models.TextField(blank=True, null=True)
     address = models.CharField(max_length=255, blank=False, null=False)
     phone = models.CharField(max_length=20, blank=False, null=False)
 
@@ -85,7 +86,6 @@ class Appointment(models.Model):
     
     class Meta:
         ordering = ['appointment_date', 'start_time']
-
 
 # what api can i use for notifications?? -> I think this should happen over a signal 
 class Notification(models.Model):
