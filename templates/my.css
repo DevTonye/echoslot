@@ -1,0 +1,423 @@
+@media (max-width: 768px) {
+.pagination {
+    gap: 0.25rem;
+    margin: 1.5rem 0;
+}
+
+.pagination .page-link {
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+.pagination .page-link[aria-label="First"],
+.pagination .page-link[aria-label="Last"] {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.6875rem;
+}
+
+.pagination .page-link[aria-label="Previous"],
+.pagination .page-link[aria-label="Next"] {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.6875rem;
+}
+.service-dashboard {
+        padding: 1rem;
+        max-width: 100%;
+    }
+
+    /* Service overview mobile optimization */
+    .service-overview {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border-radius: 8px;
+    }
+
+    /* Service header mobile layout */
+    .service-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    /* Service title mobile sizing */
+    .service-title {
+        font-size: 1.5rem;
+        line-height: 1.3;
+    }
+
+    /* Service meta mobile layout */
+    .service-meta {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        white-space: normal;
+    }
+
+    /* Header stats mobile layout */
+    .header-stats {
+        flex-direction: column;
+        gap: 0.75rem;
+        width: 100%;
+    }
+
+    /* Stat cards mobile optimization */
+    .stat-card {
+        width: 100%;
+        min-width: unset;
+        padding: 1rem;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+    }
+
+    /* Service content mobile layout */
+    .service-content {
+        display: block;
+    }
+
+    /* Description section mobile spacing */
+    .description-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .description-section h3 {
+        font-size: 1.1rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .description-section p {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-bottom: 1rem;
+    }
+
+    /* Service actions mobile layout */
+    .service-actions {
+        flex-direction: column;
+        width: 100%;
+        gap: 0.5rem;
+    }
+
+    .edit-service, 
+    .delete-service {
+        width: 100%;
+        justify-content: center;
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+    }
+
+    /* Recent appointments mobile optimization */
+    .recent-appointments {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border-radius: 8px;
+    }
+
+    .section-title {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    /* Appointment item mobile layout */
+    .appointment-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding: 1rem 0.75rem;
+        min-height: auto;
+    }
+
+    .appointment-info {
+        width: 100%;
+        justify-content: space-between;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .appointment-client {
+        font-size: 1rem;
+        white-space: normal;
+        word-break: break-word;
+    }
+
+    .appointment-date {
+        font-size: 0.85rem;
+    }
+
+    .badge {
+        align-self: flex-start;
+        margin-top: 0.25rem;
+    }
+
+    /* No services message mobile */
+    .no-services-message {
+        padding: 2rem 1rem;
+    }
+
+    .no-services-message p {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+    transform: translateX(-100%);
+}
+.alert {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+}
+
+.alert-dismissible .btn-close {
+    padding: 0.5rem 1rem;
+}
+.appointment-tabs {
+    display: flex;
+    flex-direction: row !important; 
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; 
+
+}
+.appointment-tabs > * {
+    flex-shrink: 0; 
+    white-space: nowrap;
+}
+
+.page-title {
+    font-size: 1.5rem;
+}
+.provider-card .row {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.provider-card .col-md-2,
+.provider-card .col-md-6,
+.provider-card .col-md-4 {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.stats-container .row {
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+
+table {
+    width: 100%;
+    min-width: unset; 
+    font-size: 0.9rem;
+}
+
+.row .col-md-4 {
+    width: 100%;
+}
+
+.service-card-footer {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+.card-header h5 {
+    font-size: 1.1rem;
+}
+
+.badge {
+    font-size: 0.8rem;
+}
+
+.btn {
+    font-size: 0.85rem;
+    padding: 0.3rem 0.7rem;
+}
+
+.client-appointment-grid {
+    grid-template-columns: 1fr; 
+    gap: 1.5rem;
+}
+
+.client-page-title {
+    font-size: 1.2rem;
+    flex-direction: row;
+    align-items: center;
+}
+
+.client-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.notes-section {
+    grid-column: span 1;
+}
+
+.detail-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+}
+
+.detail-label,
+.detail-value {
+    font-size: 0.95rem;
+}
+
+.client-section-title {
+    font-size: 0.95rem;
+}
+
+.btn,
+.back-btn {
+    font-size: 0.9rem;
+}
+
+.status-badge {
+    font-size: 0.8rem;
+}
+.settings-nav {
+    flex-wrap: wrap;    
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.settings-tab {
+    padding: 0.75rem 1rem;
+    font-size: 0.8rem;
+}
+
+.settings-section {
+    margin-top: 1.5rem;
+    
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    padding: 0.875rem;
+    font-size: 16px; 
+}
+
+.form-label {
+    font-size: 0.9rem;
+}
+.stats-container .row {
+    flex-wrap: wrap;
+}
+
+.stats-container .col-6 {
+    width: 50%;
+}
+
+}
+
+
+/* Responsive */
+@media (max-width: 992px) {
+.sidebar {
+    width: 80px;
+    overflow: hidden;
+}
+
+.sidebar .sidebar-logo span,
+.sidebar .menu-item span,
+.sidebar .user-info span {
+    display: none;
+}
+
+.sidebar .menu-item {
+    justify-content: center;
+    padding: 0.75rem;
+}
+
+.main-content {
+    margin-left: 80px;
+}
+
+.provider-card .row {
+    flex-direction: column;
+}
+}
+
+
+@media (max-width: 768px) {
+.main-content {
+    padding: 1rem;
+    margin-left: 0;
+}
+
+.sidebar {
+    transform: translateX(-100%);
+}
+
+
+.services-grid {
+    grid-template-columns: 1fr;
+}
+
+.stats-row {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.appointment-tabs {
+    flex-direction: column;
+}
+
+.stats-container .row {
+    flex-wrap: wrap;
+}
+
+.stats-container .col-6 {
+    width: 50%;
+}
+
+}
+
+
+@media (min-width: 768px) {
+.col-md-2 {
+    flex: 0 0 16.666667%;
+    max-width: 16.666667%;
+}
+.col-md-4 {
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
+}
+.col-md-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+}
+.col-md-10 {
+    flex: 0 0 83.333333%;
+    max-width: 83.333333%;
+}
+.col-md-12 {
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+
+.performance-stats {
+    flex-direction: column;
+}
+
+
+.appointment-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.badge {
+    align-self: flex-end;
+}
+    }

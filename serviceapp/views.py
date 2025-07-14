@@ -512,9 +512,11 @@ def update_status(request, appointment_id):
 
 # view client appointment details
 def appointment_details(request, appointment_id):
+    provider = request.user.service_provider
     appointment = Appointment.objects.get(appointment_id=appointment_id)
     context = {
         'appointment': appointment,
-        'now': timezone.now()  # Useful for showing current datetime in template
+        'now': timezone.now(),  # Useful for showing current datetime in template
+        'provider': provider
     }
     return render(request, 'service/appointment_details.html', context)
