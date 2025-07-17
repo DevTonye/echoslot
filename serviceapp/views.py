@@ -25,6 +25,11 @@ def service_provider_required(view_func):
     @wraps(view_func)
     def wrapper(request, *agrs, **kwargs):
         user = request.user
+
+        if not user.is_authenticated:
+            messages.error(request, "You need to login to access this page")
+            return redirect("accounts:login")
+
         if user.role != CustomUser.UserRole.SERVICE_PROVIDER:
             messages.error(request, "You have no access to this page")
             return redirect("accounts:selectrole")
@@ -168,11 +173,13 @@ def delete_service(request, service_id):
     return render(request, 'service/confirmdelete.html', {'service': service})
 
 # view all services and recent appointments
+@login_required(login_url='accounts:login')
+@service_provider_required
 def services_all(request):
     provider = request.user.service_provider
     services = Service.objects.all()
-    recent_appointemnt = Appointment.objects.filter(service__provider=provider).order_by('-appointment_date')[:5]
-    context = {"services": services, "provider":provider, 'recent_appointment':recent_appointemnt}
+    recent_appointment = Appointment.objects.filter(service__provider=provider).order_by('-appointment_date')[:5]
+    context = {"services": services, "provider":provider, 'recent_appointment':recent_appointment}
     return render(request, 'service/allservice.html', context)
 
 
@@ -465,9 +472,7 @@ def get_available_time_slots(provider, service, days_ahead=30):
             
             if date_slots:
                 available_slots[current_date] = date_slots
-    
     return available_slots
-
 
 @login_required(login_url="accounts:login")
 def appointment_success(request, appointment_id):
@@ -509,14 +514,13 @@ def update_status(request, appointment_id):
         html = render_to_string('partials/status_td.html', {'appointment': appointment})
         return HttpResponse(html)
 
-
 # view client appointment details
 def appointment_details(request, appointment_id):
     provider = request.user.service_provider
     appointment = Appointment.objects.get(appointment_id=appointment_id)
     context = {
         'appointment': appointment,
-        'now': timezone.now(),  # Useful for showing current datetime in template
+        'now': timezone.now(), 
         'provider': provider
     }
     return render(request, 'service/appointment_details.html', context)

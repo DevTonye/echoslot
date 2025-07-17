@@ -1,0 +1,814 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Provider Dashboard</title>
+     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-light: #eff6ff;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --border: #e5e7eb;
+            --bg: #f9fafb;
+            --white: #ffffff;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #60a5fa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Header */
+        header {
+            padding: 1rem 0;
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .user-nav {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-avatar {
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 50%;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        /* Main Layout */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+            min-height: calc(100vh - 5rem);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--white);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            height: fit-content;
+            position: sticky;
+            top: 5rem;
+        }
+
+        .sidebar-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 0.25rem;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            color: var(--text-light);
+            text-decoration: none;
+            border-radius: 0.375rem;
+            transition: all 0.15s ease;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .sidebar-menu a:hover {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .sidebar-menu a.active {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .sidebar-menu i {
+            margin-right: 0.75rem;
+            width: 1.25rem;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            background: var(--white);
+            border-radius: 0.5rem;
+            padding: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .section-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2rem;
+            gap: 0.5rem;
+        }
+
+        .tab {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            border-radius: 0.375rem 0.375rem 0 0;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-light);
+            transition: all 0.15s ease;
+        }
+
+        .tab:hover {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Table Styles */
+        .table-container {
+            background: var(--white);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            margin-top: 1.5rem;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 1.5rem;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .badge {
+            background: var(--primary);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--white);
+        }
+
+        th {
+            background: var(--bg);
+            padding: 1rem 1.5rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text);
+            border-bottom: 1px solid var(--border);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+            font-size: 0.875rem;
+        }
+
+        tr:hover {
+            background: var(--bg);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .client-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .client-name {
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .client-email {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-top: 0.125rem;
+        }
+
+        .appointment-time {
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .appointment-date {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-top: 0.125rem;
+        }
+
+        .service-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .service-name {
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .service-duration {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-top: 0.125rem;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .status-confirmed {
+            background: #ecfdf5;
+            color: var(--success);
+        }
+
+        .status-pending {
+            background: #fffbeb;
+            color: var(--warning);
+        }
+
+        .status-completed {
+            background: #eff6ff;
+            color: var(--primary);
+        }
+
+        .status-cancelled {
+            background: #fef2f2;
+            color: var(--danger);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.15s ease;
+            background: var(--white);
+            color: var(--text-light);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .btn:hover {
+            background: var(--bg);
+            border-color: var(--border);
+            color: var(--text);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            border-color: #2563eb;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            border-color: #dc2626;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card h3 {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .stat-card .stat-number {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .stat-change {
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .stat-card.today .stat-icon {
+            background: #ecfdf5;
+            color: var(--success);
+        }
+
+        .stat-card.upcoming .stat-icon {
+            background: #eff6ff;
+            color: var(--primary);
+        }
+
+        .stat-card.past .stat-icon {
+            background: var(--bg);
+            color: var(--text-light);
+        }
+
+        .stat-card.cancelled .stat-icon {
+            background: #fef2f2;
+            color: var(--danger);
+        }
+
+        /* Search and Filter */
+        .table-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            gap: 0.5rem;
+            min-width: 16rem;
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            font-size: 0.875rem;
+            color: var(--text);
+            background: transparent;
+            flex: 1;
+        }
+
+        .search-box input::placeholder {
+            color: var(--text-light);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            background: var(--white);
+            color: var(--text-light);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+        }
+
+        /* Profile Info */
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .profile-field {
+            margin-bottom: 1rem;
+        }
+
+        .profile-field label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .profile-field p {
+            color: var(--text-light);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .table-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                min-width: auto;
+            }
+
+            th, td {
+                padding: 0.75rem 1rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .user-info {
+                display: none;
+            }
+
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .main-content {
+                padding: 1.25rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            th, td {
+                padding: 0.5rem 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo">ServiceConnect</div>
+            <div class="user-nav">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        {% if user.profile_image %}
+                            <img src="{{ user.profile_image.url }}" alt="{{ user.username }}">
+                        {% else %}
+                            {{ user.first_name.0 }}{{ user.last_name.0 }}
+                        {% endif %}
+                    </div>
+                    <div class="user-details">
+                        <div class="user-name">{{ user.first_name }} {{ user.last_name }}</div>
+                        <div class="user-role">Service Provider</div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="dashboard">
+            <!-- Sidebar Navigation -->
+            <div class="sidebar">
+                <div class="sidebar-title">Navigation</div>
+                <ul class="sidebar-menu">
+                    <li><a href="#dashboard" class="nav-link active" data-section="dashboard"><i>📊</i> Dashboard</a></li>
+                    <li><a href="#appointments" class="nav-link" data-section="appointments"><i>📅</i> Appointments</a></li>
+                    <li><a href="#providers" class="nav-link" data-section="providers"><i>👨‍⚕️</i> Providers</a></li>
+                    <li><a href="#profile" class="nav-link" data-section="profile"><i>👤</i> Profile</a></li>
+                    <li><a href="#settings" class="nav-link" data-section="settings"><i>⚙️</i> Settings</a></li>
+                </ul>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Dashboard Overview -->
+                <div id="dashboard" class="section-content active">
+                    <h1 class="section-title">Dashboard Overview</h1>
+                    <p class="section-subtitle">Welcome back! Here's what's happening with your appointments today.</p>
+                    
+                    <!-- Quick Stats -->
+                    <div class="stats-grid">
+                        <div class="stat-card today">
+                            <div class="stat-header">
+                                <h3>Today's Appointments</h3>
+                                <div class="stat-icon">📅</div>
+                            </div>
+                            <div class="stat-number">{{today_appointments.count}}</div>
+                            <div class="stat-change">
+                                <span style="color: var(--success);">↗ 2 more than yesterday</span>
+                            </div>
+                        </div>
+                        <div class="stat-card upcoming">
+                            <div class="stat-header">
+                                <h3>Upcoming Appointments</h3>
+                                <div class="stat-icon">📋</div>
+                            </div>
+                            <div class="stat-number">{{upcoming_appointments.count}}</div>
+                            <div class="stat-change">
+                                <span style="color: var(--primary);">Next 7 days</span>
+                            </div>
+                        </div>
+                        <div class="stat-card past">
+                            <div class="stat-header">
+                                <h3>Completed This Week</h3>
+                                <div class="stat-icon">✅</div>
+                            </div>
+                            <div class="stat-number">{{past_appointments.count}}</div>
+                            <div class="stat-change">
+                                <span style="color: var(--text-light);">85% completion rate</span>
+                            </div>
+                        </div>
+                        <div class="stat-card cancelled">
+                            <div class="stat-header">
+                                <h3>Cancelled</h3>
+                                <div class="stat-icon">❌</div>
+                            </div>
+                            <div class="stat-number">2</div>
+                            <div class="stat-change">
+                                <span style="color: var(--danger);">↓ 1 less than last week</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                <!-- Appointments Section -->
+                <div id="appointments" class="section-content">
+                    <h1 class="section-title">Appointments</h1>
+                    <p class="section-subtitle">Manage your upcoming and past appointments</p>
+                    
+                    <!-- Appointment Tabs -->
+                 <div class="appointment-tabs">
+            <button 
+                class="tab-button active" 
+                hx-get="today-appointments/" 
+                hx-target="#appointment-data" 
+                hx-swap="innerHTML"
+                hx-trigger="click"
+                hx-on:click="document.querySelectorAll('.tab-button').forEach(tab => tab.classList.remove('active')); this.classList.add('active')">
+                <i class="fas fa-calendar-day"></i>
+                Today's Appointments
+                <div class="htmx-indicator">
+                    <i class="fas fa-spinner"></i>
+                </div>
+            </button>
+            
+            <button 
+                class="tab-button" 
+                hx-get="upcoming-appointments/" 
+                hx-target="#appointment-data" 
+                hx-swap="innerHTML"
+                hx-trigger="click"
+                hx-on:click="document.querySelectorAll('.tab-button').forEach(tab => tab.classList.remove('active')); this.classList.add('active')">
+                <i class="fas fa-calendar-week"></i>
+                Upcoming Appointments
+                <div class="htmx-indicator">
+                    <i class="fas fa-spinner"></i>
+                </div>
+            </button>
+    
+            <button 
+                class="tab-button" 
+                hx-get="past-appointments/" 
+                hx-target="#appointment-data" 
+                hx-swap="innerHTML"
+                hx-trigger="click"
+                hx-on:click="document.querySelectorAll('.tab-button').forEach(tab => tab.classList.remove('active')); this.classList.add('active')">
+                <i class="fas fa-history"></i>
+                Past Appointments
+                <div class="htmx-indicator">
+                    <i class="fas fa-spinner"></i>
+                </div>
+            </button>
+        </div>
+
+                    <div id="appointment-data">
+                    </div>
+                           
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load today's appointments by default when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            htmx.ajax('GET', 'toda-appointments/', {
+                target: "#appointment-data",
+                swap: 'innerHTML'
+            })
+        })
+    </script>
+</body>
+</html>

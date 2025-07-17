@@ -1,0 +1,87 @@
+<div class="table-container">
+    <div class="table-header">
+        <h2 class="table-title">Today's Appointments</h2>
+        <div class="badge">{{ today_appointments.count }}</div>
+    </div>
+    {% if today_appointments %}
+    <table>
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Service</th>
+                <th>Duration</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for appointment in page_obj %}
+            <tr>
+                <td>
+                    <div class="appointment-time">{{ appointment.start_time|time:"h:i A" }}</div>
+                </td>
+                <td>
+                    <div class="serviceprovider-info">
+                         {% if appointment.service.provider.profile_image %}
+                         
+                        <a href="{{ appointment.service.provider.profile_image.url }}" data-lightbox="profile" data-title="{{ appointment.provider.user.username }}">
+                            <img src="{{ appointment.service.provider.profile_image.url }}" 
+                                alt="{{ appointment.provider.user.username }}'s profile" 
+                                class="profile-image" 
+                                style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        </a>
+                    {% else %}
+                        {{appointment.service.provider.first_name.0}}{{appointment.service.provider.last_name.0}}
+                    {% endif %}
+                    </div>
+                </td>
+                <td>
+                    {{appointment.service.provider.first_name}} {{appointment.service.provider.last_name}}
+                </td>
+                <td>{{appointment.service.name}}</td>
+                <td>{{ appointment.service.duration }} min</td>
+                 <td>
+                        {% if appointment.status == 'scheduled' %}
+                            <span class="status-badge status-pending">Scheduled</span>
+                        {% elif appointment.status == 'confirmed' %}
+                            <span class="status-badge status-confirmed">Confirmed</span>
+                        {% endif %}
+                    </td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn">View</button>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="pagination-container" style="padding: 1rem 1.5rem; border-top: 1px solid var(--border);">
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="btn">Previous</a>
+            {% endif %}
+            
+            <span class="page-info">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+            
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="btn">Next</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <div class="empty-state" style="text-align: center; padding: 3rem; color: var(--text-light);">
+        <h3>No appointments today</h3>
+        <p>You don't have any appointments scheduled for today.</p>
+    </div>
+    {% endif %}
+</div>

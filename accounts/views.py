@@ -292,7 +292,7 @@ def selectuser_role(request):
             return redirect("serviceapp:dashboard")
         elif request.user.role == CustomUser.UserRole.CLIENT:
             messages.info(request, "You have already selected your role as Client.")
-            return redirect('clientapp:clientprofile') # set for now
+            return redirect('clientapp:clientprofile') 
     if request.method == "POST":
         role = request.POST.get("role")
         if role in [CustomUser.UserRole.CLIENT, CustomUser.UserRole.SERVICE_PROVIDER]:

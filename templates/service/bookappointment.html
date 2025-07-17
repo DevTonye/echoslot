@@ -76,15 +76,6 @@
             gap: 5px;
         }
 
-        .stars {
-            color: #ffffff;
-        }
-
-        .rating-text {
-            color: #cccccc;
-            font-size: 0.9rem;
-        }
-
         .provider-bio {
             color: #cccccc;
             margin-top: 20px;
@@ -384,19 +375,25 @@
         <section class="provider-info">
             <div class="provider-header">
                 <div class="provider-avatar">
-                    {{provider.first_name.0}}{{provider.last_name.0}}
+                     {% if provider.profile_image %}
+                        <a href="{{ provider.profile_image.url }}" data-lightbox="profile" data-title="{{ provider.user.username }}">
+                            <img src="{{ provider.profile_image.url }}" 
+                                alt="{{ provider.user.username }}'s profile" 
+                                class="profile-image" 
+                                style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        </a>
+                    {% else %}
+                        {{provider.first_name.0}}{{provider.last_name.0}}
+                    {% endif %}
+                    
                 </div>
                 <div class="provider-details">
                     <h1>{{provider.first_name}} {{provider.last_name}}</h1>
                     <div class="provider-specialty">{{provider.service.name}}</div>
-                    <div class="provider-rating">
-                        <div class="stars">★★★★★</div>
-                        <span class="rating-text">4.9 (127 reviews)</span>
-                    </div>
                 </div>
             </div>
             <div class="provider-bio">
-                {{provider.description}}
+                {{provider.bio}}
             </div>
             <div class="provider-location">
                 <span>📍</span>
@@ -491,7 +488,6 @@
         </option>
     {% endfor %}
 </select>
-
         {% if form.service.help_text %}
             <div class="helptext">{{ form.service.help_text }}</div>
         {% endif %}
@@ -502,11 +498,9 @@
         Available Time Slots
     </label>
     
-    <!-- This is where HTMX will inject updated slots -->
     <div id="slot-container">
         {% include 'partials/slot_options.html' %}
     </div>
-
     {{ form.start_time.errors }}
 </div>
         <!-- Notes/Reason for Visit -->

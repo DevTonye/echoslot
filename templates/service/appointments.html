@@ -8,48 +8,48 @@
 
      <!-- Appointment Tabs -->
         <div class="appointment-tabs">
-    <button 
-        class="tab-button active" 
-        hx-get="today-appointments/" 
-        hx-target="#appointment-content" 
-        hx-swap="innerHTML"
-        hx-trigger="click"
-        hx-on:click="document.querySelectorAll('.tab-button').forEach(tab => tab.classList.remove('active')); this.classList.add('active')">
-        <i class="fas fa-calendar-day"></i>
-        Today's Appointments
-        <div class="htmx-indicator">
-            <i class="fas fa-spinner"></i>
-        </div>
-    </button>
+            <button 
+                class="tab-button active" 
+                hx-get="today-appointments/" 
+                hx-target="#appointment-content" 
+                hx-swap="innerHTML"
+                hx-trigger="click"
+                hx-on:click="document.querySelectorAll('.tab-button').forEach(tab => tab.classList.remove('active')); this.classList.add('active')">
+                <i class="fas fa-calendar-day"></i>
+                Today's Appointments
+                <div class="htmx-indicator">
+                    <i class="fas fa-spinner"></i>
+                </div>
+            </button>
+            
+            <button 
+                class="tab-button" 
+                hx-get="upcoming-appointments/" 
+                hx-target="#appointment-content" 
+                hx-swap="innerHTML"
+                hx-trigger="click"
+                hx-on:click="document.querySelectorAll('.tab-button').forEach(tab => tab.classList.remove('active')); this.classList.add('active')">
+                <i class="fas fa-calendar-week"></i>
+                Upcoming Appointments
+                <div class="htmx-indicator">
+                    <i class="fas fa-spinner"></i>
+                </div>
+            </button>
     
-    <button 
-        class="tab-button" 
-        hx-get="upcoming-appointments/" 
-        hx-target="#appointment-content" 
-        hx-swap="innerHTML"
-        hx-trigger="click"
-        hx-on:click="document.querySelectorAll('.tab-button').forEach(tab => tab.classList.remove('active')); this.classList.add('active')">
-        <i class="fas fa-calendar-week"></i>
-        Upcoming Appointments
-        <div class="htmx-indicator">
-            <i class="fas fa-spinner"></i>
+            <button 
+                class="tab-button" 
+                hx-get="past-appointments/" 
+                hx-target="#appointment-content" 
+                hx-swap="innerHTML"
+                hx-trigger="click"
+                hx-on:click="document.querySelectorAll('.tab-button').forEach(tab => tab.classList.remove('active')); this.classList.add('active')">
+                <i class="fas fa-history"></i>
+                Past Appointments
+                <div class="htmx-indicator">
+                    <i class="fas fa-spinner"></i>
+                </div>
+            </button>
         </div>
-    </button>
-    
-    <button 
-        class="tab-button" 
-        hx-get="past-appointments/" 
-        hx-target="#appointment-content" 
-        hx-swap="innerHTML"
-        hx-trigger="click"
-        hx-on:click="document.querySelectorAll('.tab-button').forEach(tab => tab.classList.remove('active')); this.classList.add('active')">
-        <i class="fas fa-history"></i>
-        Past Appointments
-        <div class="htmx-indicator">
-            <i class="fas fa-spinner"></i>
-        </div>
-    </button>
-</div>
     <div class="card">
         <div id="appointment-content">
             <div class="loading">
