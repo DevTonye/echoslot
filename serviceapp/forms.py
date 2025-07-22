@@ -109,7 +109,7 @@ class AppointmentForm(forms.ModelForm):
         widget=forms.Textarea(attrs={
             'rows': 4, 
             'class': 'form-control',
-            'placeholder': 'Please describe your reason for the appointment...'
+            'placeholder': 'Please describe your symptoms or reason for the appointment...'
         }),
         required=False
     )

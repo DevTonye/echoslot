@@ -160,9 +160,19 @@
         <form method="post">
             {% csrf_token %}
             <div class="btn-container">
-                <a href="{% url 'serviceapp:account-settings' %}" class="btn btn-secondary">
-                    <i class="fas fa-times"></i> Cancel
-                </a>
+                {% if request.user.is_authenticated %}
+                    {% if request.user.service_provider %}
+                        <!-- Service Provider -->
+                        <a href="{% url 'serviceapp:settings' %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                    {% else %}
+                        <!-- Client -->
+                        <a href="{% url 'clientapp:profile_settings' %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                    {% endif %}
+            {% endif %}
                 <button type="submit" class="btn btn-danger">
                     <i class="fas fa-trash"></i> Yes, Delete
                 </button>

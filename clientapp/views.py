@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import ClientProfileForm
 from .models import ClientProfile
 from django.contrib.auth import get_user_model
@@ -9,6 +9,7 @@ from django.utils import timezone
 from serviceapp.models import Appointment
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.http import HttpResponseForbidden
 
 User = get_user_model()
 
@@ -73,11 +74,13 @@ def client_appointment_dashboard(request):
 # view clients appointments 
 @login_required(login_url="accounts:login")
 def client_appointments(request):
-     requesting_client = request.user
-     return render(request, "client/appointments.html", {"requesting_client":requesting_client})
+     return render(request, "client/appointments.html")
 
 @login_required(login_url="accounts:login")
 def today_appointments(request):
+    if not request.htmx:
+        return render(request, "403.html", status=403)
+    
     requesting_client = request.user
 
     today = timezone.now().date()
@@ -102,6 +105,10 @@ def today_appointments(request):
 
 @login_required(login_url="accounts:login")
 def upcoming_appointments(request):
+    # Block direct non-HTMX access
+    if not request.htmx:
+        return render(request, "403.html", status=403)
+    
     requesting_client = request.user
 
     today = timezone.now().date()
@@ -126,6 +133,10 @@ def upcoming_appointments(request):
 
 @login_required(login_url="accounts:login")
 def past_appointments(request):
+    # Block direct non-HTMX access
+    if not request.htmx:
+        return render(request, "403.html", status=403)
+    
     requesting_client = request.user
 
     today = timezone.now().date()
@@ -144,3 +155,81 @@ def past_appointments(request):
         "page_obj":page_obj
     }
     return render(request, "partials/client/_past_appointments.html", context)
+
+# view cancelled appointments
+@login_required(login_url="accounts:login")
+def cancelled_appointments(request):
+    if not request.htmx:
+        return render(request, "403.html", status=403)
+    
+    requesting_client = request.user  
+    
+    # Get appointments from today that are completed/cancelled and past appointments
+    cancelled_appointments_query = Appointment.objects.filter(
+         Q(client=requesting_client) & Q(status='cancelled')).order_by('-appointment_date', '-start_time')
+    
+    context = {
+        "cancelled_appointment":cancelled_appointments_query
+    }
+    return render(request, "partials/client/_cancel_appointment.html", context)
+
+# cancel appointments
+@login_required(login_url="accounts:login")
+def cancel_appointment_action(request, appointment_id):
+    if not request.htmx:
+        return render(request, "403.html", status=403)
+    
+    appointment = get_object_or_404(Appointment, appointment_id=appointment_id, client=request.user)
+    if appointment.status not in['completed', 'cancelled', 'no_show']:
+        appointment.status = "cancelled"
+        appointment.save()
+        messages.success(request, 'Appointment cancelled successfully.')
+    else:
+        messages.warning(request, "You cannot cancel this appointment.")
+
+    return render(request, "partials/client/_cancel_appointment.html", {"appointment": appointment})
+# view info about the appointment 
+@login_required(login_url="accounts:login")
+def appointment_info(request, appointment_id):
+    requesting_client = request.user
+    appointment = Appointment.objects.get(appointment_id=appointment_id)
+    context = {
+        'appointment': appointment,
+        'now': timezone.now(), 
+        'requesting_client': requesting_client
+    }
+    return render(request, 'client/appointment_info.html', context)
+
+
+@login_required(login_url="accounts:login")
+def profile_settings(request):
+    return render(request, "client/profile_settings.html")
+
+# edit profile
+@login_required(login_url="accounts:login")
+def client_edit_profile(request):
+    # Block direct non-HTMX access
+    if not request.htmx:
+        return render(request, "403.html", status=403)
+    
+    client_profile = get_object_or_404(ClientProfile, user=request.user)
+    if request.method == "POST":
+        form = ClientProfileForm(request.POST, instance=client_profile)
+        if form.is_valid():
+            save_profile = form.save()
+            save_profile.refresh_from_db()
+            messages.success(request, "Profile updated successfully.", extra_tags='profile')
+            form = ClientProfileForm(instance=client_profile)
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
+    else:
+        form = ClientProfileForm(instance=client_profile)
+    return render(request, "partials/client/_editprofile.html", {"form":form})
+
+@login_required(login_url="accounts:login")
+def security_settings(request):
+    if not request.htmx:
+        return render(request, "403.html", status=403)
+    return render(request, 'partials/client/_security_settings.html')

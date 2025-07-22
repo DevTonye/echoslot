@@ -15,7 +15,7 @@ from django.db import IntegrityError
 from django.db import transaction
 from datetime import datetime, timedelta
 from django.template.loader import render_to_string
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.core.paginator import Paginator
 
 # service provider views
@@ -25,11 +25,6 @@ def service_provider_required(view_func):
     @wraps(view_func)
     def wrapper(request, *agrs, **kwargs):
         user = request.user
-
-        if not user.is_authenticated:
-            messages.error(request, "You need to login to access this page")
-            return redirect("accounts:login")
-
         if user.role != CustomUser.UserRole.SERVICE_PROVIDER:
             messages.error(request, "You have no access to this page")
             return redirect("accounts:selectrole")
@@ -97,6 +92,9 @@ def settings(request):
 @login_required(login_url="accounts:login")
 @service_provider_required
 def settings_profile(request):
+    if not request.htmx:
+        return render(request, "403.html", status=403) 
+    
     sp_profile = get_object_or_404(ServiceProvider, user=request.user)
     if request.method == "POST":
         form = ServiceProviderForm(request.POST, request.FILES, instance=sp_profile)
@@ -117,10 +115,14 @@ def settings_profile(request):
 @login_required(login_url="accounts:login")
 @service_provider_required
 def security_settings(request):
-     return render(request, 'partials/security_settings.html')
+    if not request.htmx:
+        return render(request, "403.html", status=403) 
+    return render(request, 'partials/security_settings.html')
 
 @login_required(login_url="accounts:login")
 def account_security(request):
+    if not request.htmx:
+        return render(request, "403.html", status=403) 
     return render(request, 'partials/account_settings.html')
 
 # add services views 
@@ -173,13 +175,11 @@ def delete_service(request, service_id):
     return render(request, 'service/confirmdelete.html', {'service': service})
 
 # view all services and recent appointments
-@login_required(login_url='accounts:login')
-@service_provider_required
 def services_all(request):
     provider = request.user.service_provider
     services = Service.objects.all()
-    recent_appointment = Appointment.objects.filter(service__provider=provider).order_by('-appointment_date')[:5]
-    context = {"services": services, "provider":provider, 'recent_appointment':recent_appointment}
+    recent_appointemnt = Appointment.objects.filter(service__provider=provider).order_by('-appointment_date')[:5]
+    context = {"services": services, "provider":provider, 'recent_appointment':recent_appointemnt}
     return render(request, 'service/allservice.html', context)
 
 
@@ -190,6 +190,9 @@ def appointments(request):
     return render(request, "service/appointments.html", {"provider":provider})
 
 def today_appointments(request):
+    if not request.htmx:
+        return render(request, "403.html", status=403)
+        
     provider = request.user.service_provider
     today = timezone.now().date()
     
@@ -215,6 +218,9 @@ def today_appointments(request):
 
 # display upcoming appointments for a service provider
 def upcoming_appointments(request):
+    if not request.htmx:
+        return render(request, "403.html", status=403)
+    
     provider = request.user.service_provider
     today = timezone.now().date()
     
@@ -238,15 +244,19 @@ def upcoming_appointments(request):
     return render(request, "partials/upcoming.html", context)
 
 def past_appointments(request):
+    if not request.htmx:
+        return render(request, "403.html", status=403)
+    
     provider = request.user.service_provider    
     today = timezone.now().date()
     
     # Get appointments from today that are completed/cancelled and past appointments
     past_appointments_query = Appointment.objects.filter(
         Q(service__provider=provider) & 
-        (Q(appointment_date__lt=today) | 
+        (Q(appointment_date__lt=today) | Q(status='cancelled') |
          Q(appointment_date=today, status__in=['completed', 'cancelled', 'no_show']))
     ).order_by('-appointment_date', '-start_time')
+    
     
     # Set up pagination
     paginator = Paginator(past_appointments_query, 5)   
@@ -263,6 +273,9 @@ def past_appointments(request):
     }
     
     return render(request, "partials/past.html", context)
+
+
+# cancel
 
 # allow service providers to set and view their availability
 @login_required(login_url="accounts:login")
@@ -469,10 +482,11 @@ def get_available_time_slots(provider, service, days_ahead=30):
                             })
                     
                     current_time += timedelta(minutes=slot_duration)
-            
             if date_slots:
                 available_slots[current_date] = date_slots
+    
     return available_slots
+
 
 @login_required(login_url="accounts:login")
 def appointment_success(request, appointment_id):
@@ -482,6 +496,9 @@ def appointment_success(request, appointment_id):
 
 @login_required(login_url="accounts:login")
 def load_slots(request, provider_id):
+    if not request.htmx:
+        return render(request, "403.html", status=403)
+    
     provider = get_object_or_404(ServiceProvider, id=provider_id)
     service_id = request.GET.get("service")
     
@@ -500,12 +517,17 @@ def load_slots(request, provider_id):
 
 # get all appointment status
 def status_form(request, appointment_id):
+    if not request.htmx:
+        return render(request, "403.html", status=403)
+    
     appointment = get_object_or_404(Appointment, appointment_id=appointment_id)
     form = AppointmentStatusForm(instance=appointment)
     return render(request, 'partials/status_form.html', {'form': form, 'appointment': appointment})
 
 # update the status
 def update_status(request, appointment_id):
+    if not request.htmx:
+        return render(request, "403.html", status=403)
     appointment = Appointment.objects.get(appointment_id=appointment_id)
     if request.method == 'POST':
         new_status = request.POST.get('status')
@@ -514,13 +536,14 @@ def update_status(request, appointment_id):
         html = render_to_string('partials/status_td.html', {'appointment': appointment})
         return HttpResponse(html)
 
+
 # view client appointment details
 def appointment_details(request, appointment_id):
     provider = request.user.service_provider
     appointment = Appointment.objects.get(appointment_id=appointment_id)
     context = {
         'appointment': appointment,
-        'now': timezone.now(), 
+        'now': timezone.now(),  # Useful for showing current datetime in template
         'provider': provider
     }
     return render(request, 'service/appointment_details.html', context)

@@ -1,0 +1,48 @@
+<!-- Personal Info Tab -->
+
+  <div id="personal-info" class="tab-content active">
+    
+    {% if messages %}
+        {% for message in messages %}
+            {% if 'profile' in message.tags %}
+                <div class="alert alert-success">{{ message }}</div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+    <div class="form-container">
+        <form method="post"
+            hx-post="{% url 'clientapp:edit_profile' %}"
+            hx-target="#personal-info"
+            hx-swap="outerHTML">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="form-group">
+                {{ form.first_name.label_tag }}
+                {{ form.first_name }}
+            </div>
+
+            <div class="form-group">
+                {{ form.last_name.label_tag }}
+                {{ form.last_name }}
+            </div>
+
+            <div class="form-group">
+                {{ form.contact.label_tag }}
+                {{ form.contact }}
+            </div>
+            <div class="form-group">
+                {{ form.location.label_tag }}
+                {{ form.location }}
+            </div>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </form>
+    </div>
+  </div>
+</div>

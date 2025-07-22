@@ -20,30 +20,30 @@
             <tbody>
                 {% for appointment in page_obj %}
                 <tr>
+                    <td><strong>{{ appointment.start_time|time:"h:i A" }}</strong></td>
+
                     <td>
-                        <strong>{{ appointment.start_time|time:"h:i A" }}</strong>
-                    </td>
                         {% if appointment.client.clientprofile %}
                             {% with profile=appointment.client.clientprofile %}
-                        <td>
-                            <a href="{{ profile.profile_image.url }}" data-lightbox="client-{{ appointment.appointment_id }}">
-                                <img src="{{ profile.profile_image.url }}" alt="{{ profile.first_name }}" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover; margin-right: 5px;">
-                            </a>
-                        </td>
-                    {% endwith %}
-                {% else %}
-                    <div class="client-avatar-placeholder">
-                        <i class="fas fa-user"></i>
-                    </div>    
-                {% endif %} 
-                <td>
-                    <div>
-                        <strong>{{ appointment.first_name }} {{ appointment.last_name }}</strong>
-                    </div>
+                                <a href="{{ profile.profile_image.url }}" data-lightbox="client-{{ appointment.appointment_id }}">
+                                    <img src="{{ profile.profile_image.url }}" alt="{{ profile.first_name }}"
+                                        style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover; margin-right: 5px;">
+                                </a>
+                            {% endwith %}
+                        {% else %}
+                            <div class="client-avatar-placeholder">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        {% endif %}
                     </td>
+
+                    <td>
+                        <strong>{{ appointment.first_name }} {{ appointment.last_name }}</strong>
+                    </td>
+
                     <td>{{ appointment.service.name }}</td>
                     <td>{{ appointment.service.duration }} min</td>
-                    <td id="status-form-{{ appointment.appointment_id }}">
+                    <td>
                         {% if appointment.status == 'scheduled' %}
                             <span class="badge badge-warning">Scheduled</span>
                         {% elif appointment.status == 'confirmed' %}
@@ -52,16 +52,12 @@
                     </td>
                     <td>
                         <div class="d-flex" style="gap: 8px;">
-                             <button class="btn btn-outline-primary"
-                                    hx-get="{% url 'serviceapp:status_form' appointment.appointment_id %}"
-                                    hx-target="#status-form-{{ appointment.appointment_id}}"
-                                    hx-swap="innerHTML"
-                                >
+                            <a href="#" class="btn btn-sm btn-outline-primary">
                                 <i class="fas fa-edit"></i> Update
-                             </button>
-                            <a href="{% url 'serviceapp:appointment_details' appointment.appointment_id %}" class="btn btn-sm btn-outline-primary">
-                                <i class="fas fa-eye"></i> View
                             </a>
+                            <button class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye"></i> View
+                            </button>
                         </div>
                     </td>
                 </tr>

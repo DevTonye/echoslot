@@ -1,0 +1,27 @@
+<header>
+        <nav class="container">
+            <div class="logo">Provider<span>Hub</span></div>
+            <div class="nav-links">
+                <a href="{% url 'clientapp:client_dashboard' %}">
+                    Dashboard
+                </a>
+                <a href="{% url 'serviceapp:find_serviceproviders' %}">Providers</a>
+                <a href="{% url 'clientapp:client_appointment' %}">Appointments</a>
+                <a href="{% url 'clientapp:profile_settings' %}" >Profile</a>
+            </div>
+            <div class="user-menu">
+                <div class="user-avatar">JD</div>
+                <div class="dropdown" id="userDropdown">
+                    <a href="#">
+                        <i class="fas fa-user"></i> Profile
+                    </a>
+                    <a href="#">
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                    <a href="#">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>

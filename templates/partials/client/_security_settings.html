@@ -1,0 +1,20 @@
+<div class="security-settings">
+    
+    <div class="security-item">
+        <div class="security-item-content">
+            <span class="security-item-title">Log out of all devices</span>
+        </div>
+        <a href="{% url 'accounts:logout' %}" class="security-btn">Logout</a>
+    </div>
+    
+    <div class="security-item">
+        <div class="security-item-content">
+            <span class="security-item-title">Delete your account</span>
+            <p class="security-item-description">Once you delete your account, there is no going back. Please be certain.</p>
+        </div>
+        <a href="{% url 'accounts:delete_account' %}" class="security-btn-delete">
+            Delete Account
+        </a>
+    </div>
+</div>
+</div>

@@ -1,89 +1,54 @@
-<div class="table-container" id="appointment-data">
-    <div class="table-header">
-        <h2 class="table-title">Upcoming Appointments</h2>
-        <div class="badge">{{ upcoming_appointments.count }}</div>
-    </div>
+<!-- Upcoming Appointments -->
+<div id="upcoming-appointments" class="tab-content active">
     {% if upcoming_appointments %}
-    <table>
-        <thead>
-            <tr>
-                <th>Time</th>
-                <th>Image</th>
-                <th>Name</th>
-                <th>Service</th>
-                <th>Duration</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for appointment in page_obj %}
-            <tr>
-                <td>
-                    <div class="appointment-time">{{ appointment.start_time|time:"h:i A" }}</div>
-                    <div class="appointment-date">{{ appointment.appointment_date|date:"M d, Y" }}</div>
-                </td>
-                <td>
-                    <div class="serviceprovider-info">
-                          {% if appointment.service.provider.profile_image %}
-                         <a href="{{ appointment.service.provider.profile_image.url }}" data-lightbox="profile" data-title="{{ appointment.provider.user.username }}">
-                            <img src="{{ appointment.service.provider.profile_image.url }}" 
-                                alt="{{ appointment.provider.user.username }}'s profile" 
-                                class="profile-image" 
-                                style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
-                        </a>
-                        {% else %}
-                            {{appointment.service.provider.first_name.0}}{{appointment.service.provider.last_name.0}}
-                        {% endif %}
-                    </div>
-                </td>
-                <td>{{appointment.service.provider.first_name}} {{appointment.service.provider.last_name}}</td>
-                <td>{{ appointment.service.name }}</td>
-                <td>{{ appointment.service.duration }} min</td>
-                <td>
-                    {% if appointment.status == 'scheduled' %}
-                        <span class="status-badge status-pending">Scheduled</span>
-                    {% elif appointment.status == 'confirmed' %}
-                        <span class="status-badge status-confirmed">Confirmed</span>
-                    {% endif %}
-                </td>
-                <td>
-                    <div class="action-buttons">
-                        <button class="btn">View</button>
-                    </div>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    {% if page_obj.has_other_pages %}
-    <div class="pagination-container">
-        <div class="pagination">
-            {% if page_obj.has_previous %}
-                <a href="?page={{ page_obj.previous_page_number }}" 
-                   hx-get="upcoming-appointments/?page={{ page_obj.previous_page_number }}"
-                   hx-target="#appointment-data"
-                   class="btn">Previous</a>
-            {% endif %}
-            
-            <span class="page-info">
-                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-            </span>
-            
-            {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}"
-                   hx-get="upcoming-appointments/?page={{ page_obj.next_page_number }}"
-                   hx-target="#appointment-data"
-                   class="btn">Next</a>
-            {% endif %}
+        {% for appointment in upcoming_appointments %}
+        <div class="appointment-card" id="appointment-{{ appointment.id }}">
+            <div class="appointment-header">
+                <div class="appointment-title">{{ appointment.service.provider.first_name}} {{ appointment.service.provider.last_name}} - {{ appointment.service.name}}</div>
+                {% if appointment.status == 'scheduled' %}
+                    <span class="badge badge-scheduled">Scheduled</span>
+                {% elif appointment.status == 'confirmed' %}
+                    <span class="badge badge-confirmed">Confirmed</span>
+                {% endif %}
+            </div>
+            <div class="appointment-body">
+                <div class="info-item">
+                    <i class="fas fa-calendar"></i>
+                    <span>{{ appointment.appointment_date|date:"l, M d, Y" }} at {{ appointment.start_time|time:"h:i A" }}</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-clock"></i>
+                    <span>{{ appointment.service.duration }} min</span>
+                </div>a
+                <div class="info-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>{{ appointment.service.provider.address }}</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-dollar-sign"></i>
+                    <span>{{ appointment.service.price}}</span>
+                </div>
+            </div>
+            <div class="appointment-footer">
+                <button 
+                    class="action-btn btn-cancel" 
+                    hx-post="{% url 'clientapp:cancel_appointment_action' appointment.appointment_id %}"
+                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                    hx-target="#appointment-{{ appointment.id }}"
+                    hx-swap="innerHTML">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button class="action-btn btn-reschedule">
+                    <i class="fas fa-calendar-alt"></i> Reschedule
+                </button>
+            </div>
         </div>
-    </div>
-    {% endif %}
+        {% endfor %}
     {% else %}
-    <div class="empty-state">
-        <h3>No upcoming appointments</h3>
-        <p>You don't have any appointments scheduled.</p>
-    </div>
+        <div class="no-data">
+            <i class="fas fa-calendar-times" style="font-size: 2.5rem; margin-bottom: 15px; color: #e9ecef;"></i>
+            <h3>No upcoming appointments scheduled</h3>
+            <p>Your schedule is clear for the upcoming days.</p>
+        </div>
     {% endif %}
 </div>

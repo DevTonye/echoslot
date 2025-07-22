@@ -1,112 +1,49 @@
-<div id="appointment-data">
-    <div class="table-container">
-        <div class="table-header">
-            <h2 class="table-title">Past Appointments</h2>
-            <div class="badge">{{ past_appointments.count }}</div>
+
+{% if past_appointments %}
+    {% for appointment in past_appointments %}
+    <div class="appointment-card">
+        <div class="appointment-header">
+            <div class="appointment-title">{{ appointment.service.provider.first_name }} {{ appointment.service.provider.last_name }} - {{ appointment.service.name }}</div>
+                {% if appointment.status == 'completed' %}
+                <span class="badge badge-completed">Completed</span>
+            {% elif appointment.status == 'cancelled' %}
+                <span class="badge badge-cancelled">Cancelled</span>
+            {% elif appointment.status == 'no_show' %}
+                <span class="badge badge-warning">No Show</span>
+            {% else %}
+                <span class="badge badge-secondary">{{ appointment.status|title }}</span>
+            {% endif %}
         </div>
-        {% if past_appointments %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Image</th>
-                    <th>Name</th>
-                    <th>Service</th>
-                    <th>Duration</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for appointment in page_obj %}
-                <tr>
-                    <td>
-                        <div class="appointment-time">{{ appointment.appointment_date|date:"M d, Y" }}</div>
-                        <div class="appointment-time">{{ appointment.start_time|time:"h:i A" }}</div>
-                    </td>
-                    <td>
-                        <div class="serviceprovider-info">
-                            {% if appointment.service.provider.profile_image %}
-                             <a href="{{ appointment.service.provider.profile_image.url }}" data-lightbox="profile" data-title="{{ appointment.provider.user.username }}">
-                                <img src="{{ appointment.service.provider.profile_image.url }}" 
-                                    alt="{{ appointment.provider.user.username }}'s profile" 
-                                    class="profile-image" 
-                                    style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
-                            </a>
-                            {% else %}
-                                {{appointment.service.provider.first_name.0}}{{appointment.service.provider.last_name.0}}
-                            {% endif %}
-                        </div>
-                    </td>
-                    <td>{{appointment.service.provider.first_name}} {{appointment.service.provider.last_name}}</td>
-                    <td>{{ appointment.service.name }}</td>
-                    <td>{{ appointment.service.duration }} min</td>
-                    <td>
-                        {% if appointment.status == 'completed' %}
-                            <span class="status-badge status-completed">Completed</span>
-                        {% elif appointment.status == 'cancelled' %}
-                            <span class="status-badge status-cancelled">Cancelled</span>
-                        {% elif appointment.status == 'no_show' %}
-                            <span class="status-badge status-warning">No Show</span>
-                        {% else %}
-                            <span class="status-badge status-secondary">{{ appointment.status|title }}</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="btn">View</button>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        {% if page_obj.has_other_pages %}
-        <div class="pagination-container">
-            <div class="pagination">
-                {% if page_obj.has_previous %}
-                    <a class="btn"
-                        hx-get="past-appointments/?page=1"
-                        hx-target="#appointment-data"
-                        hx-swap="innerHTML">
-                        &laquo; First
-                    </a>
-                    <a class="btn"
-                        hx-get="past-appointments/?page={{ page_obj.previous_page_number }}"
-                        hx-target="#appointment-data" 
-                        hx-swap="innerHTML">
-                        Previous
-                    </a>
-                {% endif %}
-
-                <span class="page-info">
-                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-                </span>
-
-                {% if page_obj.has_next %}
-                    <a class="btn" 
-                       hx-get="past-appointments/?page={{ page_obj.next_page_number }}" 
-                       hx-target="#appointment-data" 
-                       hx-swap="innerHTML">
-                        Next
-                    </a>
-                    <a class="btn" 
-                       hx-get="past-appointments/?page={{ page_obj.paginator.num_pages }}" 
-                       hx-target="#appointment-data" 
-                       hx-swap="innerHTML">
-                        Last &raquo;
-                    </a>
-                {% endif %}
+        <div class="appointment-body">
+            <div class="info-item">
+                <i class="fas fa-calendar"></i>
+                <span>{{ appointment.appointment_date|date:"l, M d, Y" }} at {{ appointment.start_time|time:"h:i A" }}</span>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-clock"></i>
+                <span>{{ appointment.service.duration }} min</span>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>{{ appointment.service.provider.address }}</span>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-dollar-sign"></i>
+                <span>{{ appointment.service.price }}</span>
             </div>
         </div>
-        {% endif %}
-
-        {% else %}
-        <div class="empty-state">
-            <h3>No past appointments found</h3>
-            <p>Your appointment history will appear here once you have completed appointments.</p>
+        <div class="appointment-footer">
+            <button class="action-btn btn-outline">
+                <i class="fas fa-receipt"></i> View Receipt
+            </button>
         </div>
-        {% endif %}
+    </div> <!-- close appointment-card -->
+    {% endfor %}
+{% else %}
+    <div class="no-data">
+        <i class="fas fa-calendar-times" style="font-size: 2.5rem; margin-bottom: 15px; color: #e9ecef;"></i>
+        <h3>No past appointments found</h3>
+        <p>Your appointment history will appear here once you have completed appointments.</p>
     </div>
-</div>
+{% endif %}
+

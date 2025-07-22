@@ -1,0 +1,43 @@
+<!-- Cancelled Appointments -->
+    {% if cancelled_appointment %}
+        {% for appointment in cancelled_appointment %}
+            <div class="appointment-card">
+                <div class="appointment-header">
+                    <div class="appointment-title">
+                        {{ appointment.service.name }} with {{ appointment.service.provider.first_name }} {{ appointment.service.provider.last_name }}
+                    </div>
+                    <span class="badge badge-cancelled">Cancelled</span>
+                </div>
+                <div class="appointment-body">
+                    <div class="info-item">
+                        <i class="fas fa-calendar"></i>
+                        <span>{{ appointment.appointment_date|date:"l, M d, Y" }} at {{ appointment.start_time|time:"h:i A" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-clock"></i>
+                        <span>{{ appointment.service.duration }} min</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>{{ appointment.service.provider.address }}</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-dollar-sign"></i>
+                        <span>{{ appointment.service.price }}</span>
+                    </div>
+                </div>
+                <div class="appointment-footer">
+                    <button class="btn btn-outline-secondary" disabled>
+                        <i class="fas fa-ban"></i> Appointment Cancelled
+                    </button>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="no-data">
+            <i class="fas fa-calendar-times" style="font-size: 2.5rem; margin-bottom: 15px; color: #e9ecef;"></i>
+            <h3>No cancelled appointments found</h3>
+            <p>Any appointments you cancel will appear here.</p>
+        </div>
+    {% endif %}
+</div>
