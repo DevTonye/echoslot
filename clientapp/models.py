@@ -10,7 +10,8 @@ class ClientProfile(models.Model):
     profile_image = models.ImageField(upload_to='client/profile/', blank=False, null=False)
     location = models.CharField(max_length=250, blank=False, null=False)
     contact = models.CharField(max_length=20)
-     
+    timezone = models.CharField(max_length=50, default='UTC')
+    
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
     

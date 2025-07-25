@@ -1,7 +1,7 @@
 <!-- Upcoming Appointments -->
 <div id="upcoming-appointments" class="tab-content active">
     {% if upcoming_appointments %}
-        {% for appointment in upcoming_appointments %}
+        {% for appointment in page_obj %}
         <div class="appointment-card" id="appointment-{{ appointment.id }}">
             <div class="appointment-header">
                 <div class="appointment-title">{{ appointment.service.provider.first_name}} {{ appointment.service.provider.last_name}} - {{ appointment.service.name}}</div>
@@ -19,7 +19,7 @@
                 <div class="info-item">
                     <i class="fas fa-clock"></i>
                     <span>{{ appointment.service.duration }} min</span>
-                </div>a
+                </div>
                 <div class="info-item">
                     <i class="fas fa-map-marker-alt"></i>
                     <span>{{ appointment.service.provider.address }}</span>
@@ -44,6 +44,64 @@
             </div>
         </div>
         {% endfor %}
+
+        <!--  Pagination Section -->
+    {% if page_obj.has_previous or page_obj.has_next %}
+        <div class="d-flex justify-content-center mt-3">
+            <nav>
+                <ul class="pagination pagination-sm">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link"
+                               hx-get="upcoming-appointments/?page=1"
+                               hx-target="#appointment-content"
+                               hx-swap="innerHTML"
+                               aria-label="First">
+                               &laquo; First
+                            </a>
+                        </li>
+
+                        <li class="page-item">
+                            <a class="page-link"
+                                hx-get="upcoming-appointments/?page={{ page_obj.previous_page_number }}"
+                                hx-target="#appointment-content"
+                                hx-swap="innerHTML"
+                                aria-label="Previous">    
+                                Previous
+                            </a>
+                        </li>
+                    {% endif %}
+                        <!-- Current page info -->
+                        <li class="page-item active">
+                            <span class="page-link">
+                                {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                            </span>
+                        </li>
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link"
+                                hx-get="upcoming-appointments/?page={{ page_obj.next_page_number }}"
+                                hx-target="#appointment-content" 
+                                hx-swap="innerHTML"
+                                aria-label="Next">
+                                Next
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link"
+                                hx-get="upcoming-appointments/?page={{ page_obj.paginator.num_pages }}"
+                                hx-target="#appointment-content" 
+                                hx-swap="innerHTML"
+                                aria-label="Last">
+                                Last &raquo;
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    {% endif %}
+
     {% else %}
         <div class="no-data">
             <i class="fas fa-calendar-times" style="font-size: 2.5rem; margin-bottom: 15px; color: #e9ecef;"></i>
@@ -52,3 +110,5 @@
         </div>
     {% endif %}
 </div>
+
+  

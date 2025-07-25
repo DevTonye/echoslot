@@ -6,10 +6,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from accounts.models import CustomUser
 from django.utils import timezone
-from serviceapp.models import Appointment
+from serviceapp.models import Appointment, ServiceProvider, Service
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.http import HttpResponseForbidden
+from django.http import HttpResponse
 
 User = get_user_model()
 
@@ -30,7 +30,7 @@ def create_clientprofile(request):
                 client_profile.user = request.user
                 client_profile.save()
                 messages.success(request, f"Profile created {request.user.username}")
-                return redirect('serviceapp:client_dashboard')
+                return redirect('clientapp:client_dashboard')
             except Exception as e:
                 messages.error(request, f"An error occured: {e}")
         else:
@@ -46,7 +46,6 @@ def client_appointment_dashboard(request):
     requesting_client = request.user
     today = timezone.now().date()
 
-    # display appointments for today
     today_appointments_quary = Appointment.objects.filter(
         client=requesting_client, 
         appointment_date=today,
@@ -63,11 +62,14 @@ def client_appointment_dashboard(request):
         Q(client=requesting_client) & (Q(appointment_date__lt=today) | Q(appointment_date=today, status__in=['completed', 'cancelled', 'no_show']))
     ).order_by('-appointment_date', '-start_time')
 
+    total_appointments = today_appointments_quary.count() + upcoming_appointments_query.count()
+
     context = {
         "requesting_client":requesting_client,
         "today_appointments": today_appointments_quary,
         "upcoming_appointments": upcoming_appointments_query,
-        "past_appointments":past_appointments_query
+        "past_appointments":past_appointments_query,
+        "total_appointments": total_appointments,
     }
     return render(request, 'client/clientdashboard.html', context)
 
@@ -92,7 +94,7 @@ def today_appointments(request):
         status__in=['scheduled', 'confirmed']
     ).order_by('start_time')
 
-    paginator = Paginator(today_appointments_query, 5)
+    paginator = Paginator(today_appointments_query, 4)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -105,7 +107,6 @@ def today_appointments(request):
 
 @login_required(login_url="accounts:login")
 def upcoming_appointments(request):
-    # Block direct non-HTMX access
     if not request.htmx:
         return render(request, "403.html", status=403)
     
@@ -120,7 +121,7 @@ def upcoming_appointments(request):
         status__in=['scheduled', 'confirmed']
     ).order_by('appointment_date', 'start_time')
 
-    paginator = Paginator(upcoming_appointments_query, 5)
+    paginator = Paginator(upcoming_appointments_query, 4)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -133,7 +134,6 @@ def upcoming_appointments(request):
 
 @login_required(login_url="accounts:login")
 def past_appointments(request):
-    # Block direct non-HTMX access
     if not request.htmx:
         return render(request, "403.html", status=403)
     
@@ -145,7 +145,7 @@ def past_appointments(request):
         Q(client=requesting_client) & (Q(appointment_date__lt=today) | Q(appointment_date=today, status__in=['completed', 'cancelled', 'no_show']))
     ).order_by('-appointment_date', '-start_time')
     
-    paginator = Paginator(past_appointments_query, 5)
+    paginator = Paginator(past_appointments_query, 4)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -168,8 +168,13 @@ def cancelled_appointments(request):
     cancelled_appointments_query = Appointment.objects.filter(
          Q(client=requesting_client) & Q(status='cancelled')).order_by('-appointment_date', '-start_time')
     
+    paginator = Paginator(cancelled_appointments_query, 4)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     context = {
-        "cancelled_appointment":cancelled_appointments_query
+        "cancelled_appointment":cancelled_appointments_query,
+        "page_obj":page_obj
     }
     return render(request, "partials/client/_cancel_appointment.html", context)
 
@@ -184,10 +189,10 @@ def cancel_appointment_action(request, appointment_id):
         appointment.status = "cancelled"
         appointment.save()
         messages.success(request, 'Appointment cancelled successfully.')
+        return render(request, "partials/client/cancel_success.html")
     else:
         messages.warning(request, "You cannot cancel this appointment.")
 
-    return render(request, "partials/client/_cancel_appointment.html", {"appointment": appointment})
 # view info about the appointment 
 @login_required(login_url="accounts:login")
 def appointment_info(request, appointment_id):
@@ -214,7 +219,7 @@ def client_edit_profile(request):
     
     client_profile = get_object_or_404(ClientProfile, user=request.user)
     if request.method == "POST":
-        form = ClientProfileForm(request.POST, instance=client_profile)
+        form = ClientProfileForm(request.POST, request.FILES, instance=client_profile)
         if form.is_valid():
             save_profile = form.save()
             save_profile.refresh_from_db()
@@ -233,3 +238,27 @@ def security_settings(request):
     if not request.htmx:
         return render(request, "403.html", status=403)
     return render(request, 'partials/client/_security_settings.html')
+
+# search
+'''
+def search_providers(request):
+    query = request.GET.get('q', '')
+    providers = ServiceProvider.objects.all()
+
+    if query:
+        query = query.strip()
+        providers = ServiceProvider.objects.filter(
+            Q(first_name__icontains=query) | Q(last_name__icontains=query)
+        )
+
+        services = Service.objects.filter(
+            Q(name__icontains=query) | Q(description__icontains=query)
+        )
+
+    return render(request, 'service/findservices.html', {
+        'query':query, 
+        'providers':providers,
+        'services': services,
+    })
+
+'''

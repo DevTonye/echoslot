@@ -4,12 +4,9 @@
  <!-- Profile Page -->
 <div class="container">
     <div class="profile-header">
-        <div class="profile-avatar">JD</div>
         <div class="profile-info">
             <h1>{{ request.user.clientprofile.first_name }} {{ request.user.clientprofile.last_name }}</h1>
             <p>Member since {{ request.user.date_joined|date:"F Y" }}</p>
-            <p><i class="fas fa-envelope"></i> {{ request.user.email }}</p>
-            <p><i class="fas fa-phone"></i> {{ request.user.clientprofile.contact }}</p>
             <div class="profile-stats">
                 <div class="profile-stat">
                     <div class="profile-stat-value">12</div>

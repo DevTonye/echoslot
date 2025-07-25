@@ -50,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "django_htmx.middleware.HtmxMiddleware",
+    "echoslotproject.middleware.TimezoneMiddleware",
 ]
 
 ROOT_URLCONF = 'echoslotproject.urls'

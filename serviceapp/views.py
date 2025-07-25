@@ -13,9 +13,9 @@ import random
 from django.http import HttpResponse
 from django.db import IntegrityError
 from django.db import transaction
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 from django.template.loader import render_to_string
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse
 from django.core.paginator import Paginator
 
 # service provider views
@@ -332,9 +332,31 @@ def delete_availability(request, pk):
 # view all service provider 
 @login_required(login_url="accounts:login")
 def find_services(request):
-    service_provider = list(ServiceProvider.objects.all())
-    random_providers = random.sample(service_provider, min(len(service_provider), 6)) if service_provider else []
-    return render(request, "service/findservices.html", {'providers': random_providers})
+    query = request.GET.get('q', '').strip()
+    providers = []
+
+    if query:
+        terms = query.replace('.', ' ').split()
+
+        filters = Q()
+        for term in terms:
+            filters |= (
+                Q(first_name__icontains=term) |
+                Q(last_name__icontains=term) |
+                Q(service__name__icontains=term) |
+                Q(service__description__icontains=term)
+            )
+
+        providers = ServiceProvider.objects.filter(filters).distinct()
+    else:
+        # Default: show random 6 providers
+        all_providers = list(ServiceProvider.objects.all())
+        providers = random.sample(all_providers, min(len(all_providers), 6)) if all_providers else []
+
+    return render(request, "service/findservices.html", {
+        'query': query,
+        'providers': providers
+    })
 
 @login_required(login_url="accounts:login")
 def book_appointments(request, provider_id):
@@ -414,86 +436,76 @@ def book_appointments(request, provider_id):
         'selected_date': request.POST.get('appointment_date') or timezone.now().date()
     })
 
-
 # generate available time slot for clients base on a service provider availability schedule
 def get_available_time_slots(provider, service, days_ahead=30):
     available_slots = {}
-    today = timezone.now().date()
-    
-    # get service duration from the service
-    slot_duration = service.duration
+    now = timezone.localtime()  # current aware datetime in active timezone
+    today = now.date()
+    slot_duration = service.duration  # minutes
 
-    # Get provider's availability schedule
+    # Provider’s availability
     availability_schedule = AvailabilitySchedule.objects.filter(
         service_provider=provider
     ).order_by('day_of_week', 'start_time')
-    
-    # Get existing appointments to exclude booked slots
+
+    # Existing booked slots
     existing_appointments = Appointment.objects.filter(
         service__provider=provider,
         appointment_date__gte=today,
         appointment_date__lte=today + timedelta(days=days_ahead),
         status__in=['scheduled', 'confirmed']
     ).values_list('appointment_date', 'start_time', 'end_time')
-    
-    # Create a dictionary of booked slots for quick lookup
+
     booked_slots = {}
     for apt_date, start_time, end_time in existing_appointments:
-        if apt_date not in booked_slots:
-            booked_slots[apt_date] = []
-        booked_slots[apt_date].append((start_time, end_time))
-    
+        booked_slots.setdefault(apt_date, []).append((start_time, end_time))
+
     # Generate slots for each day
     for i in range(days_ahead):
         current_date = today + timedelta(days=i)
-        day_of_week = current_date.weekday()  # 0=Monday, 6=Sunday
-        
-        # Find availability for this day of week
-        day_availability = availability_schedule.filter(day_of_week=day_of_week)
-        
-        if day_availability:
-            date_slots = []
-            
-            for schedule in day_availability:
-                # Generate time slots within this availability window
-                current_time = datetime.combine(current_date, schedule.start_time)
-                end_time = datetime.combine(current_date, schedule.end_time)
+        day_availability = availability_schedule.filter(day_of_week=current_date.weekday())
+        if not day_availability:
+            continue
+
+        date_slots = []
+
+        for schedule in day_availability:
+            current_time = datetime.combine(current_date, schedule.start_time)
+            end_time = datetime.combine(current_date, schedule.end_time)
+
+            while current_time + timedelta(minutes=slot_duration) <= end_time:
+                slot_start = current_time.time()
+                slot_end = (current_time + timedelta(minutes=slot_duration)).time()
+
+                # Full aware datetime for this slot
+                slot_datetime = timezone.make_aware(datetime.combine(current_date, slot_start))
                 
-                while current_time + timedelta(minutes=slot_duration) <= end_time:
-                    slot_start = current_time.time()
-                    slot_end = (current_time + timedelta(minutes=slot_duration)).time()
-                    
-                    # Check if this slot is available (not booked)
-                    is_available = True
-                    if current_date in booked_slots:
-                        for booked_start, booked_end in booked_slots[current_date]:
-                            # Check for overlap
-                            if slot_start < booked_end and slot_end > booked_start:
-                                is_available = False
-                                break
-                    
-                    # Only add if slot is in the future (for today)
-                    if current_date > today or (current_date == today and slot_start > timezone.now().time()):
-                        if is_available:
-                            date_slots.append({
-                                'time': slot_start,
-                                'display': slot_start.strftime('%I:%M %p'),
-                                'available': True
-                            })
-                    
+                # Skip if slot is in the past
+                if slot_datetime <= now:
                     current_time += timedelta(minutes=slot_duration)
-            if date_slots:
-                available_slots[current_date] = date_slots
-    
+                    continue
+
+                # Check if slot overlaps with existing appointment
+                is_available = True
+                if current_date in booked_slots:
+                    for booked_start, booked_end in booked_slots[current_date]:
+                        if slot_start < booked_end and slot_end > booked_start:
+                            is_available = False
+                            break
+
+                if is_available:
+                    date_slots.append({
+                        'time': slot_start,
+                        'display': slot_start.strftime('%I:%M %p'),
+                        'available': True
+                    })
+
+                current_time += timedelta(minutes=slot_duration)
+
+        if date_slots:
+            available_slots[current_date] = date_slots
+
     return available_slots
-
-
-@login_required(login_url="accounts:login")
-def appointment_success(request, appointment_id):
-    provider = get_object_or_404(ServiceProvider)
-    appointment = get_object_or_404(Appointment, appointment_id=appointment_id, client=request.user)
-    return render(request, 'service/appointmentsuccess.html', {'appointment': appointment, 'provider':provider})
-
 @login_required(login_url="accounts:login")
 def load_slots(request, provider_id):
     if not request.htmx:
@@ -515,6 +527,12 @@ def load_slots(request, provider_id):
         "available_slots": available_slots
     })
 
+@login_required(login_url="accounts:login")
+def appointment_success(request, appointment_id):
+    provider = get_object_or_404(ServiceProvider)
+    appointment = get_object_or_404(Appointment, appointment_id=appointment_id, client=request.user)
+    return render(request, 'service/appointmentsuccess.html', {'appointment': appointment, 'provider':provider})
+
 # get all appointment status
 def status_form(request, appointment_id):
     if not request.htmx:
@@ -535,7 +553,6 @@ def update_status(request, appointment_id):
         appointment.save()
         html = render_to_string('partials/status_td.html', {'appointment': appointment})
         return HttpResponse(html)
-
 
 # view client appointment details
 def appointment_details(request, appointment_id):

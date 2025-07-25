@@ -15,7 +15,7 @@ class ServiceProvider(models.Model):
     bio = models.TextField(blank=True, null=True)
     address = models.CharField(max_length=255, blank=False, null=False)
     phone = models.CharField(max_length=20, blank=False, null=False)
-
+    timezone = models.CharField(max_length=50, default='UTC', help_text='Preferred timezone for this provider')
     def __str__(self):
         return self.user.username
     

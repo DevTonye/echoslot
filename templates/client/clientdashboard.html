@@ -12,7 +12,7 @@
                 <div class="stat-icon">
                     <i class="fas fa-calendar-check"></i>
                 </div>
-                <div class="stat-number">{{ appointments.count }}</div>
+                <div class="stat-number">{{ total_appointments }}</div>
                 <div class="stat-label">Total Appointments</div>
             </div>
             <div class="stat-card">
@@ -45,7 +45,7 @@
         <div class="appointments-container">
             {% if today_appointments %}
                 {% for appointment in today_appointments %}
-                    <div class="appointment-card">
+                    <div class="appointment-card" id="appointment-{{ appointment.id }}">
                         <div class="appointment-header">
                             <div class="appointment-title">{{ appointment.service.provider.first_name }} {{ appointment.service.provider.last_name }} - {{ appointment.service.name }}</div>
                             {% if appointment.status == 'scheduled' %}
@@ -73,11 +73,16 @@
                             </div>
                             <div class="info-item">
                                 <i class="fas fa-eye"></i>
-                                <span><a href="#" class="btn btn-outline">View All</a></span>
+                                <span><a href="{% url 'clientapp:appointment_info' appointment.appointment_id %}?next={{ request.path }}" class="btn btn-outline">View All</a></span>
                             </div>
                         </div>
                         <div class="appointment-footer">
-                            <button class="action-btn btn-cancel">
+                            <button 
+                                class="action-btn btn-cancel" 
+                                hx-post="{% url 'clientapp:cancel_appointment_action' appointment.appointment_id %}"
+                                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                                hx-target="#appointment-{{ appointment.id }}"
+                                hx-swap="innerHTML">
                                 <i class="fas fa-times"></i> Cancel
                             </button>
                             <button class="action-btn btn-reschedule">

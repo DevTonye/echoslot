@@ -1,19 +1,41 @@
 from django import forms
 from .models import ServiceProvider, Service, AvailabilitySchedule, Appointment
+from django.utils import timezone
 import datetime
 from datetime import datetime, timedelta
 from django.core.exceptions import ValidationError
 
+# user select timezone
+
 class ServiceProviderForm(forms.ModelForm):
+    COMMON_TIMEZONES = [
+        ('UTC', 'UTC'),
+        ('Africa/Lagos', 'Lagos (UTC+1)'),
+        ('Europe/London', 'London (UTC+0/+1)'),
+        ('America/New_York', 'New York (UTC-5/-4)'),
+        ('America/Los_Angeles', 'Los Angeles (UTC-8/-7)'),
+        ('Asia/Tokyo', 'Tokyo (UTC+9)'),
+        ('Asia/Shanghai', 'Shanghai (UTC+8)'),
+        ('Australia/Sydney', 'Sydney (UTC+10/+11)'),
+        ('Europe/Paris', 'Paris (UTC+1/+2)'),
+        ('Asia/Dubai', 'Dubai (UTC+4)'),
+        ('America/Chicago', 'Chicago (UTC-6/-5)'),
+        ('Asia/Kolkata', 'Mumbai/Delhi (UTC+5:30)'),
+        ('Europe/Berlin', 'Berlin (UTC+1/+2)'),
+        ('America/Toronto', 'Toronto (UTC-5/-4)'),
+        ('Pacific/Auckland', 'Auckland (UTC+12/+13)'),
+    ]
+
     first_name = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder':'enter your firstname'}))
     last_name = forms.CharField(required=True, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder': 'enter your lastname'}))
     bio = forms.CharField(required=True, widget=forms.Textarea(attrs={'class':'form-control', 'placeholder': 'Share what you do, your experience, and how you help clients', 'rows': 4}))
     address = forms.CharField(required=True, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Enter your address'}))
     phone = forms.CharField(required=True, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Enter your phone number'}))
-
+    timezone = forms.ChoiceField(choices=COMMON_TIMEZONES, widget=forms.Select(attrs={'class': 'form-control'}), help_text="Select your timezone for accurate appointment times")
+    
     class Meta:
         model = ServiceProvider
-        fields = ['first_name', 'last_name', 'profile_image', 'bio', 'address', 'phone']
+        fields = ['first_name', 'last_name', 'profile_image', 'bio', 'address', 'phone', 'timezone']
         widgets = {
             'profile_image':forms.ClearableFileInput(attrs={'multiple':False})
         }
@@ -133,15 +155,20 @@ class AppointmentForm(forms.ModelForm):
     def update_time_choices(self):
         """Update time field choices based on available slots"""
         choices = [('', 'Select a time slot')]
-        
+        now = timezone.localtime()
+
         for date, slots in self.available_slots.items():
             date_label = date.strftime('%A, %B %d, %Y')
             for slot in slots:
                 if slot['available']:
+                    # Skip past slots for today
+                    if date == now.date() and slot['time'] <= now.time():
+                        continue
+
                     choice_value = f"{date.isoformat()}|{slot['time'].strftime('%H:%M')}"
                     choice_label = f"{date_label} - {slot['display']}"
                     choices.append((choice_value, choice_label))
-        
+    
         self.fields['start_time'].choices = choices
 
     def clean(self):

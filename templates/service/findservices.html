@@ -3,13 +3,16 @@
 {% block content %}
 <!-- Find Services Page -->
 <div class="container">
-    <div class="section-header">
-        <h2 class="section-title">Available Providers</h2>
-        <div class="search-bar">
-            <i class="fas fa-search"></i>
-            <input type="text" placeholder="Search providers, services..." id="searchInput">
-        </div>
-    </div>
+   <div class="section-header">
+    <h2 class="section-title">Available Providers</h2>
+    <form method="get" action="{% url 'serviceapp:find_serviceproviders'%}" class="search-bar">
+        <input type="text" name="q" id="searchInput" placeholder="Search providers, services..." value="{{ request.GET.q }}">
+        <button type="submit" style="background: none; border: none; cursor: pointer;">
+            <i class="fas fa-search" style="color: #6c757d;"></i>
+        </button>
+    </form>
+</div>
+
 
     <div class="providers-grid">
         {% if providers %}
@@ -31,14 +34,7 @@
                         <div class="provider-info">
                             <h3>{{ provider.user.service_provider.first_name }} {{ provider.user.service_provider.last_name }}</h3>
                             <div class="provider-specialty">{{ provider.service.name }}</div>
-                            <div class="provider-rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-alt"></i>
-                                <span>({{ provider.reviews_count|default:0 }} reviews)</span>
-                            </div>
+                           
                         </div>
                     </div>
                     <div class="provider-details">

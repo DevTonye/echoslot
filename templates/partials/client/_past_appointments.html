@@ -1,6 +1,6 @@
 
 {% if past_appointments %}
-    {% for appointment in past_appointments %}
+    {% for appointment in page_obj %}
     <div class="appointment-card">
         <div class="appointment-header">
             <div class="appointment-title">{{ appointment.service.provider.first_name }} {{ appointment.service.provider.last_name }} - {{ appointment.service.name }}</div>
@@ -39,6 +39,64 @@
         </div>
     </div> <!-- close appointment-card -->
     {% endfor %}
+
+       <!--  Pagination Section -->
+    {% if page_obj.has_previous or page_obj.has_next %}
+        <div class="d-flex justify-content-center mt-3">
+            <nav>
+                <ul class="pagination pagination-sm">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link"
+                               hx-get="past-appointments/?page=1"
+                               hx-target="#appointment-content"
+                               hx-swap="innerHTML"
+                               aria-label="First">
+                               &laquo; First
+                            </a>
+                        </li>
+
+                        <li class="page-item">
+                            <a class="page-link"
+                                hx-get="past-appointments/?page={{ page_obj.previous_page_number }}"
+                                hx-target="#appointment-content"
+                                hx-swap="innerHTML"
+                                aria-label="Previous">    
+                                Previous
+                            </a>
+                        </li>
+                    {% endif %}
+                        <!-- Current page info -->
+                        <li class="page-item active">
+                            <span class="page-link">
+                                {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                            </span>
+                        </li>
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link"
+                                hx-get="past-appointments/?page={{ page_obj.next_page_number }}"
+                                hx-target="#appointment-content" 
+                                hx-swap="innerHTML"
+                                aria-label="Next">
+                                Next
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link"
+                                hx-get="past-appointments/?page={{ page_obj.paginator.num_pages }}"
+                                hx-target="#appointment-content" 
+                                hx-swap="innerHTML"
+                                aria-label="Last">
+                                Last &raquo;
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    {% endif %}
+
 {% else %}
     <div class="no-data">
         <i class="fas fa-calendar-times" style="font-size: 2.5rem; margin-bottom: 15px; color: #e9ecef;"></i>

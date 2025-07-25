@@ -1,7 +1,4 @@
-<!-- Personal Info Tab -->
-
-  <div id="personal-info" class="tab-content active">
-    
+<div id="personal-info" class="profile-form-container">
     {% if messages %}
         {% for message in messages %}
             {% if 'profile' in message.tags %}
@@ -10,39 +7,88 @@
         {% endfor %}
     {% endif %}
 
-    <div class="form-container">
-        <form method="post"
-            hx-post="{% url 'clientapp:edit_profile' %}"
-            hx-target="#personal-info"
-            hx-swap="outerHTML">
-            {% csrf_token %}
+    <div class="profile-form-header">
+        <h2>
+            <i class="fas fa-user"></i>
+            Profile Information
+        </h2>
+    </div>
 
-            {% if form.non_field_errors %}
-                <div class="alert alert-danger">
-                    {{ form.non_field_errors }}
+    <form class="profile-form-layout" method="post" enctype="multipart/form-data"
+          hx-post="{% url 'clientapp:edit_profile' %}"
+          hx-target="#personal-info"
+          hx-swap="outerHTML">
+        {% csrf_token %}
+
+        <div class="profile-image-section">
+            <div class="profile-image-container">
+                {% if request.user.clientprofile.profile_image %}
+                <a href="{{ request.user.clientprofile.profile_image.url }}" data-lightbox="profile" data-title="{{ request.user.username }}">
+                <img src="{{ request.user.clientprofile.profile_image.url }}" 
+                    alt="{{ request.user.username }}'s profile" 
+                    class="profile-image"
+                    id="profile-preview">
+            </a>
+                {% else %}
+                    <i class="fas fa-user profile-placeholder"></i>
+                {% endif %}
+            </div>
+
+            <button type="button" class="change-photo-btn" onclick="document.getElementById('photo-upload').click()">
+                <i class="fas fa-camera"></i>
+                Change Photo
+            </button>
+
+            <input type="file" id="photo-upload" name="profile_image" accept="image/*" onchange="previewImage(this)">
+        </div>
+
+        <div class="profile-form-fields">
+            <div class="form-row">
+                <div class="form-group">
+                    {{ form.first_name.label_tag }}
+                    {{ form.first_name }}
                 </div>
-            {% endif %}
 
-            <div class="form-group">
-                {{ form.first_name.label_tag }}
-                {{ form.first_name }}
+                <div class="form-group">
+                    {{ form.last_name.label_tag }}
+                    {{ form.last_name }}
+                </div>
             </div>
 
-            <div class="form-group">
-                {{ form.last_name.label_tag }}
-                {{ form.last_name }}
-            </div>
-
-            <div class="form-group">
-                {{ form.contact.label_tag }}
-                {{ form.contact }}
-            </div>
-            <div class="form-group">
+            <div class="form-group full-width">
                 {{ form.location.label_tag }}
                 {{ form.location }}
             </div>
-            <button type="submit" class="btn btn-primary">Save Changes</button>
-        </form>
-    </div>
-  </div>
+
+            <div class="form-group full-width">
+                {{ form.contact.label_tag }}
+                {{ form.contact }}
+            </div>
+
+            <div class="form-group full-width">
+                <label for="timezone">Timezone</label>
+                <div class="timezone-select">
+                    <select class="form-control" id="timezone" name="timezone">
+                        {% for value, label in form.timezone.field.choices %}
+                            <option value="{{ value }}" {% if form.timezone.value == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    {% if form.timezone.errors %}
+                        <span class="field-error">{{ form.timezone.errors.0 }}</span>
+                    {% endif %}
+                </div>
+                <div class="timezone-note">
+                    Select your timezone for accurate appointment times
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-save">
+                    Save Changes
+                </button>
+            </div>
+        </div>
+    </form>
 </div>
+
+
