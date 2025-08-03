@@ -6,7 +6,7 @@ app_name = "serviceapp"
 urlpatterns = [
     path("profile/", views.serviceprovider_profile, name="profile"),
     path("dashboard/", views.service_dashboard, name='dashboard'),
-    path('settings/', views.settings, name="settings"),
+    path('settings/', views.provider_setting, name="settings"),
     path('settings-profile/', views.settings_profile, name="settings-profile"),
     path('security-settings/', views.security_settings, name="security-settings"),
     path('settings-account', views.account_security, name="account-settings"),
@@ -28,4 +28,5 @@ urlpatterns = [
     path('status-form/<uuid:appointment_id>/', views.status_form, name='status_form'),
     path('update-status/<uuid:appointment_id>/', views.update_status, name='update_status'),
     path('appointment-details/<uuid:appointment_id>/', views.appointment_details, name='appointment_details'),
+    
 ]

@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Echoslot - Book appointment with ease</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <script src="https://unpkg.com/htmx.org@2.0.4"></script>
 <style>
@@ -264,7 +265,6 @@
         text-decoration: none;
     }
 
-    /* Status badges */
     .badge {
         padding: 6px 12px;
         border-radius: 20px;
@@ -843,9 +843,8 @@
     object-fit: cover;
 }
 
-
 .profile-info {
-    margin-left: 20px; /* adds extra spacing */
+    margin-left: 20px; 
 }
     .profile-info h1 {
         font-size: 2rem;
@@ -881,7 +880,6 @@
     }
 
     
-    /* Tab Navigation */
     .tab-navigation {
         display: flex;
         gap: 8px;
@@ -1246,63 +1244,388 @@ profile-image, .avatar-img {
         }
     }
 
-    /* ===== RESPONSIVE STYLES ===== */
-    @media (max-width: 768px) {
-        .nav-links {
-            display: none;
-        }
 
-        .hero {
-            padding: 60px 0;
-        }
-
-        .hero h1 {
-            font-size: 2rem;
-        }
-
-        .providers-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .profile-header {
-            flex-direction: column;
-            text-align: center;
-        }
-
-        .profile-avatar {
-            width: 80px;
-            height: 80px;
-            font-size: 28px;
-            margin-bottom: 16px;
-        }
-        
-        
-        .profile-stats {
-            justify-content: center;
-        }
-
-        .appointment-body {
-            grid-template-columns: 1fr;
-        }
-
-        .appointment-footer {
-            flex-direction: column;
-        }
-
-        .action-btn {
-            width: 100%;
-            justify-content: center;
-        }
+@media (max-width: 768px) {
+    /* Move header to bottom */
+    header {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: auto;
+        z-index: 1000;
+        padding: 8px 0 12px 0;
+        background: #ffffff;
+        box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
+        border-top: 1px solid #e9ecef;
     }
+
+    .logo {
+        display: none;
+    }
+
+    .nav-links {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        width: 100%;
+        gap: 0;
+    }
+
+    /* Style nav links for mobile bottom nav */
+    .nav-links a {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        color: #6c757d;
+        text-decoration: none;
+        font-size: 0.7rem;
+        font-weight: 500;
+        padding: 8px 12px;
+        border-radius: 12px;
+        transition: all 0.2s ease;
+        min-width: 60px;
+        text-align: center;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+        color: #212529;
+        background: #f8f9fa;
+    }
+
+    .nav-links a::before {
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+        font-size: 18px;
+        margin-bottom: 2px;
+    }
+
+    .nav-dashboard::before {
+        content: "\f015"; 
+}
+
+    .nav-providers::before {
+        content: "\f0f0"; 
+    }
+
+    .nav-appointments::before {
+        content: "\f073"; 
+}
+
+    .nav-profile::before {
+    content: "\f007"; /* user icon */
+}
+
+    .nav-links a::after {
+        display: none;
+    }
+
+    .user-menu {
+        display: none;
+    }
+
+    nav.container {
+        max-width: 100%;
+        padding: 0 16px;
+        justify-content: center;
+    }
+
+    body {
+        padding-bottom: 80px;
+    }
+
+    main {
+        min-height: calc(100vh - 80px); 
+        padding: 20px 0 30px 0;
+    }
+
+    .container {
+        padding: 0 16px;
+    }
+
+    .hero {
+        padding: 40px 20px;
+        margin-bottom: 20px;
+    }
+
+    .hero h1 {
+        font-size: 1.8rem;
+        margin-bottom: 12px;
+    }
+
+    .hero p {
+        font-size: 1rem;
+        margin-bottom: 20px;
+    }
+
+    .search-container {
+        margin-bottom: 20px;
+    }
+
+    .search-bar {
+        padding: 12px 20px;
+    }
+
+    .providers-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+
+    .card {
+        padding: 20px;
+        margin-bottom: 16px;
+    }
+
+    .provider-card {
+        margin-bottom: 16px;
+    }
+
+    .provider-content {
+        padding: 16px;
+    }
+
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+        padding: 24px 20px;
+        gap: 20px;
+    }
+
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+        font-size: 28px;
+        margin-bottom: 0;
+    }
+
+    .profile-info {
+        margin-left: 0;
+    }
+
+    .profile-info h1 {
+        font-size: 1.5rem;
+    }
+
+    .profile-stats {
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .form-container {
+        padding: 24px 20px;
+        margin: 0 16px;
+    }
+
+    .profile-form-container {
+        padding: 24px 20px;
+        margin: 0 16px;
+    }
+
+    .profile-form-layout {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .modal-content {
+        margin: 20px;
+        width: calc(100% - 40px);
+        padding: 24px 20px;
+    }
+
+    .tab-navigation {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .tab-navigation::-webkit-scrollbar {
+        display: none;
+    }
+
+    .tab-btn {
+        white-space: nowrap;
+        padding: 10px 16px;
+        font-size: 0.85rem;
+    }
+
+    .appointment-body {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .appointment-footer {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .action-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 10px 16px;
+    }
+}
+
+@media (max-width: 375px) {
+    body {
+        padding-bottom: 75px;
+    }
+
+    header {
+        padding: 6px 0 10px 0;
+    }
+
+    .nav-links a {
+        padding: 6px 8px;
+        min-width: 50px;
+        gap: 2px;
+        font-size: 0.65rem;
+    }
+
+    .nav-links a::before {
+        font-size: 16px;
+    }
+
+    nav.container {
+        padding: 0 8px;
+    }
+
+    .container {
+        padding: 0 12px;
+    }
+
+    main {
+        padding: 16px 0 24px 0;
+    }
+
+    .hero {
+        padding: 30px 16px;
+        margin-bottom: 16px;
+    }
+
+    .hero h1 {
+        font-size: 1.6rem;
+        line-height: 1.2;
+    }
+
+    .hero p {
+        font-size: 0.9rem;
+    }
+
+    .search-bar {
+        padding: 10px 16px;
+    }
+
+    .search-bar input {
+        font-size: 14px;
+    }
+
+    .stats-grid {
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .stat-card {
+        padding: 16px 12px;
+    }
+
+    .stat-number {
+        font-size: 1.5rem;
+    }
+
+    .stat-label {
+        font-size: 0.8rem;
+    }
+
+    .card {
+        padding: 16px;
+        margin-bottom: 12px;
+    }
+
+    .provider-content {
+        padding: 14px;
+    }
+
+    .provider-header {
+        margin-bottom: 12px;
+    }
+
+    .provider-avatar {
+        width: 60px;
+        height: 60px;
+        font-size: 20px;
+        margin-right: 12px;
+    }
+
+
+    .profile-header {
+        padding: 20px 16px;
+    }
+
+    .profile-avatar {
+        width: 70px;
+        height: 70px;
+        font-size: 24px;
+    }
+
+    .profile-info h1 {
+        font-size: 1.3rem;
+    }
+
+    .profile-stats {
+        gap: 16px;
+    }
+
+    .form-container,
+    .profile-form-container {
+        padding: 20px 16px;
+        margin: 0 8px;
+    }
+
+    .modal-content {
+        margin: 16px;
+        width: calc(100% - 32px);
+        padding: 20px 16px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+
+    .action-btn {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
+
+    .tab-btn {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
+}
 </style>
 </head>
 <body>
-<!-- Header Section -->
- {% include 'partials/_navbar.html' %}
-<!-- Main Content -->
-<main id="main-content">
-    {% block content %}{% endblock %}    
-</main>
+    
+
+    {% include 'partials/_navbar.html' %}
+
+    <main id="main-content">
+        {% block content %}{% endblock %}    
+    </main>
                     
 </body>
 </html>

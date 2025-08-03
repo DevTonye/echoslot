@@ -4,13 +4,15 @@
                 <div class="logo">Echo<span>slot</span></div>
                 </a>
             <div class="nav-links">
-                <a href="{% url 'clientapp:client_dashboard' %}">
+                <a class="nav-dashboard" href="{% url 'clientapp:client_dashboard' %}">
                     Dashboard
                 </a>
-                <a href="{% url 'serviceapp:find_serviceproviders' %}">Providers</a>
-                <a href="{% url 'clientapp:client_appointment' %}">Appointments</a>
-                <a href="{% url 'clientapp:profile_settings' %}" >Profile</a>
+                <a class="nav-providers" href="{% url 'serviceapp:find_serviceproviders' %}">Providers</a>
+                <a class="nav-appointments" href="{% url 'clientapp:client_appointment' %}">Appointments</a>
+                <a class="nav-profile" href="{% url 'clientapp:profile_settings' %}" >Profile</a>
             </div>
             <div class="user-menu"></div>
         </nav>
     </header>
+
+    

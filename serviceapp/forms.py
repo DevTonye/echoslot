@@ -223,3 +223,4 @@ class AppointmentStatusForm(forms.ModelForm):
     class Meta:
         model = Appointment
         fields = ['status']
+

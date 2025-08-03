@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Find & Book Service Providers</title>
+    <title>Book an Appointment</title>
     <style>
         * {
             margin: 0;
@@ -12,391 +12,329 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #000000;
-            color: #ffffff;
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Header */
-        header {
-            padding: 20px 0;
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #ffffff, #cccccc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .search-bar {
-            display: flex;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50px;
-            padding: 12px 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            min-width: 300px;
-        }
-
-        .search-bar input {
-            background: none;
-            border: none;
-            color: #ffffff;
-            outline: none;
-            flex: 1;
-            font-size: 16px;
-        }
-
-        .search-bar input::placeholder {
-            color: #888888;
-        }
-
-        /* Hero Section */
-        .hero {
-            padding: 60px 0;
-            text-align: center;
-            background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
-        }
-
-        .hero h1 {
-            font-size: clamp(2rem, 4vw, 3.5rem);
-            font-weight: 800;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, #ffffff, #888888);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height: 1.2;
-        }
-
-        .hero p {
-            font-size: 1.1rem;
-            color: #cccccc;
-            max-width: 600px;
-            margin: 0 auto 40px;
-        }
-
-        /* Provider Grid */
-        .providers-section {
-            padding: 40px 0 80px;
-        }
-
-        .providers-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
-        }
-
-        .provider-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            padding: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .provider-card:hover {
-            transform: translateY(-10px);
-            background: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 20px 40px rgba(255, 255, 255, 0.1);
-        }
-
-        .provider-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .provider-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #ffffff, #cccccc);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: 700;
-            color: #000000;
-            margin-right: 15px;
-            position: relative;
-            overflow: hidden;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-        }
-
-        .provider-avatar:hover {
-            border-color: rgba(255, 255, 255, 0.4);
-            transform: scale(1.05);
-        }
-
-        /* Profile Image Styling */
-        .profile-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 50%;
-            transition: all 0.3s ease;
-        }
-
-        .profile-image:hover {
-            transform: scale(1.1);
-        }
-
-        /* Profile image link styling */
-        .provider-avatar a {
-            display: block;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            overflow: hidden;
-            text-decoration: none;
-        }
-
-        /* Fallback icon styling */
-        .provider-avatar .fas {
-            color: rgba(255, 255, 255, 0.7);
-            transition: color 0.3s ease;
-        }
-
-        .provider-avatar:hover .fas {
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .detail-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .detail-item:last-child {
-            border-bottom: none;
-        }
-
-        .detail-label {
-            color: #cccccc;
-            font-size: 0.9rem;
-        }
-
-        .detail-value {
-            color: #ffffff;
-            font-weight: 500;
-        }
-
-        .provider-bio {
-            color: #cccccc;
-            font-size: 0.9rem;
-            margin-bottom: 25px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #fafafa;
+            color: #333;
             line-height: 1.5;
         }
 
-        .book-btn {
-    width: 100%;
-    background: #ffffff;
-    border-radius: 10px;
-    text-align: center; /* center the link inside */
-    padding: 0; /* remove padding from the div */
-}
-
-.book-btn a {
-    display: inline-block;
-    padding: 15px;
-    width: 100%;
-    color: #000000;
-    text-decoration: none;
-    font-size: 16px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    border-radius: 10px;
-}
-
-        .book-btn:hover {
-            background: #cccccc;
-            transform: translateY(-2px);
-        }
-        .no-providers {
-            text-align: center;
-            padding: 60px 20px;
-            color: #cccccc;
+        .container {
+            max-width: 640px;
+            margin: 40px auto;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-radius: 8px;
         }
 
-        .no-providers h2 {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
+        .header {
+            padding: 32px 32px 24px;
+            border-bottom: 1px solid #e5e5e5;
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .search-bar {
-                min-width: 250px;
-            }
-
-            .providers-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .provider-avatar {
-                width: 50px;
-                height: 50px;
-                font-size: 20px;
-            }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #111;
+            margin-bottom: 4px;
         }
 
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .header p {
+            color: #666;
+            font-size: 15px;
         }
 
-        .provider-card {
-            animation: fadeInUp 0.6s ease-out;
+        .form-body {
+            padding: 32px;
         }
 
-        .provider-card:nth-child(2) { animation-delay: 0.1s; }
-        .provider-card:nth-child(3) { animation-delay: 0.2s; }
-        .provider-card:nth-child(4) { animation-delay: 0.3s; }
-        .provider-card:nth-child(5) { animation-delay: 0.4s; }
-        .provider-card:nth-child(6) { animation-delay: 0.5s; }
-
-        /* Lightbox effect for profile images */
-        .provider-avatar a {
-            position: relative;
+        .field-group {
+            margin-bottom: 24px;
         }
 
-        .provider-avatar a::before {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 14px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: 2;
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
+        .field-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .field-row {
             display: flex;
-            align-items: center;
-            justify-content: center;
+            gap: 16px;
+        }
+
+        .field {
+            flex: 1;
+            margin-bottom: 16px;
+        }
+
+        .field:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #111;
+            margin-bottom: 6px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 15px;
+            background: white;
+            transition: border-color 0.15s ease;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 12px center;
+            background-repeat: no-repeat;
+            background-size: 16px;
+            padding-right: 40px;
+            appearance: none;
+        }
+
+        textarea {
+            resize: vertical;
+            height: 80px;
+        }
+
+        .availability-section {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 24px 0;
+        }
+
+        .availability-title {
+            font-size: 15px;
+            font-weight: 500;
+            color: #111;
+            margin-bottom: 16px;
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .schedule-item {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            padding: 8px 12px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .schedule-day {
+            font-weight: 500;
+            color: #111;
+        }
+
+        .schedule-hours {
+            color: #666;
+            margin-top: 2px;
+        }
+
+        .time-selection {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .submit-button {
+            background: #111;
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 24px;
+            transition: background-color 0.15s ease;
+        }
+
+        .submit-button:hover {
+            background: #000;
+        }
+
+        .error {
+            color: #dc2626;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .errorlist {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .errorlist li {
+            color: #dc2626;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .help-text {
+            color: #666;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+                min-height: 100vh;
+            }
+
+            .header,
+            .form-body {
+                padding: 24px 20px;
+            }
+
+            .field-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .time-selection {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .schedule-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
 <body>
-<header>
-    <nav class="container">
-        <div class="logo">ProviderHub</div>
-        <div class="search-bar">
-            <input type="text" placeholder="Search providers, services..." id="searchInput">
-            <span>🔍</span>
+    <div class="container">
+        <div class="header">
+            <h1>Book an appointment</h1>
+            <p>Fill out the form below to schedule your visit</p>
         </div>
-    </nav>
-</header>
 
-<main>
-    <section class="hero">
-        <div class="container">
-            <h1>Find Your Perfect Service Provider</h1>
-            <p>Browse through our network of verified professionals and book appointments instantly</p>
-        </div>
-    </section>
-
-    <section class="providers-section">
-        <div class="container">
-            <div class="providers-grid" id="providersGrid">
-                {% if providers %}
-                    {% for provider in providers %}
-                    <div class="provider-card">
-                        <div class="provider-header">
-                            <div class="provider-avatar">
-                                {% if provider.profile_image %}
-                                    <a href="{{ provider.profile_image.url }}" data-lightbox="profile" data-title="{{ provider.user.username }}">
-                                        <img src="{{ provider.profile_image.url }}" 
-                                            alt="{{ provider.user.username }}'s profile" 
-                                            class="profile-image">
-                                    </a>
-                                    {% else %}
-                                        <i class="fas fa-user-circle fa-4x"></i>
-                                    {% endif %}
-                            </div>
-                            <div class="provider-info">
-                                <h3>{{ provider.user.service_provider.first_name}} {{ provider.user.service_provider.last_name}}</h3>
-                                <div class="provider-specialty">{{ provider.service.name }}</div>
-                            </div>
+        <div class="form-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="field-group">
+                    <div class="field-row">
+                        <div class="field">
+                            <label for="{{ form.first_name.id_for_label }}">First name</label>
+                            {{ form.first_name.errors }}
+                            {{ form.first_name }}
                         </div>
-                        <div class="provider-details">
-                            <div class="detail-item">
-                                <span class="detail-label">Experience</span>
-                                <span class="detail-value">{{ provider.experience_years|default:0 }} years</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-label">Duration</span>
-                                <span class="detail-value">{{ provider.service.duration }} mins</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-label">Rate</span>
-                                <span class="detail-value">${{ provider.service.price }}/hour</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-label">Location</span>
-                                <span class="detail-value">{{ provider.address }}</span>
-                            </div>
+                        <div class="field">
+                            <label for="{{ form.last_name.id_for_label }}">Last name</label>
+                            {{ form.last_name.errors }}
+                            {{ form.last_name }}
                         </div>
-
-                        <div class="provider-bio">
-                            {{ provider.service.description }}
-                        </div>
-                        <div class="book-btn">
-                            <a href="{% url 'serviceapp:book_appointment' provider.pk %}">Book Now</a>
-                        </div>
-                        
                     </div>
+                </div>
+
+                <div class="field-group">
+                    <div class="field-row">
+                        <div class="field">
+                            <label for="{{ form.email.id_for_label }}">Email</label>
+                            {{ form.email.errors }}
+                            {{ form.email }}
+                        </div>
+                        <div class="field">
+                            <label for="{{ form.phone.id_for_label }}">Phone</label>
+                            {{ form.phone.errors }}
+                            {{ form.phone }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <div class="field">
+                        <label for="{{ form.service.id_for_label }}">Service</label>
+                        {{ form.service.errors }}
+                        {{ form.service }}
+                    </div>
+                </div>
+
+                {% if availability_schedule %}
+                <div class="availability-section">
+                    <div class="availability-title">Provider availability</div>
+                    <div class="schedule-grid">
+                        {% for schedule in availability_schedule %}
+                        <div class="schedule-item">
+                            <div class="schedule-day">{{ schedule.get_day_of_week_display }}</div>
+                            <div class="schedule-hours">{{ schedule.start_time|time:"g:i A" }} - {{ schedule.end_time|time:"g:i A" }}</div>
+                        </div>
                     {% endfor %}
-                {% else %}
-                    <div class="no-providers">
-                        <h2>No Service Providers Available</h2>
-                        <p>Please check back later or contact us for assistance.</p>
+                        <div class="schedule-item">
+                            <div class="schedule-day">Tue</div>
+                            <div class="schedule-hours">9:00 - 17:00</div>
+                        </div>
+                        <div class="schedule-item">
+                            <div class="schedule-day">Wed</div>
+                            <div class="schedule-hours">9:00 - 17:00</div>
+                        </div>
+                        <div class="schedule-item">
+                            <div class="schedule-day">Thu</div>
+                            <div class="schedule-hours">9:00 - 17:00</div>
+                        </div>
+                        <div class="schedule-item">
+                            <div class="schedule-day">Fri</div>
+                            <div class="schedule-hours">9:00 - 15:00</div>
+                        </div>
                     </div>
-                {% endif %}
-            </div>
-            </div>
-        </section>
-    </main>
+                     {% endif %}
+                    <div class="time-selection">
+                        <div class="field">
+                            <label for="{{ form.appointment_date.id_for_label }}">Date</label>
+                            {{ form.appointment_date.errors }}
+                            {{ form.appointment_date }}
+                        </div>
+                        <div class="field">
+                            <label for="{{ form.start_time.id_for_label }}">Time</label>
+                            {{ form.start_time.errors }}
+                            {{ form.start_time }}
+                            {% if form.start_time.help_text %}
+                                <div class="help-text">{{ form.start_time.help_text }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
 
+                <div class="field-group">
+                    <div class="field">
+                        <label for="{{ form.notes.id_for_label }}">Notes</label>
+                        {{ form.notes.errors }}
+                        {{ form.notes }}
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-button">Book appointment</button>
+            </form>
         </div>
     </div>
 </body>

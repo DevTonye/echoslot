@@ -43,6 +43,7 @@ def send_custom_email(subject, message, recipient_email):
     except Exception:
         raise ValidationError("An unexpected error occurred. Please try again later.")
 
+
 def send_verification_email(user, request):
     token = default_token_generator.make_token(user)
     uid = urlsafe_base64_encode(force_bytes(user.pk))
@@ -75,6 +76,7 @@ def verify_email(request, uidb64, token):
         user.is_active = True
         user.save()
         # Log the user in after verification
+        user.backend = 'django.contrib.auth.backends.ModelBackend'
         login(request, user)
         messages.success(request, "Your account have beem verified.")
         return redirect("accounts:selectrole")
@@ -130,7 +132,7 @@ def delayed_send_email(user, request):
             if user is not None:
                 send_password_reset_link(user, request)
         except ValidationError:
-            pass # Silently handle errors in background thread
+            pass 
     thread = threading.Thread(target=_send_with_delay)
     thread.daemon = True
     thread.start()
@@ -308,6 +310,17 @@ def selectuser_role(request):
         else:
             messages.error(request, "Invalid role selected.")
     return render(request, 'account/selectrole.html')
+
+def post_login(request):
+    if request.user.is_authenticated:
+        if request.user.role:
+            if request.user.role == 'service_provider':
+                return redirect('serviceapp:dashboard')
+            else:
+                return redirect('clientapp:client_dashboard')
+        else:
+            return redirect('accounts:selectrole')
+    return redirect('accounts:login') 
 
 # delete account
 @login_required(login_url='accounts:login')

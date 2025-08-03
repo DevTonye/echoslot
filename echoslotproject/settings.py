@@ -34,11 +34,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
     'django_htmx',
     'accounts',
     'echoslot',
     'serviceapp',
     'clientapp',
+    'ratelimit',
 ]
 
 MIDDLEWARE = [
@@ -47,11 +53,20 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    "allauth.account.middleware.AccountMiddleware",
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "django_htmx.middleware.HtmxMiddleware",
     "echoslotproject.middleware.TimezoneMiddleware",
+     
 ]
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+SITE_ID = 2
 
 ROOT_URLCONF = 'echoslotproject.urls'
 
@@ -71,6 +86,21 @@ TEMPLATES = [
 ]
 
 AUTH_USER_MODEL = "accounts.CustomUser"
+LOGIN_REDIRECT_URL = env('LOGIN_REDIRECT_URL', default='/user-auth/post-login/') 
+LOGOUT_REDIRECT_URL = '/' 
+ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+ACCOUNT_EMAIL_VERIFICATION = "none"
+
+SOCIALACCOUNT_LOGIN_ON_GET=True
+SOCIALACCOUNT_AUTO_SIGNUP = True
+SOCIALACCOUNT_EMAIL_VERIFICATION = "none"
+SOCIALACCOUNT_EMAIL_REQUIRED = True
+
+# Automatically connect social accounts to existing users with the same email
+SOCIALACCOUNT_ADAPTER = "accounts.adapters.MySocialAccountAdapter"
+
+ACCOUNT_ADAPTER = "allauth.account.adapter.DefaultAccountAdapter"
 
 WSGI_APPLICATION = 'echoslotproject.wsgi.application'
 
@@ -82,9 +112,7 @@ DATABASES = {
     'default': env.db(),
 }
 
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-]
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -143,3 +171,7 @@ EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default=EMAIL_HOST_USER)
 
 RATELIMIT_ENABLE = env.bool('RATELIMIT_ENABLE')
+
+CELERY_BROKER_URL = env('CELERY_BROKER_URL')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'

@@ -28,6 +28,10 @@
                     <i class="fas fa-dollar-sign"></i>
                     <span>{{ appointment.service.price}}</span>
                 </div>
+
+                <div class="info-item">
+                    <span><a href="{% url 'clientapp:appointment_info' appointment.appointment_id %}?next={{ request.path }}" class="btn btn-outline">View All</a></span>
+                </div>
             </div>
             <div class="appointment-footer">
                 <button 
@@ -38,9 +42,11 @@
                     hx-swap="innerHTML">
                     <i class="fas fa-times"></i> Cancel
                 </button>
-                <button class="action-btn btn-reschedule">
-                    <i class="fas fa-calendar-alt"></i> Reschedule
-                </button>
+                <!--
+                    <button class="action-btn btn-reschedule">
+                        <i class="fas fa-calendar-alt"></i> Reschedule
+                    </button>
+                -->
             </div>
         </div>
         {% endfor %}

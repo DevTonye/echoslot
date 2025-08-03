@@ -1,3 +1,5 @@
+from django.core.mail import send_mail
+from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import ServiceProvider, Service, Appointment, Notification, AvailabilitySchedule
 from .forms import ServiceProviderForm, ServiceForm, AppointmentForm, AvailabilityScheduleForm, AppointmentStatusForm
@@ -17,6 +19,7 @@ from datetime import datetime, timedelta, time
 from django.template.loader import render_to_string
 from django.http import HttpResponse
 from django.core.paginator import Paginator
+from serviceapp.tasks import send_appointment_reminder
 
 # service provider views
 User = get_user_model()
@@ -85,7 +88,7 @@ def service_dashboard(request):
     return render(request, 'service/dashboard.html', context)
 
 @login_required(login_url="accounts:login")
-def settings(request):
+def provider_setting(request):
     provider = request.user.service_provider
     return render(request, "service/settings.html", {"provider":provider})
 
@@ -394,12 +397,54 @@ def book_appointments(request, provider_id):
 
             with transaction.atomic():
                 appointment.save()
+                
+                subject = "New Appointment Booked"
+                message_provider = f"""
+                            Hello {appointment.service.provider.user.first_name}, 
 
+                            A new appointment has been booked by {appointment.client.first_name }, 
+
+                            📅 Date: {appointment.appointment_date}
+                            🕐 Time: {appointment.start_time.strftime('%I:%M %p')}
+                            🧾 Service: {appointment.service.name}
+                            💬 Note: {appointment.notes or 'None'}
+
+                            Login to your dashboard to view more details.
+                        """
+                message_client = f"""
+                            Hi {appointment.client.first_name},
+
+                            Your appointment with {appointment.service.provider.user.get_full_name()} has been successfully booked.
+
+                            📅 Date: {appointment.appointment_date}
+                            🕐 Time: {appointment.start_time.strftime('%I:%M %p')}
+                            🧾 Service: {appointment.service.name}
+
+                            We'll remind you 24 hours before it starts.
+                        """
+                # print("SETTINGS:", settings)
+                # print("DEFAULT_FROM_EMAIL:", settings.DEFAULT_FROM_EMAIL)
+                send_mail(subject, message_provider, settings.DEFAULT_FROM_EMAIL, [appointment.service.provider.user.email])
+                send_mail(subject, message_client, settings.DEFAULT_FROM_EMAIL, [appointment.client.email])
+                
                 appt_datetime = timezone.make_aware(
                     datetime.combine(appointment.appointment_date, appointment.start_time)
                 )
 
                 # Email reminder (1 day before)
+                reminder_day = appt_datetime - timedelta(days=1)
+                delay_seconds = (reminder_day - timezone.now()).total_seconds()
+                if delay_seconds > 0:
+                    send_appointment_reminder.apply_async(
+                        args=[
+                            appointment.client.email,
+                            "Appointment Reminder",
+                            f"Hi {appointment.client.first_name}, this is a reminder that you have an appointment tomorrow at {appointment.start_time.strftime('%I:%M %p')} for {appointment.service.name}."
+                        ],
+                        eta=reminder_day
+                        #countdown=delay_seconds
+                    )
+                '''
                 reminder_day = appt_datetime - timedelta(days=1)
                 if reminder_day > timezone.now():
                     Notification.objects.create(
@@ -408,7 +453,7 @@ def book_appointments(request, provider_id):
                         scheduled_for=reminder_day,
                         message=f"Reminder: You have an appointment for {appointment.service.name} tomorrow at {appointment.start_time}."
                     )
-
+'''
                 # SMS reminder (1 hour before)
                 reminder_hour = appt_datetime - timedelta(hours=1)
                 if reminder_hour > timezone.now():
@@ -504,8 +549,10 @@ def get_available_time_slots(provider, service, days_ahead=30):
 
         if date_slots:
             available_slots[current_date] = date_slots
-
     return available_slots
+
+
+
 @login_required(login_url="accounts:login")
 def load_slots(request, provider_id):
     if not request.htmx:
@@ -564,3 +611,4 @@ def appointment_details(request, appointment_id):
         'provider': provider
     }
     return render(request, 'service/appointment_details.html', context)
+
