@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'echoslot',
     'serviceapp',
     'clientapp',
-    'ratelimit',
+    'django_recaptcha',
 ]
 
 MIDDLEWARE = [
@@ -175,3 +175,6 @@ RATELIMIT_ENABLE = env.bool('RATELIMIT_ENABLE')
 CELERY_BROKER_URL = env('CELERY_BROKER_URL')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
+
+RECAPTCHA_PUBLIC_KEY = env('RECAPTCHA_SITE_KEY')
+RECAPTCHA_PRIVATE_KEY = env('RECAPTCHA_SECRET_KEY')

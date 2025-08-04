@@ -87,7 +87,14 @@ def verification_pending(request):
     return render(request, 'account/verification_pending.html')
     
 # for email verification
+@ratelimit(key='ip', rate='10/h', block=True)
+@ratelimit(key='post:email', rate='3/h', block=True)
+@ratelimit(key='post:email', rate='6/d', block=True)
 def resend_verification_link(request):
+    if request.user.is_authenticated and request.user.is_active:
+        messages.info(request, "Your email is already verified.")
+        return redirect('accounts:login') # set for now
+    
     if request.method == "POST":
         email = request.POST.get('email')
         try:
@@ -139,6 +146,8 @@ def delayed_send_email(user, request):
 
 # handle password reset request form
 @require_http_methods(["GET", "POST"])
+@ratelimit(key='ip', rate='5/h', block=True)
+@ratelimit(key='post:email', rate='3/h', block=True)
 def password_reset_request(request):
     if request.method == "POST":
         form = PasswordResetForm(request.POST)
@@ -180,13 +189,14 @@ def new_password_request(request, uidb64, token):
         return render(request, "account/newpassword.html", {"form": form})
     else:
         messages.error(request, "The password reset link is invalid or has expired.")
-        return render(request, "account/passwordrest_invalid.html")
+        return render(request, "account/passwordreset_invalid.html")
 
 @require_http_methods(["GET"])
 def passwordrest_complete(request):
     messages.success(request, "Your password has been reset successfully.")
     return redirect("accounts:login")
 
+@require_http_methods(['GET', 'POST'])
 @ratelimit(key='ip', rate='5/h', method='POST', block=True)
 @ratelimit(key='post:email', rate='3/h', method='POST', block=True)
 def resend_passwordreset_link(request):
@@ -194,7 +204,7 @@ def resend_passwordreset_link(request):
         email = request.POST.get('email', '').strip()
         try:
             validate_email(email) # checks the email format
-        except User.DoesNotExist:
+        except ValidationError:
             messages.error(request, "Please enter a valid email address")
             return render(request, "account/password_reset_form.html")
         try:
@@ -213,6 +223,8 @@ def handle_ratelimited(request, exception):
     return render(request, "account/password_reset_form.html", status=429)
 
 # register users
+@ratelimit(key='ip', rate='5/h', block=True)
+@ratelimit(key='post:email', rate='3/h', block=True)
 def registeraccount(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
@@ -239,6 +251,8 @@ def registeraccount(request):
         form = RegisterForm()
     return render(request, "account/register.html", {"form":form})
 
+@ratelimit(key='ip', rate='10/m', block=True)
+@ratelimit(key='post:email', rate='5/m', block=True)
 def loginaccount(request):
     if request.method == "POST":
         form = LoginForm(request.POST)

@@ -182,7 +182,6 @@ input[type="password"] {
     color: #333;
 }
 
-/* Existing checkbox styling */
 .remember-me input[type="checkbox"] {
     margin-right: 8px;
     width: 16px;
@@ -191,7 +190,6 @@ input[type="password"] {
     cursor: pointer;
 }
 
-/* New forgot password link style */
 .forgot-password a {
     font-size: 14px;
     color: #000000;

@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Register</title>
-    <link rel="stylesheet" href="{% static 'accounts/re.css'%}">
+    <link rel="stylesheet" href="{% static 'accounts/registeraccount.css'%}">
 </head>
 <body>
     <div class="form-container">
@@ -45,6 +45,13 @@
             <div class="form-group">
                 {{ form.password2 }}
                 {% for error in form.password2.errors %}
+                    <div class="field-error">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                {{ form.captcha }}
+                {% for error in form.captcha.errors %}
                     <div class="field-error">{{ error }}</div>
                 {% endfor %}
             </div>
