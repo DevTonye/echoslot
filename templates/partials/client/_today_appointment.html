@@ -1,0 +1,120 @@
+
+<div id="today-appointments" class="tab-content active">
+    {% if today_appointments %}
+        {% for appointment in page_obj %}
+        <div class="appointment-card" id="appointment-{{ appointment.id }}">
+            <div class="appointment-header">
+                <div class="appointment-title">{{ appointment.service.provider.first_name}} {{ appointment.service.provider.last_name}} - {{ appointment.service.name}}</div>
+                {% if appointment.status == 'scheduled' %}
+                    <span class="badge badge-scheduled">Scheduled</span>
+                {% elif appointment.status == 'confirmed' %}
+                    <span class="badge badge-confirmed">Confirmed</span>
+                {% endif %}
+            </div>
+            <div class="appointment-body">
+                <div class="info-item">
+                    <i class="fas fa-calendar"></i>
+                    <span>{{ appointment.appointment_date|date:"l, M d, Y" }} at {{ appointment.start_time|time:"h:i A" }}</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-clock"></i>
+                    <span>{{ appointment.service.duration }} min</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>{{ appointment.service.provider.address }}</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-dollar-sign"></i>
+                    <span>{{ appointment.service.price}}</span>
+                </div>
+
+                <div class="info-item">
+                    <span><a href="{% url 'clientapp:appointment_info' appointment.appointment_id %}?next={{ request.path }}" class="btn btn-outline">View All</a></span>
+                </div>
+            </div>
+            <div class="appointment-footer">
+                <button 
+                    class="action-btn btn-cancel" 
+                    hx-post="{% url 'clientapp:cancel_appointment_action' appointment.appointment_id %}"
+                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                    hx-target="#appointment-{{ appointment.id }}"
+                    hx-swap="innerHTML">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <!--
+                    <button class="action-btn btn-reschedule">
+                        <i class="fas fa-calendar-alt"></i> Reschedule
+                    </button>
+                -->
+            </div>
+        </div>
+        {% endfor %}
+
+        <!--  Pagination Section -->
+    {% if page_obj.has_previous or page_obj.has_next %}
+        <div class="d-flex justify-content-center mt-3">
+            <nav>
+                <ul class="pagination pagination-sm">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link"
+                               hx-get="today-appointments/?page=1"
+                               hx-target="#appointment-content"
+                               hx-swap="innerHTML"
+                               aria-label="First">
+                               &laquo; First
+                            </a>
+                        </li>
+
+                        <li class="page-item">
+                            <a class="page-link"
+                                hx-get="upcoming-appointments/?page={{ page_obj.previous_page_number }}"
+                                hx-target="#appointment-content"
+                                hx-swap="innerHTML"
+                                aria-label="Previous">    
+                                Previous
+                            </a>
+                        </li>
+                    {% endif %}
+                        <!-- Current page info -->
+                        <li class="page-item active">
+                            <span class="page-link">
+                                {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                            </span>
+                        </li>
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link"
+                                hx-get="today-appointments/?page={{ page_obj.next_page_number }}"
+                                hx-target="#appointment-content" 
+                                hx-swap="innerHTML"
+                                aria-label="Next">
+                                Next
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link"
+                                hx-get="today-appointments/?page={{ page_obj.paginator.num_pages }}"
+                                hx-target="#appointment-content" 
+                                hx-swap="innerHTML"
+                                aria-label="Last">
+                                Last &raquo;
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    {% endif %}
+
+    {% else %}
+        <div class="no-data">
+            <i class="fas fa-calendar-times" style="font-size: 2.5rem; margin-bottom: 15px; color: #e9ecef;"></i>
+            <h3>No appointments scheduled for today</h3>
+            <p>Your schedule is clear for today</p>
+        </div>
+    {% endif %}
+</div>
+
+  

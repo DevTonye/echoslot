@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'accounts/verificationfailed.css' %}">
+    <title>Verification Failed</title>
+</head>
+<body>
+    <div class="confirmation-container">
+        <div class="icon-section">
+            <div class="error-icon"></div>
+        </div>
+        
+        <div class="header">
+            <h2>Verification Failed</h2>
+            <p>We couldn't verify your account</p>
+        </div>
+        
+        <div class="content-section">
+            <p>The verification link you used is either invalid, expired, or has already been used. This can happen if:</p>
+            <p>• The link is older than 24 hours<br>
+               • You've already verified your account<br>
+               • The link was corrupted during transmission</p>
+            <p>Don't worry - you can request a new verification link to complete the process.</p>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="action-section">
+            <a href="{% url 'accounts:login' %}" class="back-link">Back to Login</a>
+            <a href="{% url 'accounts:resend_verification' %}" class="retry-link">Request New Link</a>
+        </div>
+    </div>
+</body>
+</html>

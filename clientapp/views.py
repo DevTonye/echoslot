@@ -39,6 +39,7 @@ def create_clientprofile(request):
                     messages.error(request, f"{field}: {error}")
     else:
         form = ClientProfileForm()
+   
     return render(request, 'client/clientprofile.html', {"form": form})
 
 @login_required(login_url="accounts:login")
@@ -50,7 +51,7 @@ def client_appointment_dashboard(request):
         client=requesting_client, 
         appointment_date=today,
         status__in=['scheduled', 'confirmed']
-    ).order_by('start_time')
+    ).order_by('start_time')[:3]
 
     upcoming_appointments_query = Appointment.objects.filter(
         client=requesting_client, 
@@ -63,7 +64,7 @@ def client_appointment_dashboard(request):
     ).order_by('-appointment_date', '-start_time')
 
     total_appointments = today_appointments_quary.count() + upcoming_appointments_query.count()
-
+    
     context = {
         "requesting_client":requesting_client,
         "today_appointments": today_appointments_quary,
@@ -103,7 +104,7 @@ def today_appointments(request):
         "today_appointments": today_appointments_query,
         "page_obj":page_obj
     }
-    return render(request, "partials/client/_today_appointments.html", context)
+    return render(request, "partials/client/_today_appointment.html", context)
 
 @login_required(login_url="accounts:login")
 def upcoming_appointments(request):
@@ -208,7 +209,9 @@ def appointment_info(request, appointment_id):
 
 @login_required(login_url="accounts:login")
 def profile_settings(request):
-    return render(request, "client/profile_settings.html")
+    total_appointments = Appointment.objects.filter(client=request.user).count()
+
+    return render(request, "client/profile_settings.html", {"total_appointments":total_appointments})
 
 # edit profile
 @login_required(login_url="accounts:login")
@@ -231,7 +234,8 @@ def client_edit_profile(request):
                     messages.error(request, f"{field}: {error}")
     else:
         form = ClientProfileForm(instance=client_profile)
-    return render(request, "partials/client/_editprofile.html", {"form":form})
+    
+    return render(request, "partials/client/_editprofile.html", {"form":form })
 
 @login_required(login_url="accounts:login")
 def security_settings(request):

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book an Appointment</title>
-    <link rel="stylesheet" href="{% static 'service/book_appointment.css'%}">
+    <link rel="stylesheet" href="{% static 'services/book_appointment.css'%}">
 </head>
 <body>
     <div class="container">
@@ -70,11 +70,7 @@
                     {% endif %}
                     
                     <div class="time-selection">
-                        <div class="field">
-                            <label for="{{ form.appointment_date.id_for_label }}">Date</label>
-                            {{ form.appointment_date.errors }}
-                            {{ form.appointment_date }}
-                        </div>
+                   
                         <div class="field">
                             <label for="{{ form.start_time.id_for_label }}">Time</label>
                             {{ form.start_time.errors }}

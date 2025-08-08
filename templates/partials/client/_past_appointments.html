@@ -33,9 +33,9 @@
             </div>
         </div>
         <div class="appointment-footer">
-            <button class="action-btn btn-outline">
+            <a href="{% url 'clientapp:appointment_info' appointment.appointment_id %}?next={{ request.path }}" class="action-btn btn-outline">
                 <i class="fas fa-receipt"></i> View Receipt
-            </button>
+            </a>
         </div>
     </div> <!-- close appointment-card -->
     {% endfor %}

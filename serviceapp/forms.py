@@ -118,8 +118,8 @@ class AppointmentForm(forms.ModelForm):
         widget=forms.Select(attrs={'class': 'form-control'})
     )
     appointment_date = forms.DateField(
-    widget=forms.DateInput(attrs={'type': 'date'}),
-    initial=datetime.today().strftime('%Y-%m-%d %H:%M:%S') 
+    widget=forms.HiddenInput(),  # Hide the field
+    required=False,  # Make it not required
 )
 
     start_time = forms.ChoiceField(

@@ -1030,23 +1030,10 @@ textarea.form-input {
 }
 
 .stat-card {
-    background: white;
-    border-radius: 8px;
     padding: 1.5rem;
-    border: 1px solid #e2e8f0;
     text-align: center;
     transition: all 0.2s;
     min-width: 120px;
-}
-
-.stat-card:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    transform: translateY(-2px);
-}
-
-.stat-card.accent {
-    border-color: #bee3f8;
-    background: #f0f9ff;
 }
 
 .stat-value {

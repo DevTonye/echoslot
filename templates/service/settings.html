@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block title %}Settings{% endblock %}
 
 {% block content %}
@@ -55,18 +55,10 @@
 
 {% block extra_js %}
 <script>
-    // Load profile by default when page loads
-    document.addEventListener('DOMContentLoaded', function () {
-        htmx.ajax('GET', "{% url 'serviceapp:settings-profile' %}", {
-            target: '#setting-content',
-            swap: 'innerHTML'
-        });
-    });
-
-    document.body.addEventListener('htmx:configRequest', function (event) {
-        event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
-    });
+    // Pass data from Django to JS
+    const settingsProfileurl = "{% url 'serviceapp:settings-profile' %}"
+    const csrfToken = "{{ csrf_token }}";
 </script>
-    
+<script src="{% static 'js/settings.js' %}"></script>
 
 {% endblock %}

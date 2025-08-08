@@ -1,3 +1,4 @@
+{% load static %}
 <div id="profile-section" class="settings-section active">
     {% if messages %}
         {% for message in messages %}
@@ -130,19 +131,7 @@
         </div>
     </div>
     
-    <script>
-        function triggerFileInput() {
-            // Get the actual form field (not the custom one)
-            const realFileInput = document.querySelector('input[name="profile_image"]');
-            realFileInput.click();
-        }
-
-        // Add event listener when the page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            const fileInput = document.querySelector('input[name="profile_image"]');
-            if (fileInput) {
-                fileInput.addEventListener('change', previewImage);
-            }
-        });
-    </script>
+    {% block extra_js %}
+    <script src="{% static 'js/settingsprofile.js' %}"></script>
+{% endblock %}
 </div>
