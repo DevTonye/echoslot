@@ -19,8 +19,7 @@ from datetime import datetime, timedelta, time
 from django.template.loader import render_to_string
 from django.http import HttpResponse
 from django.core.paginator import Paginator
-from serviceapp.tasks import send_appointment_reminder
-
+from django.urls import reverse
 # service provider views
 User = get_user_model()
 
@@ -87,7 +86,9 @@ def service_dashboard(request):
 
     return render(request, 'service/dashboard.html', context)
 
+# handle with htmx
 @login_required(login_url="accounts:login")
+@service_provider_required
 def provider_setting(request):
     provider = request.user.service_provider
     return render(request, "service/settings.html", {"provider":provider})
@@ -398,6 +399,8 @@ def book_appointments(request, provider_id):
             with transaction.atomic():
                 appointment.save()
                 
+                login_url = request.build_absolute_uri(reverse("accounts:login"))
+
                 subject = "New Appointment Booked"
                 message_provider = f"""
                             Hello {appointment.service.provider.user.first_name}, 
@@ -410,6 +413,7 @@ def book_appointments(request, provider_id):
                             💬 Note: {appointment.notes or 'None'}
 
                             Login to your dashboard to view more details.
+                            {login_url}
                         """
                 message_client = f"""
                             Hi {appointment.client.first_name},
@@ -419,6 +423,9 @@ def book_appointments(request, provider_id):
                             📅 Date: {appointment.appointment_date}
                             🕐 Time: {appointment.start_time.strftime('%I:%M %p')}
                             🧾 Service: {appointment.service.name}
+
+                            You can log in here if needed:
+                            {login_url}
 
                             We'll remind you 24 hours before it starts.
                         """
@@ -431,7 +438,8 @@ def book_appointments(request, provider_id):
                     datetime.combine(appointment.appointment_date, appointment.start_time)
                 )
 
-                # Email reminder (1 day before)
+                '''
+                 # Email reminder (1 day before)
                 reminder_day = appt_datetime - timedelta(days=1)
                 delay_seconds = (reminder_day - timezone.now()).total_seconds()
                 if delay_seconds > 0:
@@ -444,7 +452,6 @@ def book_appointments(request, provider_id):
                         eta=reminder_day
                         #countdown=delay_seconds
                     )
-                '''
                 reminder_day = appt_datetime - timedelta(days=1)
                 if reminder_day > timezone.now():
                     Notification.objects.create(
@@ -550,29 +557,6 @@ def get_available_time_slots(provider, service, days_ahead=30):
         if date_slots:
             available_slots[current_date] = date_slots
     return available_slots
-
-
-
-@login_required(login_url="accounts:login")
-def load_slots(request, provider_id):
-    if not request.htmx:
-        return render(request, "403.html", status=403)
-    
-    provider = get_object_or_404(ServiceProvider, id=provider_id)
-    service_id = request.GET.get("service")
-    
-    if service_id:
-        try:
-            service = Service.objects.get(id=service_id, provider=provider)
-            available_slots = get_available_time_slots(provider, service)
-        except Service.DoesNotExist:
-            available_slots = {}
-    else:
-        available_slots = {}
-
-    return render(request, "service/partials/slot_options.html", {
-        "available_slots": available_slots
-    })
 
 @login_required(login_url="accounts:login")
 def appointment_success(request, appointment_id):

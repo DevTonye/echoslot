@@ -223,7 +223,7 @@ def handle_ratelimited(request, exception):
     return render(request, "account/password_reset_form.html", status=429)
 
 # register users
-@ratelimit(key='ip', rate='5/h', block=True)
+@ratelimit(key='ip', rate='10/h', block=True)
 @ratelimit(key='post:email', rate='3/h', block=True)
 def registeraccount(request):
     if request.method == "POST":
@@ -294,7 +294,7 @@ def loginaccount(request):
 
 # logout users
 def logoutuser(request):
-    username = request.user.username  # Get the username before logging out
+    username = request.user.username  
     logout(request)
     messages.success(request, f'{username} logged out')
     return redirect("accounts:login")

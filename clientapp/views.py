@@ -10,18 +10,27 @@ from serviceapp.models import Appointment, ServiceProvider, Service
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import HttpResponse
-
+from functools import wraps
 User = get_user_model()
 
+def client_role_required(view_func):
+    """Decorator that only checks if user is a CLIENT (doesn't check for profile)"""
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        if request.user.role != CustomUser.UserRole.CLIENT:
+            messages.error(request, "You don't have access to this page")
+            return redirect('accounts:logout')
+        return view_func(request, *args, **kwargs)
+    return wrapper
+
+
 @login_required(login_url="accounts:login")
+@client_role_required
 def create_clientprofile(request):
-    if request.user.role != CustomUser.UserRole.CLIENT:
-        messages.error(request, "Access deined")
-        return redirect("serviceapp:dashboard")
-    # check if the user already has a profile
-    if ClientProfile.objects.filter(user=request.user).exists():
-        messages.error(request, "You already have a profile and cannot create another one")
-        return redirect('serviceapp:find_serviceproviders')
+    if hasattr(request.user, 'clientprofile'):
+        messages.info(request, 'You already have a profile')
+        return redirect('clientapp:client_dashboard')
+     
     if request.method == "POST":
         form = ClientProfileForm(request.POST, request.FILES)
         if form.is_valid():
@@ -43,6 +52,7 @@ def create_clientprofile(request):
     return render(request, 'client/clientprofile.html', {"form": form})
 
 @login_required(login_url="accounts:login")
+@client_role_required
 def client_appointment_dashboard(request):
     requesting_client = request.user
     today = timezone.now().date()
@@ -76,10 +86,12 @@ def client_appointment_dashboard(request):
 
 # view clients appointments 
 @login_required(login_url="accounts:login")
+@client_role_required
 def client_appointments(request):
      return render(request, "client/appointments.html")
 
 @login_required(login_url="accounts:login")
+@client_role_required
 def today_appointments(request):
     if not request.htmx:
         return render(request, "403.html", status=403)
@@ -107,6 +119,7 @@ def today_appointments(request):
     return render(request, "partials/client/_today_appointment.html", context)
 
 @login_required(login_url="accounts:login")
+@client_role_required
 def upcoming_appointments(request):
     if not request.htmx:
         return render(request, "403.html", status=403)
@@ -134,6 +147,7 @@ def upcoming_appointments(request):
     return render(request, "partials/client/_upcoming_appointments.html", context)
 
 @login_required(login_url="accounts:login")
+@client_role_required
 def past_appointments(request):
     if not request.htmx:
         return render(request, "403.html", status=403)
@@ -159,6 +173,7 @@ def past_appointments(request):
 
 # view cancelled appointments
 @login_required(login_url="accounts:login")
+@client_role_required
 def cancelled_appointments(request):
     if not request.htmx:
         return render(request, "403.html", status=403)
@@ -181,6 +196,7 @@ def cancelled_appointments(request):
 
 # cancel appointments
 @login_required(login_url="accounts:login")
+@client_role_required
 def cancel_appointment_action(request, appointment_id):
     if not request.htmx:
         return render(request, "403.html", status=403)
@@ -196,6 +212,7 @@ def cancel_appointment_action(request, appointment_id):
 
 # view info about the appointment 
 @login_required(login_url="accounts:login")
+@client_role_required
 def appointment_info(request, appointment_id):
     requesting_client = request.user
     appointment = Appointment.objects.get(appointment_id=appointment_id)
@@ -208,6 +225,7 @@ def appointment_info(request, appointment_id):
 
 
 @login_required(login_url="accounts:login")
+@client_role_required
 def profile_settings(request):
     total_appointments = Appointment.objects.filter(client=request.user).count()
 
@@ -215,6 +233,7 @@ def profile_settings(request):
 
 # edit profile
 @login_required(login_url="accounts:login")
+@client_role_required
 def client_edit_profile(request):
     # Block direct non-HTMX access
     if not request.htmx:
@@ -238,6 +257,7 @@ def client_edit_profile(request):
     return render(request, "partials/client/_editprofile.html", {"form":form })
 
 @login_required(login_url="accounts:login")
+@client_role_required
 def security_settings(request):
     if not request.htmx:
         return render(request, "403.html", status=403)

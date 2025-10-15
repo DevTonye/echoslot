@@ -1,0 +1,281 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: white;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    color: #1a1a1a;
+}
+.custom-reset-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.reset-container,
+.confirmation-container {
+    width: 100%;
+    max-width: 350px;
+    text-align: center;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.header h2 {
+    font-size: 28px;
+    font-weight: 300;
+    color: #000;
+    margin-bottom: 12px;
+    letter-spacing: -0.3px;
+}
+
+.header p {
+    color: #949494;
+    font-size: 16px;
+    font-weight: 300;
+}
+
+.form-section,
+.content-section {
+    margin-bottom: 32px;
+    text-align: left;
+}
+
+.input-group {
+    margin-bottom: 28px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 13px;
+    color: #4a4a4a;
+    margin-bottom: 8px;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.input-field {
+    width: 100%;
+    padding: 16px 0;
+    border: none;
+    border-bottom: 1px solid #e0e0e0;
+    background: transparent;
+    font-size: 17px;
+    color: #000;
+    transition: border-color 0.3s ease;
+}
+
+.input-field:focus {
+    outline: none;
+    border-bottom-color: #000;
+}
+
+.input-field::placeholder {
+    color: #c0c0c0;
+    font-weight: 300;
+}
+
+.action-btn {
+    width: 100%;
+    padding: 18px;
+    background: #000;
+    color: white;
+    border: none;
+    font-size: 15px;
+    font-weight: 400;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    border-radius: 2px;
+    text-align: center;
+    display: inline-block;
+    text-decoration: none;
+    margin-top: 24px;
+}
+
+.action-btn:hover {
+    background: #2a2a2a;
+    color: white;
+    text-decoration: none;
+}
+
+.divider {
+    text-align: center;
+    margin: 32px 0;
+    position: relative;
+    color: #999;
+    font-size: 13px;
+}
+
+.divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #f0f0f0;
+    z-index: 1;
+}
+
+.divider span {
+    background: white;
+    padding: 0 20px;
+    position: relative;
+    z-index: 2;
+}
+
+.secondary-link {
+    text-align: center;
+}
+
+.secondary-link a {
+    color: #666;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 300;
+    transition: color 0.2s ease;
+}
+
+.secondary-link a:hover {
+    color: #000;
+}
+
+/* Messages */
+.message,
+.notice {
+    padding: 16px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    border-left: 3px solid #000;
+    background: #f9f9f9;
+    color: #333;
+}
+
+.message.error {
+    background: #fef2f2;
+    border-left-color: #dc2626;
+    color: #991b1b;
+}
+
+.message.success {
+    background: #f0fdf4;
+    border-left-color: #16a34a;
+    color: #166534;
+}
+
+.notice {
+    background: #fff8e1;
+    border-left-color: #ffc107;
+    color: #856404;
+    border-radius: 2px;
+}
+
+.notice-icon {
+    font-weight: 600;
+    margin-right: 8px;
+    display: inline-block;
+}
+
+.help-text,
+.error-text,
+.resend-text {
+    font-size: 12px;
+    margin-top: 6px;
+    line-height: 1.4;
+}
+
+.help-text {
+    color: #949494;
+}
+
+.error-text {
+    color: #dc2626;
+}
+
+.resend-text {
+    color: #000;
+}
+
+/* Confirmation Styles */
+.check-icon {
+    width: 64px;
+    height: 64px;
+    border: 2px solid #2ebc43;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.check-icon::after {
+    content: '✓';
+    font-size: 28px;
+    color: #1ca44e;
+    font-weight: 300;
+}
+
+.back-link {
+    display: inline-block;
+    color: #000000;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 300;
+    padding: 12px 24px;
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    transition: all 0.2s ease;
+    letter-spacing: 0.3px;
+}
+
+.back-link:hover {
+    color: #000;
+    border-color: #000;
+}
+
+.resend-link {
+    color: #666;
+    text-decoration: none;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: color 0.2s ease;
+}
+
+.resend-link:hover {
+    color: #000;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    body {
+        padding: 20px;
+    }
+
+    .header h2 {
+        font-size: 24px;
+    }
+
+    .reset-container,
+    .confirmation-container {
+        max-width: 100%;
+    }
+
+    .content-section {
+        text-align: center;
+    }
+}

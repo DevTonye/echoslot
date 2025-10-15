@@ -14,12 +14,13 @@ body {
     justify-content: center;
     align-items: center;
     background-color: #f8f9fa; 
+    padding: 20px; 
+
 }
 
 .form-container {
     background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+ 
     padding: 40px;
     width: 100%;
     max-width: 480px;
@@ -173,4 +174,149 @@ input[type="password"] {
     box-sizing: border-box;
     border: 1px solid #ccc;
     border-radius: 5px;
+}
+
+/* Mobile specific optimizations */
+@media screen and (max-width: 768px) {
+    body {
+        padding: 12px;
+        align-items: flex-start;
+        padding-top: 20px;
+    }
+    
+    .form-container {
+        padding: 24px 20px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
+    
+    .form-container h2 {
+        font-size: 18px;
+        margin-bottom: 20px;
+    }
+    
+    .btn-google {
+        font-size: 14px;
+        padding: 12px 14px;
+    }
+    
+    .btn-google svg {
+        margin-right: 6px;
+    }
+    
+    .form-group {
+        margin-bottom: 16px;
+    }
+    
+    .signup-form input,
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+        padding: 14px 16px;
+        font-size: 16px; 
+        border-radius: 8px;
+    }
+    
+    .btn {
+        padding: 16px 24px;
+        font-size: 16px;
+        border-radius: 8px;
+    }
+    
+    .divider {
+        margin: 16px 0;
+        font-size: 12px;
+    }
+    
+    .divider::before {
+        margin-right: 8px;
+    }
+    
+    .divider::after {
+        margin-left: 8px;
+    }
+    
+    .login-link {
+        margin-top: 16px;
+    }
+    
+    .login-link p {
+        font-size: 13px;
+    }
+}
+
+/* Extra small screens */
+@media screen and (max-width: 480px) {
+    body {
+        padding: 8px;
+        padding-top: 16px;
+    }
+    
+    .form-container {
+        padding: 20px 16px;
+    }
+    
+    .form-container h2 {
+        font-size: 16px;
+    }
+    
+    .btn-google {
+        font-size: 13px;
+        padding: 12px;
+    }
+    
+    .signup-form input,
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+        padding: 12px 14px;
+    }
+    
+    .btn {
+        padding: 14px 20px;
+    }
+}
+
+/* Landscape orientation on mobile */
+@media screen and (max-height: 600px) and (orientation: landscape) {
+    body {
+        align-items: flex-start;
+        padding-top: 10px;
+    }
+    
+    .form-container {
+        margin-bottom: 10px;
+    }
+    
+    .form-container h2 {
+        margin-bottom: 16px;
+    }
+    
+    .form-group {
+        margin-bottom: 12px;
+    }
+    
+    .google-signup-container {
+        margin-bottom: 14px;
+    }
+    
+    .divider {
+        margin: 12px 0;
+    }
+}
+
+/* Touch target improvements */
+@media (hover: none) and (pointer: coarse) {
+    .btn-google,
+    .btn,
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+        min-height: 44px; 
+    }
+    
+    .login-link a {
+        padding: 8px 4px;
+        margin: -8px -4px;
+    }
 }

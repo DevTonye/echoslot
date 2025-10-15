@@ -177,25 +177,22 @@ body {
 .support-link:hover {
     color: #000;
 }
-
-@media (max-width: 480px) {
+@media (max-width: 600px) {
     body {
         padding: 20px;
     }
 
-    .header h2 {
-        font-size: 24px;
+    .form-container {
+        padding: 20px;
     }
 
-    .verification-container {
-        max-width: 100%;
+    .form-container h2 {
+        font-size: 20px;
     }
 
-    .content-section {
-        text-align: center;
-    }
-
-    .help-section {
-        text-align: center;
+    .signup-form input, 
+    .signup-form .btn {
+        font-size: 14px;
+        padding: 10px;
     }
 }

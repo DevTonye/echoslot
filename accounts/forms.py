@@ -13,7 +13,6 @@ class RegisterForm(UserCreationForm):
     email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'class': 'forms-control', 'placeholder': 'youremail@gmail.com'}))
     password1 = forms.CharField(required=True, widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'enter password'}))
     password2 = forms.CharField(required=True, widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'confirm password'}))
-    captcha = ReCaptchaField(widget=ReCaptchaV2Checkbox)
     
     class Meta:
         model = User

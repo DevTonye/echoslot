@@ -97,7 +97,6 @@ body {
     margin-right: 12px;
 }
 
-/* Divider Styles - Only show if you add the divider element */
 .divider {
     display: flex;
     align-items: center;
@@ -121,7 +120,6 @@ body {
     margin-left: 16px;
 }
 
-/* If you want to add space between Google button and email form */
 .login-form .form-group:first-of-type {
     margin-top: 24px;
 }
@@ -211,4 +209,31 @@ input[type="password"] {
 
 .login-link a:hover {
     text-decoration: underline;
+}
+@media (max-width: 480px) {
+    body {
+        display: block; 
+        padding: 20px;
+        background-color: #f8f9fa;
+    }
+
+    .form-container {
+        max-width: 100%;
+        width: 100%;
+        padding: 20px;
+        margin: 0 auto;
+        border-radius: 0; 
+        box-shadow: none; 
+    }
+
+    .form-container h2 {
+        font-size: 20px;
+        margin-bottom: 20px;
+    }
+
+    .remember-options {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
 }

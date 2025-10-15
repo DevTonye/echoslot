@@ -59,7 +59,7 @@ class AvailabilityScheduleForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.service_provider = kwargs.pop('service_provider', None)
         super().__init__(*args, **kwargs)
-
+   
     def clean(self):
         cleaned_data = super().clean()
         start_time = cleaned_data.get('start_time')
