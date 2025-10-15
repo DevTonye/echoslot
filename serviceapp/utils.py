@@ -2,13 +2,11 @@ from datetime import datetime, timedelta
 from django.utils import timezone
 from .models import AvailabilitySchedule, Appointment
 
-
-# generate available time slot for clients base on a service provider availability schedule
 def get_available_time_slots(provider, service, days_ahead=30):
     available_slots = {}
     now = timezone.localtime()  # current aware datetime in active timezone
     today = now.date()
-    slot_duration = service.duration  # minutes
+    slot_duration = service.duration  # in minutes
 
     # Provider’s availability
     availability_schedule = AvailabilitySchedule.objects.filter(
@@ -44,15 +42,14 @@ def get_available_time_slots(provider, service, days_ahead=30):
                 slot_start = current_time.time()
                 slot_end = (current_time + timedelta(minutes=slot_duration)).time()
 
-                # Full aware datetime for this slot
                 slot_datetime = timezone.make_aware(datetime.combine(current_date, slot_start))
-                
+
                 # Skip if slot is in the past
                 if slot_datetime <= now:
                     current_time += timedelta(minutes=slot_duration)
                     continue
 
-                # Check if slot overlaps with existing appointment
+                # Check for overlap with existing appointments
                 is_available = True
                 if current_date in booked_slots:
                     for booked_start, booked_end in booked_slots[current_date]:
@@ -62,7 +59,7 @@ def get_available_time_slots(provider, service, days_ahead=30):
 
                 if is_available:
                     date_slots.append({
-                        'time': slot_start,
+                        'time': slot_start.strftime('%H:%M:%S'),  # ✅ serialize to string
                         'display': slot_start.strftime('%I:%M %p'),
                         'available': True
                     })
@@ -70,5 +67,7 @@ def get_available_time_slots(provider, service, days_ahead=30):
                 current_time += timedelta(minutes=slot_duration)
 
         if date_slots:
-            available_slots[current_date] = date_slots
+            # ✅ convert the date key to a string for JSON safety
+            available_slots[current_date.strftime('%Y-%m-%d')] = date_slots
+
     return available_slots
