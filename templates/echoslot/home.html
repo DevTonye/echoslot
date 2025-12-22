@@ -1,0 +1,135 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echoslot - Modern Scheduling</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'echoslot/index.css'%}">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-calendar-alt nav-icon"></i>
+                <span class="brand-name">Echoslot</span>
+            </div>
+              <div class="menu-toggle" id="mobile-menu">
+                <i class="fas fa-bars"></i>
+            </div>
+            
+            <div class="nav-links" id="nav-links">
+                <a href="#features">Features</a>
+            <a href="{% url 'schema-swagger-ui' %}">API Docs</a>
+                   
+            <button class="btn btn-outline">Dashboard</button>
+                <a href="{% url 'accounts:login'%}">Login</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Card -->
+    <div class="main-card">
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    Modern Scheduling 
+                    for Busy Teams
+                </h1>
+                <p class="hero-description">
+                    Echoslot simplifies appointment scheduling with real-time availability, smart booking, 
+                    and automated email reminders. Built for service providers, it helps you stay organized, 
+                    reduce no-shows, and deliver a seamless client experience — all in one place.
+                </p>
+                <div class="hero-buttons">
+                    <a href="{% url 'accounts:register' %}" class="btn btn-primary">Get Started</a>
+                </div>
+                
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-number">50K+</div>
+                        <div class="stat-label">Appointments</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">98%</div>
+                        <div class="stat-label">Satisfaction</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">4.9/5</div>
+                        <div class="stat-label">Rating</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features" id="features">
+            <div class="section-header">
+                <h2 class="section-title">Designed for productivity</h2>
+                <p class="section-subtitle">
+                    Everything you need to manage appointments efficiently and delight your clients.
+                </p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-calendar-day feature-icon"></i>
+                    <h3 class="feature-title">Real-Time Scheduling</h3>
+                    <p class="feature-description">
+                        Clients can view available time slots and book appointments instantly.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <i class="fas fa-bell feature-icon"></i>
+                    <h3 class="feature-title">Automated Email Notifications</h3>
+                    <p class="feature-description">
+                        Get instant alerts when an appointment is booked, and send reminders 24 hours before.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <i class="fas fa-users feature-icon"></i>
+                    <h3 class="feature-title">Client Profiles</h3>
+                    <p class="feature-description">
+                        Track client history, notes, and preferences in one place.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <i class="fas fa-lock feature-icon"></i>
+                    <h3 class="feature-title">Secure Platform</h3>
+                    <p class="feature-description">
+                        Enterprise-grade security with end-to-end encryption.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <i class="fas fa-user-shield feature-icon"></i>
+                    <h3 class="feature-title">Role-Based Access Control</h3>
+                    <p class="feature-description">
+                        Separate dashboards and permissions for clients and service providers.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <i class="fas fa-cogs feature-icon"></i>
+                    <h3 class="feature-title">Custom Services & Availability</h3>
+                    <p class="feature-description">
+                        Each provider can manage their services and define custom availability schedules.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer class="footer">
+        <p class="footer-text">&copy; 2025 Echoslot. All rights reserved.</p>
+    </footer>
+
+    <script src="{% static 'js/index.js'%}"></script>
+</body>
+</html>

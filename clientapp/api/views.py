@@ -8,10 +8,12 @@ from rest_framework import status
 from django.core.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from ..permissions import IsClient
+from drf_spectacular.utils import extend_schema
 
 User = get_user_model()
 
-class ClientProfileiewSet(viewsets.ModelViewSet):
+@extend_schema(tags=['ClientAPI'])
+class ClientProfileViewSet(viewsets.ModelViewSet):
     queryset = ClientProfile.objects.all()
     serializer_class = ClientProfileSerializers
     permission_classes = [IsAuthenticated, IsClient]

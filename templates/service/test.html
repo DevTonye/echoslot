@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}My Service - EchoSlot{% endblock %}
+
+{% block content %}
+<div class="service-dashboard">
+    <section class="service-overview">
+        {% if services %}
+            {% for service in services %}
+            <div class="service-header">
+                <div class="service-title-section">
+                    <h1 class="service-title">{{ service.name }}</h1>
+                    <div class="service-meta">
+                        <span class="price">${{ service.price }}</span>
+                        <span class="divider">•</span>
+                        <span class="duration">{{ service.duration }} min</span>
+                    </div>
+                </div>
+                
+                <!-- Stats moved to header, inline with title -->
+                <div class="header-stats">
+                    <div class="stat-card accent">
+                        <div class="stat-value">{{services.count}}</div>
+                        <div class="stat-label">Total Bookings</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="service-content">
+                <div class="description-section">
+                    <h3>Service Description</h3>
+                    <p>{{ service.description|truncatechars:100 }}</p>
+                    
+                    <!-- Action buttons -->
+                    <div class="service-actions">
+                        <a href="{% url 'serviceapp:editservice' service.service_id %}" class="edit-service">
+                            <i class="fas fa-pencil-alt"></i> Edit Service
+                        </a>
+                        <a href="{% url 'serviceapp:deleteservice' service.service_id %}" class="delete-service">
+                            <i class="fas fa-trash-alt"></i> Delete
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-services-message">
+                <i class="fas fa-clipboard-list text-muted fa-3x"></i>
+                <p>No services available at the moment.</p>
+                <a href="{% url 'serviceapp:addservice' %}" class="btn btn-outline-success mt-3">
+                    <i class="fas fa-plus"></i> Add Your First Service
+                </a>
+            </div>
+        {% endif %}
+    </section>
+</div>   
+{% endblock %}

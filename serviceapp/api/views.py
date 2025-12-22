@@ -4,12 +4,14 @@ from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from rest_framework import viewsets
 from ..models import ServiceProvider, Service, AvailabilitySchedule, Appointment
+from ..throttle import ServiceProviderThrottle, ServiceThrottle, AppointmentCreateThrottle, AppointmentThrottle
+from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 from rest_framework import status
 from django.core.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from ..permissions import IsServiceProvider
 from ..utils import get_available_time_slots
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from django.db import transaction
 from django.urls import reverse
 from django.core.mail import send_mail
@@ -17,10 +19,12 @@ from django.utils import timezone
 from django.conf import settings
 from rest_framework.decorators import action
 from rest_framework import filters
-from django.db.models import Q
+from .pagination import CustomPagination
+from drf_spectacular.utils import extend_schema
 
 User = get_user_model()
 
+@extend_schema(tags=['ServiceProvider'])
 class ServiceProviderViewSet(viewsets.ModelViewSet):
     queryset = ServiceProvider.objects.all()
     serializer_class = ServiceProviderSerializer
@@ -37,6 +41,11 @@ class ServiceProviderViewSet(viewsets.ModelViewSet):
             return [AllowAny()]
         return [IsAuthenticated(), IsServiceProvider()]
 
+    def get_throttles(self):
+        if self.action in ['list', 'retrieve', 'get_availability']:
+            return [AnonRateThrottle()]
+        return [ServiceProviderThrottle()]
+    
     def get_queryset(self):
         queryset = ServiceProvider.objects.all()
         
@@ -84,6 +93,8 @@ class ServiceProviderViewSet(viewsets.ModelViewSet):
             'service': service.id,
             'available_slots': available_slots
         })
+    
+@extend_schema(tags=['Service'])
 class ServiceViewSet(viewsets.ModelViewSet):
     queryset = Service.objects.all()
     serializer_class = ServicesSerializer
@@ -100,6 +111,11 @@ class ServiceViewSet(viewsets.ModelViewSet):
             return [AllowAny()]
         return [IsAuthenticated(), IsServiceProvider()]
 
+    def get_throttles(self):
+        if self.action in ['list', 'retrieve']:
+            return [AnonRateThrottle()]
+        return [ServiceThrottle()]
+    
     def get_queryset(self):
         queryset = Service.objects.all()
         
@@ -127,10 +143,13 @@ class ServiceViewSet(viewsets.ModelViewSet):
         provider = ServiceProvider.objects.get(user=self.request.user)
         serializer.save(provider=provider)
 
+@extend_schema(tags=['Availability'])
 class AvailabilityScheduleViewSet(viewsets.ModelViewSet):
     queryset = AvailabilitySchedule.objects.all()
     serializer_class = AvailabilityScheduleSerializer
+    pagination_class = CustomPagination
     permission_classes = [IsAuthenticated, IsServiceProvider]
+    throttle_classes = [UserRateThrottle]
 
     def get_queryset(self):
         # Providers only see their own schedules
@@ -140,23 +159,57 @@ class AvailabilityScheduleViewSet(viewsets.ModelViewSet):
         provider = self.request.user.service_provider
         serializer.save(service_provider=provider)
 
+@extend_schema(tags=['Appointments'])
 class AppointmentViewSet(viewsets.ModelViewSet):
     queryset = Appointment.objects.all()
     serializer_class = AppointmentSerializer
+    pagination_class = CustomPagination
     permission_classes = [IsAuthenticated]
 
+   
     def get_queryset(self):
         user = self.request.user
-
         # Provider can see their own appointments
         if hasattr(user, 'service_provider'):
             provider_appointments = Appointment.objects.filter(service__provider__user=user)
             client_appointments =  Appointment.objects.filter(client=user)
             return (provider_appointments | client_appointments).distinct()
-        
         # Regular user can only see their own appointments
         return Appointment.objects.filter(client=user)
+
+    def get_throttles(self):
+        if self.action == 'create':
+            return [AppointmentCreateThrottle()]
+        return [AppointmentThrottle()]
     
+    # custom endpoints
+    @action(detail=False, methods=['get'], url_path='today')
+    def today_appointments(self, request):
+        today = date.today()
+        qs = self.get_queryset().filter(appointment_date=today, status__in=["scheduled", "completed"])
+        if not qs.exists():
+            return Response({"message": "No appointments found for today."},status=status.HTTP_200_OK)
+        serializer = self.get_serializer(qs, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['get'], url_path='upcoming')
+    def upcoming_appointments(self, request):
+        today = date.today()
+        qs = self.get_queryset().filter(appointment_date__gt=today, status__in=["scheduled", "completed"])
+        if not qs.exists():
+            return Response({"message": "No upcoming appointments found."},status=status.HTTP_200_OK)
+        serializer = self.get_serializer(qs, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['get'], url_path='past')
+    def past_appointments(self, request):
+        today = date.today()
+        qs = self.get_queryset().filter(appointment_date__lt=today, status__in=["scheduled", "completed"])
+        if not qs.exists():
+            return Response({"message": "No past appointments found."},status=status.HTTP_200_OK)
+        serializer = self.get_serializer(qs, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def create(self, request, *args, **kwargs):
         data = request.data
         user = request.user
@@ -247,6 +300,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
 
                         We'll remind you 24 hours before it starts.
                     """
+            # for testing
             # print("SETTINGS:", settings)
             # print("DEFAULT_FROM_EMAIL:", settings.DEFAULT_FROM_EMAIL)
             try:

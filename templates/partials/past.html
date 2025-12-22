@@ -1,81 +1,50 @@
-<div class="card-header">
-    <h5><i class="fas fa-history"></i> Past Appointments</h5>
-    <span class="badge badge-info">{{ past_appointments.count }} Appointment{{ past_appointments.count|pluralize }}</span>
+<div class="history-header">
+    <span><i class="fa-solid fa-circle-info"></i> History is stored for 90 days.</span>
+    <button class="btn-clear"><i class="fa-solid fa-trash-can"></i> Clear History</button>
 </div>
-<div class="card-body">
-    {% if past_appointments %}
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Image</th>
-                    <th>Client</th>
-                    <th>Service</th>
-                    <th>Duration</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for appointment in page_obj %}
-                <tr>
-                    <td>
-                        <strong>{{ appointment.appointment_date|date:"M d, Y" }}</strong>
-                        <br>
-                        <small class="text-muted">{{ appointment.appointment_date|date:"l" }}</small>
-                    </td>
-                    <td>
-                        <strong>{{ appointment.start_time|time:"h:i A" }}</strong>
-                    </td>
-                     {% if appointment.client.clientprofile %}
-                        {% with profile=appointment.client.clientprofile %}
-                            <td>
-                                <a href="{{ profile.profile_image.url }}" data-lightbox="client-{{ appointment.appointment_id }}">
-                                    <img src="{{ profile.profile_image.url }}" alt="{{ profile.first_name }}" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover; margin-right: 5px;">
-                                </a>
-                            </td>
-                        {% endwith %}
-                    {% else %}
-                        <div class="client-avatar-placeholder">
-                            <i class="fas fa-user"></i>
-                        </div>    
-                    {% endif %} 
-                    <td>
-                        <div>
-                            <strong>{{ appointment.first_name }} {{ appointment.last_name }}</strong>
-                        </div>
-                    </td>
-                    <td>{{ appointment.service.name }}</td>
-                    <td>{{ appointment.service.duration }} min</td>
-                    <td>
-                        {% if appointment.status == 'completed' %}
-                            <span class="badge badge-success">Completed</span>
-                        {% elif appointment.status == 'cancelled' %}
-                            <span class="badge badge-danger">Cancelled</span>
-                        {% elif appointment.status == 'no_show' %}
-                            <span class="badge badge-warning">No Show</span>
-                        {% else %}
-                            <span class="badge badge-secondary">{{ appointment.status|title }}</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <div class="d-flex" style="gap: 8px;">
-                            <a href="{% url 'serviceapp:appointment_details' appointment.appointment_id %}" class="btn btn-sm btn-outline-primary">
-                                <i class="fas fa-eye"></i> View
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
 
-    <!--  Pagination Section -->
+{% if past_appointments %}
+    {% for appointment in page_obj %}
+    <div class="appt-card {% if appointment.status == 'cancelled' %}cancelled{% endif %}">
+        <div class="appt-left">
+            <div class="date-badge {% if appointment.status == 'cancelled' %}cancelled{% endif %}">
+                <div class="db-month">{{ appointment.appointment_date|date:"b"|upper }}</div>
+                <div class="db-day">{{ appointment.appointment_date|date:"d" }}</div>
+            </div>
+            <div class="appt-info">
+                <h4>
+                    {{ appointment.service.name }}
+                    {% if appointment.status == 'completed' %}
+                        <span class="status-pill status-completed">COMPLETED</span>
+                    {% elif appointment.status == 'cancelled' %}
+                        <span class="status-pill status-cancelled">CANCELLED</span>
+                    {% endif %}
+                </h4>
+                <div class="appt-meta">
+                    <span>{{ appointment.start_time|time:"h:i A" }} • {{ appointment.first_name }} {{ appointment.last_name }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="appt-actions">
+            {% if appointment.status == 'completed' %}
+             <button 
+                class="btn-sm"
+                hx-get="{% url 'serviceapp:checkin_modal' appointment.appointment_id %}"
+                hx-target="#modal-container"
+                hx-swap="innerHTML"
+            >
+                view notes
+        </button>
+            {% elif appointment.status == 'cancelled' %}
+                <button class="btn-danger-text"><i class="fa-solid fa-xmark"></i> Delete</button>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Pagination -->
     {% if page_obj.has_previous or page_obj.has_next %}
-    <div class="d-flex justify-content-center mt-3">
+    <div style="display: flex; justify-content: center; margin-top: 20px;">
         <nav>
             <ul class="pagination pagination-sm">
                 {% if page_obj.has_previous %}
@@ -99,7 +68,6 @@
                     </li>
                 {% endif %}
 
-                <!-- Current page info -->
                 <li class="page-item active">
                     <span class="page-link">
                         {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
@@ -130,12 +98,10 @@
         </nav>
     </div>
     {% endif %}
-
-    {% else %}
+{% else %}
     <div class="empty-state">
         <i class="fas fa-calendar-times"></i>
         <p>No past appointments found</p>
         <p class="text-muted">Your appointment history will appear here once you have completed appointments.</p>
     </div>
-    {% endif %}
-</div>
+{% endif %}

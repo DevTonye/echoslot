@@ -5,62 +5,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}EchoSlot{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
     <link rel="stylesheet" href="{% static 'services/base.css'%}">
+    <link rel="stylesheet" href="{% static 'services/components.css' %}">
 {% block extra_css %}{% endblock %}
 </head>
 <body>
     <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <div class="sidebar-logo">
-                <i class="fas fa-calendar-check"></i>
-                <span>EchoSlot</span>
+    <nav class="sidebar">
+        <div>
+            <div class="logo">
+                <div style="width: 20px; height: 20px; background: #000; border-radius: 4px;"></div>
+                Echoslot
             </div>
-        </div>
-        <nav class="sidebar-menu">
-            <a href="{% url 'serviceapp:dashboard' %}" class="menu-item {% if active_tab == 'dashboard' %}active{% endif %}">
-                <i class="fas fa-tachometer-alt"></i>
-                <span>Dashboard</span>
-            </a>
-            <a href="{% url 'serviceapp:appointment' %}" class="menu-item {% if active_tab == 'appointments' %}active{% endif %}">
-                <i class="fas fa-calendar-alt"></i>
-                <span>Appointments</span>
-            </a>
-            <a href="{% url 'serviceapp:service'%}" class="menu-item {% if active_tab == 'services' %}active{% endif %}">
-                <i class="fas fa-list-alt"></i>
-                <span>Services</span>
-            </a>
-            <a href="{% url 'serviceapp:my_availability' %}" class="menu-item {% if active_tab == 'availability' %}active{% endif %}">
-                <i class="fas fa-clock"></i>
-                <span>My Availability</span>
-            </a>
-            <!-- will add later 
-            <a href="#" class="menu-item {% if active_tab == 'clients' %}active{% endif %}">
-                <i class="fas fa-users"></i>
-                <span>Clients</span>
-            </a>
-            
-                <a href="#" class="menu-item {% if active_tab == 'analytics' %}active{% endif %}">
-                    <i class="fas fa-chart-line"></i>
-                    <span>Analytics</span>
+            <div class="nav-item active">
+                <a href="{% url 'serviceapp:dashboard' %}"  {% if active_tab == 'dashboard' %}active{% endif %}>
+                    <i class="fa-regular fa-calendar" style="width: 20px;"></i> Dashboard
                 </a>
-            -->
-            <a href="{% url 'serviceapp:settings' %}" class="menu-item {% if active_tab == 'settings' %}active{% endif %}">
-                <i class="fas fa-cog"></i>
-                <span>Settings</span>
-            </a>
-        </nav>
-        <div class="sidebar-footer">
-            <div class="user-info">
-                <div class="user-avatar">
-                    <i class="fas fa-user"></i>
-                </div>
-                <span>{{ provider.user.username }}</span>
             </div>
+            <div class="nav-item">
+                <a href="{% url 'serviceapp:appointment' %}"  {% if active_tab == 'dashboard' %}active{% endif %}>
+                    <i class="fa-solid fa-list-check" style="width: 20px;"></i> Appointment</div>
+                </a>
+
+            <div class="nav-item">
+                <a href="{% url 'serviceapp:service' %}"  {% if active_tab == 'dashboard' %}active{% endif %}>
+                    <i class="fas fa-list-alt" style="width: 20px;"></i>Services</div>
+                </a>
+                
+                <div class="nav-item">
+                    <a href="{% url 'serviceapp:my_availability' %}"  {% if active_tab == 'dashboard' %}active{% endif %}>
+                        <i class="fa-regular fa-user" style="width: 20px;"></i> My Availability</div>
+                    </a>
+            <div class="nav-item">
+                <a href="{% url 'serviceapp:settings' %}"  {% if active_tab == 'dashboard' %}active{% endif %}>
+                    <i class="fa-solid fa-chart-simple" style="width: 20px;"></i> Settings</div>
+                </a>
+            </div>
+        <div class="user-mini">
+            <div class="user-avatar"></div>
+            <span style="font-size: 14px; font-weight: 600;">{{ provider.first_name}} {{ provider.last_name}}</span>
         </div>
-    </aside>
+    </nav>
 
     <!-- Main Content -->
     <main class="main-content">

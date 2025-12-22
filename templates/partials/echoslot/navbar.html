@@ -1,0 +1,26 @@
+<!-- Navigation -->
+<nav class="navbar" id="navbar">
+<div class="container nav-container">
+    <div class="nav-brand">
+
+            <i class="fas fa-calendar-alt nav-icon"></i>
+            <a href="{% url 'echoslot:index'%}">
+            <span class="brand-name">Echoslot</span>
+        </a>
+    </div>
+    
+    <div class="mobile-menu-toggle" id="mobile-menu">
+        <i class="fas fa-bars"></i>
+    </div>
+    
+    <div class="nav-links" id="nav-links">
+        
+        <a href="{% url 'echoslot:index'%}"> Home</a>
+        <a href="{% url 'schema-swagger-ui' %}">API</a>
+            <a href="{% url 'echoslot:about' %}">About</a>
+        <a href="{% url 'echoslot:contact' %}">Contact</a>
+        <a href="{% url 'accounts:login'%}" class="btn btn-outline">Login</a>
+        <a href="{% url 'accounts:register' %}" class="btn btn-primary" >Get Started</a>
+    </div>
+</div>
+</nav>

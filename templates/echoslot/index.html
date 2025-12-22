@@ -4,68 +4,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Echoslot - Modern Scheduling</title>
+    <title>Echoslot - Smart Appointment Scheduling</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'echoslot/index.css'%}">
+     <link rel="stylesheet" href="{% static 'echoslot/index.css'%}">
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar" id="navbar">
-        <div class="nav-container">
-            <div class="nav-brand">
-                <i class="fas fa-calendar-alt nav-icon"></i>
-                <span class="brand-name">Echoslot</span>
-            </div>
-              <div class="menu-toggle" id="mobile-menu">
-                <i class="fas fa-bars"></i>
+    {% include 'partials/echoslot/navbar.html'%}
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container hero-content">
+            <h1 class="hero-title">
+                Smart Scheduling for Busy Professionals
+            </h1>
+            <p class="hero-description">
+                Echoslot eliminates the hassle of manual scheduling with automated booking, real-time availability, and smart reminders. Focus on your work while we handle your calendar.
+            </p>
+            <div class="hero-buttons">
+                <a href="{% url 'accounts:register' %}" class="btn btn-secondary">Get Started Free</a>
+                <a href="#how-it-works" class="btn btn-outline">See How It Works</a>
             </div>
             
-            <div class="nav-links" id="nav-links">
-                <a href="#features">Features</a>
-                <button class="btn btn-outline">Dashboard</button>
-                <a href="{% url 'accounts:login'%}">Login</a>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number">50K+</div>
+                    <div class="stat-label">Appointments Scheduled</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">98%</div>
+                    <div class="stat-label">Reduced No-Shows</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">4.9/5</div>
+                    <div class="stat-label">User Rating</div>
+                </div>
             </div>
         </div>
-    </nav>
+    </section>
 
-    <!-- Main Card -->
-    <div class="main-card">
-        <section class="hero">
-            <div class="hero-content">
-                <h1 class="hero-title">
-                    Modern Scheduling 
-                    for Busy Teams
-                </h1>
-                <p class="hero-description">
-                    Echoslot simplifies appointment scheduling with real-time availability, smart booking, 
-                    and automated email reminders. Built for service providers, it helps you stay organized, 
-                    reduce no-shows, and deliver a seamless client experience — all in one place.
-                </p>
-                <div class="hero-buttons">
-                    <a href="{% url 'accounts:register' %}" class="btn btn-primary">Get Started</a>
-                </div>
-                
-                <div class="stats">
-                    <div class="stat-item">
-                        <div class="stat-number">50K+</div>
-                        <div class="stat-label">Appointments</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">98%</div>
-                        <div class="stat-label">Satisfaction</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">4.9/5</div>
-                        <div class="stat-label">Rating</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Features Section -->
-        <section class="features" id="features">
-            <div class="section-header">
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header" id="features-header">
                 <h2 class="section-title">Designed for productivity</h2>
                 <p class="section-subtitle">
                     Everything you need to manage appointments efficiently and delight your clients.
@@ -73,60 +54,169 @@
             </div>
             
             <div class="features-grid">
-                <div class="feature-card">
-                    <i class="fas fa-calendar-day feature-icon"></i>
+                <div class="feature-card" id="feature-1">
+                    <div class="feature-icon">
+                        <i class="fas fa-calendar-day"></i>
+                    </div>
                     <h3 class="feature-title">Real-Time Scheduling</h3>
                     <p class="feature-description">
-                        Clients can view available time slots and book appointments instantly.
+                        Clients can view available time slots and book appointments instantly, 24/7.
+                    </p>
+                    
+                </div>
+                
+                <div class="feature-card" id="feature-2">
+                    <div class="feature-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <h3 class="feature-title">Smart Reminders</h3>
+                    <p class="feature-description">
+                        Automated email and SMS notifications reduce no-shows and last-minute cancellations.
+                    </p>
+                   
+                </div>
+                
+                <div class="feature-card" id="feature-3">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="feature-title">Client Management</h3>
+                    <p class="feature-description">
+                        Track client history, notes, and preferences all in one organized place.
+                    </p>
+                    
+                </div>
+                
+                <div class="feature-card" id="feature-4">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h3 class="feature-title">Role-Based Access</h3>
+                    <p class="feature-description">
+                        Separate dashboards and permissions for clients, staff, and administrators.
                     </p>
                 </div>
                 
-                <div class="feature-card">
-                    <i class="fas fa-bell feature-icon"></i>
-                    <h3 class="feature-title">Automated Email Notifications</h3>
+                <div class="feature-card" id="feature-5">
+                    <div class="feature-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h3 class="feature-title">Custom Availability</h3>
                     <p class="feature-description">
-                        Get instant alerts when an appointment is booked, and send reminders 24 hours before.
+                        Each provider can set their own services, hours, and booking rules.
                     </p>
                 </div>
                 
-                <div class="feature-card">
-                    <i class="fas fa-users feature-icon"></i>
-                    <h3 class="feature-title">Client Profiles</h3>
-                    <p class="feature-description">
-                        Track client history, notes, and preferences in one place.
+                <div class="feature-card" id="feature-6">
+    <div class="feature-icon">
+        <i class="fas fa-calendar-plus"></i>
+    </div>
+    <h3 class="feature-title">Automated Scheduling</h3>
+    <p class="feature-description">
+        Providers define their working hours and services. The system automatically shows available slots and handles bookings instantly, eliminating scheduling conflicts.
+    </p>
+</div>
+    </div>
+        </div>
+</section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="section-header" id="how-it-works-header">
+                <h2 class="section-title">Simple setup, powerful results</h2>
+                <p class="section-subtitle">
+                    Get started with Echoslot in just a few minutes.
+                </p>
+            </div>
+            
+            <div class="steps">
+                <div class="step" id="step-1">
+                    <div class="step-number">1</div>
+                    <h3 class="step-title">Create Account</h3>
+                    <p class="step-description">Sign up and complete your profile in minutes.</p>
+                </div>
+                
+                <div class="step" id="step-2">
+                    <div class="step-number">2</div>
+                    <h3 class="step-title">Set Availability</h3>
+                    <p class="step-description">Define your services, hours, and booking preferences.</p>
+                </div>
+                
+                <div class="step" id="step-3">
+                    <div class="step-number">3</div>
+                    <h3 class="step-title">Share Booking Link</h3>
+                    <p class="step-description">Share your unique link or embed it on your website.</p>
+                </div>
+                
+                <div class="step" id="step-4">
+                    <div class="step-number">4</div>
+                    <h3 class="step-title">Manage Appointments</h3>
+                    <p class="step-description">Accept bookings, send reminders, and grow your business.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Use Cases Section -->
+    <section class="use-cases" id="use-cases">
+        <div class="container">
+            <div class="section-header" id="use-cases-header">
+                <h2 class="section-title">Perfect for any business</h2>
+                <p class="section-subtitle">
+                    Echoslot adapts to your specific scheduling needs.
+                </p>
+            </div>
+            
+            <div class="use-cases-grid">
+                <div class="use-case-card" id="use-case-1">
+                    <i class="fas fa-user-md use-case-icon"></i>
+                    <h3 class="use-case-title">Healthcare</h3>
+                    <p class="use-case-description">
+                        Doctors, therapists, and medical practices can manage patient appointments with ease.
                     </p>
                 </div>
                 
-                <div class="feature-card">
-                    <i class="fas fa-lock feature-icon"></i>
-                    <h3 class="feature-title">Secure Platform</h3>
-                    <p class="feature-description">
-                        Enterprise-grade security with end-to-end encryption.
+                <div class="use-case-card" id="use-case-2">
+                    <i class="fas fa-graduation-cap use-case-icon"></i>
+                    <h3 class="use-case-title">Education</h3>
+                    <p class="use-case-description">
+                        Teachers, tutors, and educational institutions can schedule sessions and office hours.
                     </p>
                 </div>
                 
-                <div class="feature-card">
-                    <i class="fas fa-user-shield feature-icon"></i>
-                    <h3 class="feature-title">Role-Based Access Control</h3>
-                    <p class="feature-description">
-                        Separate dashboards and permissions for clients and service providers.
+                <div class="use-case-card" id="use-case-3">
+                    <i class="fas fa-cut use-case-icon"></i>
+                    <h3 class="use-case-title">Beauty & Wellness</h3>
+                    <p class="use-case-description">
+                        Salons, spas, and fitness professionals can book clients and manage their schedules.
                     </p>
                 </div>
                 
-                <div class="feature-card">
-                    <i class="fas fa-cogs feature-icon"></i>
-                    <h3 class="feature-title">Custom Services & Availability</h3>
-                    <p class="feature-description">
-                        Each provider can manage their services and define custom availability schedules.
+                <div class="use-case-card" id="use-case-4">
+                    <i class="fas fa-briefcase use-case-icon"></i>
+                    <h3 class="use-case-title">Professional Services</h3>
+                    <p class="use-case-description">
+                        Consultants, lawyers, and freelancers can streamline client meetings and consultations.
                     </p>
                 </div>
             </div>
-        </section>
-    </div>
+        </div>
+    </section>
 
-    <footer class="footer">
-        <p class="footer-text">&copy; 2025 Echoslot. All rights reserved.</p>
-    </footer>
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <h2 class="cta-title" id="cta-title">Ready to simplify your scheduling?</h2>
+            <p class="cta-description" id="cta-description">
+                Join thousands of professionals who use Echoslot to save time, reduce administrative work, and provide a better client experience.
+            </p>
+            <a href="{% url 'accounts:register' %}" class="btn" id="cta-button">Get Started Free</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    {% include 'partials/echoslot/footer.html' %}
 
     <script src="{% static 'js/index.js'%}"></script>
 </body>

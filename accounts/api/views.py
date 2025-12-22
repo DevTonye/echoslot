@@ -15,9 +15,10 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from ..models import CustomUser
-from django.shortcuts import render, redirect
+from drf_spectacular.utils import extend_schema
 User = get_user_model()
 
+@extend_schema(tags=['RegisterAPI'])
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
@@ -33,7 +34,7 @@ class RegisterView(generics.CreateAPIView):
             {"detail": "Registration successful. Please check your email to verify your account."},
             status=status.HTTP_201_CREATED
         )
-    
+@extend_schema(tags=['Login'])
 class LoginView(APIView):
     permission_classes = [AllowAny]
 
@@ -49,6 +50,7 @@ class LoginView(APIView):
             })
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@extend_schema(tags=['SendVerificationEmail'])
 class SendVerificationEmailView(APIView):
     permission_classes = [AllowAny]
 
@@ -65,7 +67,8 @@ class SendVerificationEmailView(APIView):
                 {"detail": "If this email exists, a verification link has been sent."}, 
                 status=status.HTTP_200_OK
             )
-        
+
+@extend_schema(tags=['VerifyEmailView'])   
 class VerifyEmailView(APIView):
     permission_classes = [AllowAny]
 
@@ -101,6 +104,9 @@ class VerifyEmailView(APIView):
             {"message": "Email verified successfully!"}, 
             status=status.HTTP_200_OK
         )
+
+
+@extend_schema(tags=['PasswordReset'])
 class PasswordResetView(APIView):
     permission_classes = [AllowAny]
 
@@ -114,7 +120,8 @@ class PasswordResetView(APIView):
             except User.DoesNotExist:
                 pass
             return Response({"detail": "If this email exists, a password reset link has been sent."}, status=status.HTTP_200_OK)
-        
+
+@extend_schema(tags=['PasswordResetConfirmAPI'])
 class PasswordResetConfirmAPI(APIView):
     permission_classes = [AllowAny]
 
@@ -142,6 +149,7 @@ class PasswordResetConfirmAPI(APIView):
         except ValidationError as e:
             return Response({"error": list(e.messages)}, status=status.HTTP_400_BAD_REQUEST)
 
+@extend_schema(tags=['SelectUserRole'])
 class SelectUserRoleView(APIView):
     permission_classes = [IsAuthenticated]
 

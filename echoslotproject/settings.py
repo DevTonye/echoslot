@@ -47,11 +47,14 @@ INSTALLED_APPS = [
     'django_recaptcha',
     'rest_framework',
     'django_extensions',
+    'drf_spectacular',
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -68,6 +71,20 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
+CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",     # your own React
+    "http://127.0.0.1:3000",
+]
+
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    ".ngrok-free.app",   # if using ngrok
+    ".ngrok.io", 
+    "branchlike-nonaltruistically-toya.ngrok-free.dev",       
+]
 SITE_ID = 2
 
 ROOT_URLCONF = 'echoslotproject.urls'
@@ -136,17 +153,54 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # rest framework
 REST_FRAMEWORK = {
+
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
      'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
+
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/hour',  # Anonymous users (searching providers/services)
+        'user': '1000/hour',  # General authenticated user limit
+        'service_provider': '500/hour',  # Provider profile management
+        'services': '300/hour',  # Service listing/creation
+        'appointments': '100/hour',  # General appointment operations
+        'appointment_create': '30/hour'  # Stricter limit for booking
+    },
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 3
+    'PAGE_SIZE': 7,
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'EchoSlot API',
+    'DESCRIPTION': 'API documentation for the appointment booking and notification system.',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': True,
+    'SECURITY': [
+        {
+            'BearerAuth': []
+        }
+    ],
+    'COMPONENTS': {
+        'securitySchemes': {
+            'BearerAuth': {
+                'type': 'http',
+                'scheme': 'bearer',
+                'bearerFormat': 'JWT',
+            }
+        }
+    },
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/

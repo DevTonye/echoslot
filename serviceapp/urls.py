@@ -25,7 +25,11 @@ urlpatterns = [
     path('availability-edit/<int:pk>/', views.edit_availability, name='editavailability'),
     path('delete-availability/<int:pk>/', views.delete_availability, name='deleteavailability'),
     path('status-form/<uuid:appointment_id>/', views.status_form, name='status_form'),
+    path('appointment/<uuid:appointment_id>/status-modal/', views.status_modal, name='status_modal'),
+    path('appointment/<uuid:appointment_id>/status-badge/', views.status_badge, name='status_badge'),
     path('update-status/<uuid:appointment_id>/', views.update_status, name='update_status'),
     path('appointment-details/<uuid:appointment_id>/', views.appointment_details, name='appointment_details'),
+
+    path('checkin-modal/<uuid:appointment_id>/', views.checkin_modal, name='checkin_modal'),
     
 ]

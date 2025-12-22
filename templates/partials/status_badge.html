@@ -1,0 +1,25 @@
+<div class="status-display">
+    {% if appointment.status == 'scheduled' %}
+        <span class="status-badge status-warning">Scheduled</span>
+    {% elif appointment.status == 'confirmed' %}
+        <span class="status-badge status-success">Confirmed</span>
+    {% elif appointment.status == 'completed' %}
+        <span class="status-badge status-primary">Completed</span>
+    {% elif appointment.status == 'cancelled' %}
+        <span class="status-badge status-danger">Cancelled</span>
+    {% elif appointment.status == 'no_show' %}
+        <span class="status-badge status-secondary">No Show</span>
+    {% else %}
+        <span class="status-badge status-secondary">{{ appointment.status|capfirst }}</span>
+    {% endif %}
+    <!--
+        <button 
+            class="btn-status-edit"
+            hx-get="{% url 'serviceapp:status_modal' appointment.appointment_id %}"
+            hx-target="#modal-container"
+            hx-swap="innerHTML"
+        >
+            <i class="fas fa-pen"></i>
+        </button>
+    -->
+</div>

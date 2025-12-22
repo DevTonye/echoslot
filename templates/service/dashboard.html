@@ -1,241 +1,234 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Service Provider Dashboard{% endblock %}
-
+{% block extra_css %}<link rel="stylesheet" href="{% static 'services/dashboard.css' %}">{% endblock %}
 {% block content %}
-<div class="page-header">
-    <h1 class="page-title">Dashboard</h1>
-</div>
+    <!-- Modal Container -->
+    <div id="modal-container"></div>
 
-<!-- Provider Profile Section -->
-<div class="card mb-4">
-     <div class="card-body provider-card">
-        <div class="row align-items-center">
-            <div class="col-md-2 text-center">
-                <div class="avatar-circle">
-                    {% if provider.profile_image %}
-                         <a href="{{ provider.profile_image.url }}" data-lightbox="profile" data-title="{{ provider.user.username }}">
-                            <img src="{{ provider.profile_image.url }}" 
-                                 alt="{{ provider.user.username }}'s profile" 
-                                 class="profile-image">
-                        </a>
-                    {% else %}
-                        <i class="fas fa-user-circle fa-4x"></i>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="col-md-6 provider-info">
-                <h2 class="mb-1">{{provider.first_name}} {{provider.last_name}}</h2>
-                <p class="text-muted mb-1"><i class="fas fa-briefcase"></i> {{ provider.service.name}}</p>
-                <p class="text-muted mb-1"><i class="fas fa-map-marker-alt"></i> {{ provider.address }}</p>
-                <p class="mb-2">{{ provider.bio|truncatechars:150}}</p>
-            </div>
-            <div class="col-md-4">
-                <div class="stats-container">
-                    <div class="row">
-                        <div class="col-6 text-center mb-3">
-                            <div class="stats-item">
-                                <h3>{{services.count}}</h3>
-                                <small class="text-muted">Total Services</small>
-                            </div>
-                        </div>
-                        <div class="col-6 text-center mb-3">
-                            <div class="stats-item">
-                                <h3>{{ today_appointments.count }}</h3>
-                                <small class="text-muted">Today's Appointments</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Today's Appointments -->
-<div class="card mb-4">
-    <div class="card-header">
-        <h5><i class="fas fa-calendar-day"></i> Today's Appointments</h5>
-        <span class="badge badge-info">{{today_appointments.count}} Appointment{{today_appointments.count | pluralize }}</span>
-    </div>
-    <div class="card-body">
-        {% if today_appointments %}
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Time</th>
-                        <th>Image</th>
-                        <th>Client</th>
-                        <th>Service</th>
-                        <th>Duration</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for appointment in today_appointments %}
-                    <tr>
-                        <td>{{ appointment.start_time|time:"h:i A"}}</td>
-                        {% if appointment.client.clientprofile %}
-                            {% with profile=appointment.client.clientprofile %}
-                                <td>
-                                    <a href="{{ profile.profile_image.url }}" data-lightbox="client-{{ appointment.appointment_id }}">
-                                        <img src="{{ profile.profile_image.url }}" alt="{{ profile.first_name }}" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover; margin-right: 5px;">
-                                    </a>
-                                </td>
-                            {% endwith %}
-                        {% else %}
-                                <div class="client-avatar-placeholder">
-                                    <i class="fas fa-user"></i>
-                                </div>    
-                        {% endif %}
-                        <td>{{ appointment.first_name }} {{ appointment.last_name }}</td>
-                        <td>{{ appointment.service.name }}</td>
-                        <td>{{ appointment.service.duration }} min</td>
-                        <td id="status-form-{{ appointment.appointment_id }}">
-                            {% if appointment.status == 'scheduled' %}
-                                    <span class="badge badge-warning">Scheduled</span>
-                            {% elif appointment.status == 'confirmed' %}
-                                    <span class="badge bg-success">Confirmed</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-outline-primary"
-                                    hx-get="{% url 'serviceapp:status_form' appointment.appointment_id %}"
-                                    hx-target="#status-form-{{ appointment.appointment_id}}"
-                                    hx-swap="innerHTML"
-                                >
-                                    <i class="fas fa-pen"></i> Update Status
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% else %}
-        <div class="text-center py-4">
-            <i class="fas fa-calendar-times text-muted fa-3x mb-3"></i>
-            <p class="mb-0">No appointments scheduled for today</p>
-        </div>
-        {% endif %}
-    </div>
-</div>
-
-<!-- Upcoming Appointments -->
-<div class="card mb-4">
-    <div class="card-header">
-        <h5><i class="fas fa-calendar-alt"></i> Upcoming Appointments</h5>
-        <span class="badge badge-info">{{ upcoming_appointments.count }} Appointment{{ upcoming_appointments.count|pluralize }}</span>
-    </div>
-    <div class="card-body">
-        {% if upcoming_appointments %}
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Time</th>
-                        <th>Image</th>
-                        <th>Client</th>
-                        <th>Service</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                        
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for appointment in upcoming_appointments %}
-                    <tr>
-                        <td>{{ appointment.appointment_date|date:"M d, Y" }}</td>
-                        <td>{{ appointment.start_time|time:"h:i A" }}</td>
-                       {% if appointment.client.clientprofile %}
+    <main class="main">
+        <section class="today-column">
+            <h2>Today's Schedule</h2>
+            
+            {% if today_appointments %}
+                {% with today_appointments.first as appointment %}
+                <div class="now-playing-card">
+                    <div class="badge-live">Up Next</div>
+                    <div class="np-time">{{ appointment.start_time|time:"g:i A" }} - {{ appointment.end_time|time:"g:i A" }}</div>
+                    <div class="np-title">{{ appointment.service.name }}</div>
+                    {% if appointment.client.clientprofile %}
                         {% with profile=appointment.client.clientprofile %}
-                            <td>
+                            <div class="np-client">
                                 <a href="{{ profile.profile_image.url }}" data-lightbox="client-{{ appointment.appointment_id }}">
-                                    <img src="{{ profile.profile_image.url }}" alt="{{ profile.first_name }}" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover; margin-right: 5px;">
+                                    <img src="{{ profile.profile_image.url }}" alt="{{ profile.first_name }}">
                                 </a>
-                            </td>
+                                <span>with <strong>{{ profile.first_name }} {{ profile.last_name }}</strong></span>
+                            </div>
                         {% endwith %}
-                    {% else %}
-                        <div class="client-avatar-placeholder">
-                            <i class="fas fa-user"></i>
-                        </div>    
-                {% endif %} 
-                <td>{{ appointment.first_name }} {{ appointment.last_name }}</td>      
-                    <td>{{ appointment.service.name }}</td>
-                        <td id="status-form-{{ appointment.appointment_id }}">
-                            {% if appointment.status == 'scheduled' %}
-                                <span class="badge badge-warning">Scheduled</span>
-                            {% elif appointment.status == 'confirmed' %}
-                                <span class="badge badge-info">Confirmed</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-outline-primary"
-                                    hx-get="{% url 'serviceapp:status_form' appointment.appointment_id %}"
-                                    hx-target="#status-form-{{ appointment.appointment_id}}"
+                    {% endif %}
+                    <div class="np-actions">
+                        <button class="btn btn-black">Check In</button>
+                        <button class="btn btn-outline">View Profile</button>
+                        <button class="btn btn-outline"><i class="fa-regular fa-comment"></i></button>
+                    </div>
+                    
+                    <!-- Status Update Section for Up Next Card -->
+                    <div class="status-section" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border);">
+                        <div id="status-form-{{ appointment.appointment_id }}" class="status-container">
+                            <div class="status-display">
+                                {% if appointment.status == 'scheduled' %}
+                                    <span class="status-badge status-warning">Scheduled</span>
+                                {% elif appointment.status == 'confirmed' %}
+                                    <span class="status-badge status-success">Confirmed</span>
+                                {% elif appointment.status == 'completed' %}
+                                    <span class="status-badge status-primary">Completed</span>
+                                {% elif appointment.status == 'cancelled' %}
+                                    <span class="status-badge status-danger">Cancelled</span>
+                                {% else %}
+                                    <span class="status-badge status-secondary">{{ appointment.status|capfirst }}</span>
+                                {% endif %}
+                                
+                                <button 
+                                    class="btn-status-edit"
+                                    hx-get="{% url 'serviceapp:status_modal' appointment.appointment_id %}"
+                                    hx-target="#modal-container"
                                     hx-swap="innerHTML"
                                 >
                                     <i class="fas fa-pen"></i> Update Status
                                 </button>
                             </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% else %}
-            <div class="text-center py-4">
-                <i class="fas fa-calendar-week text-muted fa-3x mb-3"></i>
-                <p class="mb-0">No upcoming appointments scheduled</p>
-            </div>
-            {% endif %}
-    </div>
-</div>
-
-<!-- Services Section -->
-<div class="card">
-    <div class="card-header">
-        <h5><i class="fas fa-list-alt"></i> Your Service</h5>
-        <!--
-            <a href="{% url 'serviceapp:addservice' %}" class="btn btn-primary btn-sm">
-                <i class="fas fa-plus"></i> Add New Service
-            </a>
-        -->
-    </div>
-    <div class="card-body">
-        {% if services %}
-        <div class="row">
-            {% for service in services|slice:":3" %}
-            <div class="col-md-4 mb-4">
-                <div class="service-card">
-                    <div class="service-card-body">
-                        <h5 class="card-title">{{ service.name}}</h5>
-                        <h6 class="text-muted mb-2">{{ service.duration}} minutes | ${{ service.price }} </h6>
-                        <p>{{ service.description|truncatechars:100 }}</p>
-                    </div>
-                    <div class="service-card-footer">
-                       <a href="{% url 'serviceapp:editservice' service.service_id %}" class="btn btn-sm btn-outline-primary">Edit</a>
-                       <a href="{% url 'serviceapp:deleteservice' service.service_id%}" class="btn btn-sm btn-outline-danger">Delete</a>
+                        </div>
                     </div>
                 </div>
+                {% endwith %}
+
+                <!-- Rest of today's appointments -->
+                <div class="timeline-list">
+                    {% for appointment in today_appointments %}
+                        {% if not forloop.first %}
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="t-card">
+                                <div class="t-header">
+                                    <div class="t-service">{{ appointment.service.name }}</div>
+                                    <div class="t-time">{{ appointment.start_time|time:"g:i A" }}</div>
+                                </div>
+                                <div class="t-client">
+                                    {% if appointment.client.clientprofile %}
+                                        {{ appointment.client.clientprofile.first_name }} {{ appointment.client.clientprofile.last_name }}
+                                    {% else %}
+                                        {{ appointment.client.user.first_name }} {{ appointment.client.user.last_name }}
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Status Update for Timeline Items -->
+                                <div id="status-form-{{ appointment.appointment_id }}" class="status-container" style="margin-top: 12px;">
+                                    <div class="status-display">
+                                        {% if appointment.status == 'scheduled' %}
+                                            <span class="status-badge status-warning">Scheduled</span>
+                                        {% elif appointment.status == 'confirmed' %}
+                                            <span class="status-badge status-success">Confirmed</span>
+                                        {% elif appointment.status == 'completed' %}
+                                            <span class="status-badge status-primary">Completed</span>
+                                        {% elif appointment.status == 'cancelled' %}
+                                            <span class="status-badge status-danger">Cancelled</span>
+                                        {% else %}
+                                            <span class="status-badge status-secondary">{{ appointment.status|capfirst }}</span>
+                                        {% endif %}
+                                        
+                                        <button 
+                                            class="btn-status-edit-sm"
+                                            hx-get="{% url 'serviceapp:status_modal' appointment.appointment_id %}"
+                                            hx-target="#modal-container"
+                                            hx-swap="innerHTML"
+                                        >
+                                            <i class="fas fa-pen"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+            {% else %}
+                <!-- Enhanced empty state -->
+                <div class="empty-state today-empty">
+                    <div class="empty-state-icon">
+                        <i class="fa-regular fa-calendar-check"></i>
+                    </div>
+                    <h3>Clear Schedule Today</h3>
+                    <p>No appointments booked for {{ today|date:"F j" }}. Use this time to prepare or accept new bookings.</p>
+                    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                        <a href="{% url 'serviceapp:my_availability' %}" class="btn btn-black">
+                            <i class="fa-solid fa-plus"></i> Add Time Slots
+                        </a>
+                        <button class="btn btn-outline">
+                            <i class="fa-solid fa-link"></i> Copy Booking Link
+                        </button>
+                    </div>
+                </div>
+            {% endif %}
+        </section>
+
+        <!-- UPCOMING SECTION WITH PROPER GROUPING -->
+        <section class="upcoming-column">
+            <div class="upcoming-header">
+                <h2>Upcoming</h2>
+                <div class="icon-btn"><i class="fa-solid fa-plus"></i></div>
             </div>
-            {% endfor %}
+
+            {% if upcoming_appointments %}
+            <div class="grouped-list">
+                {% regroup upcoming_appointments by appointment_date as appointments_by_date %}
+                
+                {% for date_group in appointments_by_date %}
+                    <div>
+                        <!-- Date Group Title -->
+                        <div class="date-group-title">
+                            {% with days_until=date_group.grouper|timeuntil %}
+                                {% if "day" in days_until and "1 day" in days_until %}
+                                    TOMORROW
+                                {% elif "day" in days_until %}
+                                    NEXT WEEK
+                                {% else %}
+                                    {{ date_group.grouper|date:"F j, Y"|upper }}
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                        
+                        <!-- Appointments for this date -->
+                        {% for appointment in date_group.list %}
+                        <div class="upcoming-card-wrapper">
+                            <div class="upcoming-card">
+                                <div class="uc-date-box">
+                                    <span class="uc-day">{{ appointment.appointment_date|date:"D"|upper }}</span>
+                                    <span class="uc-num">{{ appointment.appointment_date|date:"d" }}</span>
+                                </div>
+                                <div class="uc-info">
+                                    <div class="uc-service">{{ appointment.service.name }}</div>
+                                    <div class="uc-meta">
+                                        {{ appointment.start_time|time:"g:i A" }} • 
+                                        {% if appointment.client.clientprofile %}
+                                            {{ appointment.client.clientprofile.first_name }} {{ appointment.client.clientprofile.last_name }}
+                                        {% else %}
+                                            {{ appointment.client.user.first_name }} {{ appointment.client.user.last_name }}
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <!-- Status Badge in Upcoming -->
+                                    <div id="status-form-{{ appointment.appointment_id }}" class="status-container" style="margin-top: 8px;">
+                                        <div class="status-display">
+                                            {% if appointment.status == 'scheduled' %}
+                                                <span class="status-badge-sm status-warning">Scheduled</span>
+                                            {% elif appointment.status == 'confirmed' %}
+                                                <span class="status-badge-sm status-success">Confirmed</span>
+                                            {% elif appointment.status == 'completed' %}
+                                                <span class="status-badge-sm status-primary">Completed</span>
+                                            {% elif appointment.status == 'cancelled' %}
+                                                <span class="status-badge-sm status-danger">Cancelled</span>
+                                            {% else %}
+                                                <span class="status-badge-sm status-secondary">{{ appointment.status|capfirst }}</span>
+                                            {% endif %}
+                                            
+                                            <button 
+                                                class="btn-status-edit-xs"
+                                                hx-get="{% url 'serviceapp:status_modal' appointment.appointment_id %}"
+                                                hx-target="#modal-container"
+                                                hx-swap="innerHTML"
+                                            >
+                                                <i class="fas fa-pen"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="uc-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
             </div>
             {% else %}
-            <div class="text-center py-4">
-                <i class="fas fa-clipboard-list text-muted fa-3x mb-3"></i>
-                <p class="mb-0">You haven't added any services yet</p>
-                <a href="{% url 'serviceapp:addservice' %}" class="btn btn-outline-success mt-3">
-                    <i class="fas fa-plus-circle"></i> Add Your First Service
-                </a>
+            <!-- Empty state for no upcoming appointments -->
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fa-regular fa-calendar-plus"></i>
+                </div>
+                <h3>No Upcoming Appointments</h3>
+                <p>When clients book your services, their appointments will appear here.</p>
+                <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                    <button class="btn btn-black">
+                        <i class="fa-solid fa-share"></i> Share Profile
+                    </button>
+                    <button class="btn btn-outline">
+                        <i class="fa-solid fa-sliders"></i> Manage Services
+                    </button>
+                </div>
             </div>
             {% endif %}
-    </div>
-</div>
+        </section>
+
+    </main>
 {% endblock %}

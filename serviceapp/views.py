@@ -20,6 +20,8 @@ from django.template.loader import render_to_string
 from django.http import HttpResponse
 from django.core.paginator import Paginator
 from django.urls import reverse
+from django.http import HttpResponse
+from django.views.decorators.http import require_http_methods
 # service provider views
 User = get_user_model()
 
@@ -573,17 +575,43 @@ def status_form(request, appointment_id):
     form = AppointmentStatusForm(instance=appointment)
     return render(request, 'partials/status_form.html', {'form': form, 'appointment': appointment})
 
+# Return the status update modal
+@require_http_methods(["GET"])
+def status_modal(request, appointment_id):
+    appointment = get_object_or_404(Appointment, appointment_id=appointment_id)
+    form = AppointmentStatusForm(instance=appointment)
+    
+    context = {
+        'form': form,
+        'appointment': appointment
+    }
+    return render(request, 'partials/status_modal.html', context)
+
+# Return the status badge view (for canceling edit)
+@require_http_methods(["GET"])
+def status_badge(request, appointment_id):
+    appointment = get_object_or_404(Appointment, appointment_id=appointment_id)
+    context = {'appointment': appointment}
+    return render(request, 'partials/status_badge.html', context)
+
+
 # update the status
+@require_http_methods(["POST"])
 def update_status(request, appointment_id):
-    if not request.htmx:
-        return render(request, "403.html", status=403)
-    appointment = Appointment.objects.get(appointment_id=appointment_id)
-    if request.method == 'POST':
-        new_status = request.POST.get('status')
-        appointment.status = new_status
-        appointment.save()
-        html = render_to_string('partials/status_td.html', {'appointment': appointment})
-        return HttpResponse(html)
+    """Update appointment status and return updated badge"""
+    appointment = get_object_or_404(Appointment, appointment_id=appointment_id)
+    form = AppointmentStatusForm(request.POST, instance=appointment)
+    
+    if form.is_valid():
+        form.save()
+        # Return the updated status badge
+        context = {'appointment': appointment}
+        return render(request, 'partials/status_badge.html', context)
+    context = {
+        'form': form,
+        'appointment': appointment
+    }
+    return render(request, 'partials/status_modal.html', context)
 
 # view client appointment details
 def appointment_details(request, appointment_id):
@@ -595,4 +623,12 @@ def appointment_details(request, appointment_id):
         'provider': provider
     }
     return render(request, 'service/appointment_details.html', context)
+
+@require_http_methods(["GET"])
+def checkin_modal(request, appointment_id):
+    appointment = get_object_or_404(Appointment, appointment_id=appointment_id)
+    context = {
+        'appointment': appointment
+    }
+    return render(request, 'partials/checkin_modal.html', context)
 

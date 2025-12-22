@@ -1,0 +1,152 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Echoslot | Smart Appointment Scheduling</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'echoslot/contact.css'%}">
+</head>
+<body>
+    <!-- Navigation -->
+     {% include 'partials/echoslot/navbar.html'%}
+
+    <!-- Contact Hero Section -->
+    <section class="contact-hero">
+        <div class="container contact-hero-content">
+            <h1 class="contact-hero-title">Get In Touch</h1>
+            <p class="contact-hero-description">
+                As the solo founder and developer of Echoslot, I personally handle all inquiries. Whether you have questions, need support, or want to provide feedback, I'd love to hear from you.
+            </p>
+        </div>
+    </section>
+
+    <!-- Contact Content Section -->
+    <section class="contact-content">
+        <div class="container">
+            <div class="contact-info">
+                <div class="contact-method" id="contact-1">
+                    <div class="contact-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="contact-details">
+                        <h3>Email Me</h3>
+                        <p>Send me an email and I'll respond within 24 hours</p>
+                        <a href="mailto:tobintonye143@gmail.com" class="contact-link">
+                            tobintonye143@gmail.com <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="contact-method" id="contact-2">
+                    <div class="contact-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <div class="contact-details">
+                        <h3>Technical Support</h3>
+                        <p>Get help with API integration or technical issues</p>
+                        <a href="api.html" class="contact-link">
+                            View API Docs <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="contact-method" id="contact-3">
+                    <div class="contact-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div class="contact-details">
+                        <h3>Feature Requests</h3>
+                        <p>Suggest new features or improvements</p>
+                        <a href="mailto:tobintonye143@gmail.com?subject=Feature Request" class="contact-link">
+                            Email Your Idea <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq">
+        <div class="container">
+            <div class="section-header" id="faq-header">
+                <h2 class="section-title">Frequently Asked Questions</h2>
+                <p class="section-subtitle">
+                    Quick answers to common questions about Echoslot.
+                </p>
+            </div>
+            
+            <div class="faq-grid">
+                <div class="faq-item" id="faq-1">
+                    <div class="faq-question">
+                        How quickly do you respond to support requests?
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        I typically respond to all support requests within 24 hours. As the solo developer, I handle all inquiries personally and aim to provide thorough, helpful responses.
+                    </div>
+                </div>
+                
+                <div class="faq-item" id="faq-2">
+                    <div class="faq-question">
+                        Do you offer custom development for specific needs?
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Yes! As the sole developer, I can work with you to implement custom features or integrations that meet your specific business requirements.
+                    </div>
+                </div>
+                
+                <div class="faq-item" id="faq-3">
+                    <div class="faq-question">
+                        Can I integrate Echoslot with my existing systems?
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Absolutely! Echoslot provides a comprehensive REST API for custom integrations. Check out our API documentation for detailed information.
+                    </div>
+                </div>
+                
+                <div class="faq-item" id="faq-4">
+                <div class="faq-question">
+                    Is Echoslot completely free?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Yes! Echoslot is completely free to use with full access to all features. There are no hidden fees, credit card requirements, or limitations on the free plan.
+                </div>
+            </div>
+
+            <div class="faq-item" id="faq-5">
+                <div class="faq-question">
+                    What kind of support do you offer for free users?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    All users receive the same level of support regardless of whether they're on a free or paid plan. I'm available to help you get started and answer any questions you have about using Echoslot.
+                </div>
+            </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <h2 class="cta-title" id="cta-title">Ready to Get Started?</h2>
+            <p class="cta-description" id="cta-description">
+                Join thousands of businesses using Echoslot to streamline their scheduling and provide better client experiences.
+            </p>
+            <a href="{% url 'accounts:register' %}" class="btn" id="cta-button">Get Started Free</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    {% include 'partials/echoslot/footer.html' %}
+
+    <script src="{% static 'js/index.js'%}"></script>
+</body>
+</html>

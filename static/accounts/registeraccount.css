@@ -6,7 +6,7 @@
 }
 
 html, body {
-    height: 100%;
+    min-height: 100vh;
 }
 
 body {
@@ -15,15 +15,12 @@ body {
     align-items: center;
     background-color: #f8f9fa; 
     padding: 20px; 
-
 }
 
 .form-container {
-    background-color: #ffffff;
- 
     padding: 40px;
     width: 100%;
-    max-width: 480px;
+    max-width: 400px; /* Reduced from 480px to make overall form narrower */
 }
 
 .form-container h2 {
@@ -45,17 +42,24 @@ body {
     padding: 12px 16px;
     background-color: #ffffff;
     border: 1px solid #dee2e6;
-    border-radius: 4px;
+     border-radius: 8px;
+     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     color: #3c4043;
     font-weight: 500;
     font-size: 16px;
-    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    transition: all 0.2s ease-in-out;
+    
 }
 
+
 .btn-google:hover {
-    background-color: #f8f9fa;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    color: #2563eb;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+    border-color: #2563eb;
 }
+
 
 .btn-google svg {
     margin-right: 12px;
@@ -65,7 +69,7 @@ body {
     display: flex;
     align-items: center;
     margin: 24px 0;
-    color: #6c757d;
+    color: #000000;
     font-size: 14px;
 }
 
@@ -84,15 +88,18 @@ body {
     margin-left: 16px;
 }
 
-
-
+/* Increased spacing for form fields */
 .form-group {
-    margin-bottom: 24px;
+    margin-bottom: 32px;
 }
 
+/* Make inputs narrower */
 .signup-form input {
     width: 100%; 
-    padding: 12px 16px;
+    max-width: 320px; 
+    margin: 0 auto; 
+    display: block; 
+    padding: 14px 16px; 
     background-color: #ffffff;
     border: 1px solid #dee2e6;
     border-radius: 4px;
@@ -103,25 +110,29 @@ body {
 
 .signup-form input:focus {
     border-color: #000000;
-    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
     outline: none;
+    transform: translateY(-1px);
 }
 
 .signup-form input::placeholder {
-    color: #797979;
+    color: #6c757d; /* Softer placeholder color */
+    font-weight: 400;
 }
 
 .btn {
     display: inline-block;
     padding: 12px 24px;
-    border-radius: 4px;
+    border-radius: 8px;
     font-size: 16px;
     font-weight: 500;
     cursor: pointer;
     border: none;
     width: 100%;
-    margin-top: 8px;
+    max-width: 320px; 
+    margin: 8px auto 0; 
+    display: block; 
 }
+
 
 .btn-primary {
     background-color: #000000;
@@ -137,6 +148,10 @@ body {
     color: #d9534f;
     font-size: 0.85em;
     margin-top: 5px;
+    text-align: center; /* Center error messages */
+    max-width: 320px; /* Match input width */
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .login-link {
@@ -169,10 +184,12 @@ input[type="text"],
 input[type="email"],
 input[type="password"] {
     width: 100%;
+    max-width: 320px; /* Added max-width */
+    margin: 5px auto 0; /* Center and add top margin */
+    display: block; /* Ensure centering works */
     padding: 10px;
-    margin-top: 5px;
     box-sizing: border-box;
-    border: 1px solid #ccc;
+    border: 1.5px solid #112b52;
     border-radius: 5px;
 }
 
@@ -180,14 +197,16 @@ input[type="password"] {
 @media screen and (max-width: 768px) {
     body {
         padding: 12px;
-        align-items: flex-start;
-        padding-top: 20px;
+        align-items: center;   /* CENTER FORM */
+        padding-top: 0;        /* STOP PUSHING DOWN */
+        min-height: 100vh;     /* FULL HEIGHT FOR CENTERING */
     }
     
     .form-container {
         padding: 24px 20px;
         border-radius: 12px;
         margin-bottom: 20px;
+        max-width: 100%;
     }
     
     .form-container h2 {
@@ -198,6 +217,10 @@ input[type="password"] {
     .btn-google {
         font-size: 14px;
         padding: 12px 14px;
+        width: 100%;
+        max-width: 320px;
+        margin: 0 auto;
+        display: block;
     }
     
     .btn-google svg {
@@ -205,7 +228,7 @@ input[type="password"] {
     }
     
     .form-group {
-        margin-bottom: 16px;
+        margin-bottom: 24px;
     }
     
     .signup-form input,
@@ -213,14 +236,16 @@ input[type="password"] {
     input[type="email"],
     input[type="password"] {
         padding: 14px 16px;
-        font-size: 16px; 
+        font-size: 16px;
         border-radius: 8px;
+        max-width: 100%;
     }
     
     .btn {
         padding: 16px 24px;
         font-size: 16px;
         border-radius: 8px;
+        max-width: 100%;
     }
     
     .divider {
@@ -243,13 +268,20 @@ input[type="password"] {
     .login-link p {
         font-size: 13px;
     }
+    
+    .field-error {
+        max-width: 100%;
+    }
 }
+
 
 /* Extra small screens */
 @media screen and (max-width: 480px) {
     body {
         padding: 8px;
-        padding-top: 16px;
+        align-items: center;   /* KEEP CENTERED */
+        padding-top: 0;
+        min-height: 100vh;     /* PREVENT TOP STICKING */
     }
     
     .form-container {
@@ -263,6 +295,7 @@ input[type="password"] {
     .btn-google {
         font-size: 13px;
         padding: 12px;
+        max-width: 100%;
     }
     
     .signup-form input,
@@ -293,7 +326,7 @@ input[type="password"] {
     }
     
     .form-group {
-        margin-bottom: 12px;
+        margin-bottom: 16px;
     }
     
     .google-signup-container {

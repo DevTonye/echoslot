@@ -1,0 +1,266 @@
+/* =============================
+   APPOINTMENT PAGE STYLES
+   Depends on base.css
+   ============================= */
+
+/* ===== PAGE HEADER ===== */
+.header-title {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 30px;
+}
+
+/* ===== TABS ===== */
+.tabs-container {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 30px;
+}
+
+.tab {
+    padding: 12px 24px;
+    font-weight: 600;
+    color: var(--text-sub);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.2s;
+}
+
+.tab:hover {
+    color: var(--text-main);
+    background: var(--highlight);
+    border-radius: 8px 8px 0 0;
+}
+
+.tab.active {
+    color: var(--accent);
+    border-bottom: 2px solid var(--accent);
+}
+
+/* ===== TAB CONTENT ===== */
+.tab-content {
+    display: none;
+    animation: fadeIn 0.25s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== APPOINTMENT CARD ===== */
+.appt-card {
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: 0.2s;
+}
+
+.appt-card:hover {
+    border-color: var(--text-sub);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+
+.appt-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* ===== DATE BADGE ===== */
+.date-badge {
+    background: var(--highlight);
+    padding: 10px 16px;
+    border-radius: 12px;
+    text-align: center;
+    min-width: 70px;
+}
+
+.db-month {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-sub);
+}
+
+.db-day {
+    font-size: 18px;
+    font-weight: 800;
+}
+
+/* ===== APPOINTMENT INFO ===== */
+.appt-info h4 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.appt-meta {
+    font-size: 14px;
+    color: var(--text-sub);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.appt-meta span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ===== ACTIONS ===== */
+.appt-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-sm {
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-sm:hover {
+    background: var(--highlight);
+}
+
+.btn-primary-sm {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+}
+
+.btn-primary-sm:hover {
+    opacity: 0.9;
+}
+
+.btn-danger-text {
+    border: none;
+    background: transparent;
+    color: #DC2626;
+    padding: 8px;
+}
+
+.btn-danger-text:hover {
+    background: #FEE2E2;
+    border-radius: 8px;
+}
+
+/* ===== HISTORY HEADER ===== */
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 16px;
+    background: var(--highlight);
+    border-radius: 16px;
+}
+
+.btn-clear {
+    background: #fff;
+    color: #DC2626;
+    border: 1px solid #FECACA;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-clear:hover {
+    background: #DC2626;
+    color: #fff;
+}
+
+/* ===== LOADING ===== */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px;
+    color: var(--text-sub);
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--highlight);
+    border-top: 3px solid var(--accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+    .header-title {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    .tabs-container {
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    .tabs-container::-webkit-scrollbar { display: none; }
+
+    .tab {
+        padding: 10px 16px;
+        font-size: 14px;
+        white-space: nowrap;
+    }
+
+    .appt-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .appt-left {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .appt-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .appt-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .btn-sm {
+        width: 100%;
+        padding: 10px 16px;
+    }
+}

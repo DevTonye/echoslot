@@ -1,0 +1,217 @@
+/* ================================
+   SERVICE PAGE OVERRIDES ONLY
+   ================================ */
+
+/* Main content spacing (account for fixed sidebar) */
+.main {
+    flex: 1;
+    padding: 40px;
+    margin-left: 240px; /* sidebar width from base.css */
+    overflow-y: auto;
+    position: relative;
+}
+
+/* Header Section */
+.header-section {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 30px;
+}
+
+.header-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.header-title {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Status badge */
+.status-badge {
+    font-size: 12px;
+    background: #D1FAE5;
+    color: var(--green-text);
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+/* Header actions */
+.header-actions {
+    display: flex;
+    gap: 12px;
+}
+
+/* Buttons */
+.btn-outline {
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--text-main);
+    transition: 0.2s;
+}
+
+.btn-outline:hover {
+    background: var(--highlight);
+}
+
+.btn-black {
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: #fff;
+    transition: 0.2s;
+}
+
+.btn-black:hover {
+    opacity: 0.9;
+}
+
+/* ================================
+   STATS
+   ================================ */
+
+.header-stats {
+    display: flex;
+    gap: 20px;
+}
+
+.stat-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 28px;
+    min-width: 180px;
+}
+
+.stat-card.accent {
+    background: var(--highlight);
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: 800;
+}
+
+.stat-label {
+    font-size: 13px;
+    color: var(--text-sub);
+    font-weight: 600;
+}
+
+/* ================================
+   GRID LAYOUT
+   ================================ */
+
+.view-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 40px;
+}
+
+/* Info cards */
+.info-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 30px;
+    background: #fff;
+}
+
+.info-card h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-sub);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--highlight);
+    padding-bottom: 10px;
+}
+
+/* Data rows */
+.data-row {
+    margin-bottom: 24px;
+}
+
+.data-row:last-child {
+    margin-bottom: 0;
+}
+
+.data-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-sub);
+    margin-bottom: 6px;
+}
+
+.data-value {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-main);
+    line-height: 1.6;
+}
+
+.data-value.large {
+    font-size: 24px;
+    font-weight: 800;
+}
+
+/* Duration + price grid */
+.duration-price-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+/* ================================
+   EMPTY STATE
+   ================================ */
+
+.no-services-message {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--text-sub);
+}
+
+/* ================================
+   MOBILE FIXES
+   ================================ */
+
+@media (max-width: 768px) {
+    .main {
+        margin-left: 0;
+        padding-bottom: 100px; /* space for bottom nav */
+    }
+
+    .view-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    .header-title {
+        font-size: 24px;
+    }
+
+    .header-actions {
+        width: 100%;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+}

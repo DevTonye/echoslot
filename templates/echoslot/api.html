@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation - Echoslot | Smart Appointment Scheduling</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --black: #000000;
+            --white: #ffffff;
+            --gray-100: #f5f5f5;
+            --gray-200: #e5e5e5;
+            --gray-600: #525252;
+            --gray-900: #171717;
+            --blue: #001139;
+            --green: #10b981;
+            --orange: #f59e0b;
+            --purple: #8b5cf6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--white);
+            color: var(--gray-900);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1.5rem 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            transform: translateY(0);
+        }
+
+        .navbar.hidden {
+            transform: translateY(-100%);
+        }
+
+        .navbar.scrolled {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 1rem 0;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-brand:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-icon {
+            font-size: 1.4rem;
+            color: var(--blue);
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brand-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--black);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--gray-600);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:not(.btn):after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: var(--blue);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:not(.btn):hover {
+            color: var(--blue);
+        }
+
+        .nav-links a:not(.btn):hover:after {
+            width: 100%;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover:before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: var(--blue);
+            color: var(--white);
+            box-shadow: 0 4px 14px 0 rgba(0, 17, 57, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: var(--gray-900);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--gray-900);
+            color: var(--gray-900);
+        }
+
+        .btn-outline:hover {
+            background: var(--gray-100);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* API Hero Section */
+        .api-hero {
+            padding: 10rem 0 4rem;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e6f7ff 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .api-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: rgba(0, 17, 57, 0.05);
+            z-index: 0;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .api-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -20%;
+            left: -10%;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: rgba(16, 185, 129, 0.05);
+            z-index: 0;
+            animation: float 8s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        .api-hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .api-hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            color: var(--blue);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .api-hero-description {
+            font-size: 1.25rem;
+            color: var(--gray-600);
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease 0.2s forwards;
+        }
+
+        .api-hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 4rem;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease 0.4s forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* API Documentation Section */
+        .api-docs {
+            padding: 6rem 0;
+            background-color: var(--white);
+        }
+
+        .docs-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Sidebar Navigation */
+        .docs-sidebar {
+            position: sticky;
+            top: 120px;
+            height: fit-content;
+            background: var(--gray-100);
+            border-radius: 0.75rem;
+            padding: 2rem;
+        }
+
+        .sidebar-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--blue);
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 0.75rem;
+        }
+
+        .sidebar-nav a {
+            color: var(--gray-600);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: block;
+            padding: 0.5rem 0;
+            border-left: 3px solid transparent;
+            padding-left: 1rem;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            color: var(--blue);
+            border-left-color: var(--blue);
+        }
+
+        /* API Content */
+        .docs-content {
+            min-height: 100vh;
+        }
+
+        .api-section {
+            margin-bottom: 4rem;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .api-section.in-view {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--blue);
+        }
+
+        .section-description {
+            color: var(--gray-600);
+            font-size: 1.125rem;
+        }
+
+        /* Endpoint Cards */
+        .endpoint-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 0.75rem;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .endpoint-card:hover {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            border-color: var(--blue);
+        }
+
+        .endpoint-header {
+            background: var(--gray-100);
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .endpoint-method {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+        }
+
+        .method-get {
+            background: var(--green);
+            color: var(--white);
+        }
+
+        .method-post {
+            background: var(--blue);
+            color: var(--white);
+        }
+
+        .method-put {
+            background: var(--orange);
+            color: var(--white);
+        }
+
+        .method-delete {
+            background: #ef4444;
+            color: var(--white);
+        }
+
+        .endpoint-path {
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 1rem;
+            color: var(--gray-900);
+        }
+
+        .endpoint-body {
+            padding: 1.5rem;
+        }
+
+        .endpoint-description {
+            color: var(--gray-600);
+            margin-bottom: 1.5rem;
+        }
+
+        .endpoint-parameters,
+        .endpoint-responses {
+            margin-bottom: 1.5rem;
+        }
+
+        .subsection-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--blue);
+        }
+
+        .parameters-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .parameters-table th,
+        .parameters-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .parameters-table th {
+            font-weight: 600;
+            color: var(--gray-900);
+            background: var(--gray-100);
+        }
+
+        .parameter-name {
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-weight: 600;
+            color: var(--blue);
+        }
+
+        .parameter-type {
+            color: var(--green);
+            font-weight: 500;
+        }
+
+        .parameter-required {
+            color: #ef4444;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .parameter-optional {
+            color: var(--gray-600);
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .code-block {
+            background: var(--gray-900);
+            color: var(--gray-100);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .code-comment {
+            color: #6b7280;
+        }
+
+        .code-key {
+            color: var(--green);
+        }
+
+        .code-string {
+            color: var(--orange);
+        }
+
+        .code-number {
+            color: var(--purple);
+        }
+
+        /* Authentication Section */
+        .auth-section {
+            background: var(--gray-100);
+            padding: 2rem;
+            border-radius: 0.75rem;
+            margin-bottom: 3rem;
+        }
+
+        .auth-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--blue);
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 6rem 0;
+            background: var(--blue);
+            color: var(--white);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: translateX(-100%);
+        }
+
+        .cta:hover:before {
+            animation: shine 1.5s ease;
+        }
+
+        @keyframes shine {
+            100% { transform: translateX(100%); }
+        }
+
+        .cta-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .cta-title.in-view {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .cta-description {
+            font-size: 1.125rem;
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+            opacity: 0.9;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease 0.2s;
+        }
+
+        .cta-description.in-view {
+            opacity: 0.9;
+            transform: translateY(0);
+        }
+
+        .cta .btn {
+            background: var(--white);
+            color: var(--blue);
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease 0.4s;
+        }
+
+        .cta .btn.in-view {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .cta .btn:hover {
+            background: var(--gray-100);
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        .footer {
+            padding: 4rem 0 2rem;
+            background-color: var(--gray-900);
+            color: var(--white);
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-column h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.75rem;
+            transition: transform 0.3s ease;
+        }
+
+        .footer-links li:hover {
+            transform: translateX(5px);
+        }
+
+        .footer-links a {
+            color: var(--gray-200);
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--white);
+        }
+
+        .footer-bottom {
+            padding-top: 2rem;
+            border-top: 1px solid var(--gray-600);
+            text-align: center;
+            color: var(--gray-200);
+            font-size: 0.875rem;
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--black);
+            transition: transform 0.3s ease;
+        }
+
+        .mobile-menu-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 5rem;
+                left: 0;
+                width: 100%;
+                background: var(--white);
+                flex-direction: column;
+                align-items: center;
+                padding: 2rem 0;
+                gap: 1.5rem;
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+                transform: translateY(-150%);
+                transition: transform 0.3s ease;
+                z-index: 99;
+            }
+
+            .nav-links.active {
+                transform: translateY(0);
+            }
+
+            .api-hero-title {
+                font-size: 2.5rem;
+            }
+
+            .docs-container {
+                grid-template-columns: 1fr;
+            }
+
+            .docs-sidebar {
+                position: static;
+                margin-bottom: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="container nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-calendar-alt nav-icon"></i>
+                <span class="brand-name">Echoslot</span>
+            </div>
+            
+            <div class="mobile-menu-toggle" id="mobile-menu">
+                <i class="fas fa-bars"></i>
+            </div>
+            
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#features">Features</a>
+                <a href="index.html#how-it-works">How It Works</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+                <a href="api.html" class="active">API Docs</a>
+                <a href="login.html" class="btn btn-outline">Login</a>
+                <a href="register.html" class="btn btn-primary">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- API Hero Section -->
+    <section class="api-hero">
+        <div class="container api-hero-content">
+            <h1 class="api-hero-title">Echoslot API Documentation</h1>
+            <p class="api-hero-description">
+                Build powerful scheduling applications with our comprehensive REST API. Integrate appointment booking, availability management, and client profiles into your applications.
+            </p>
+            <div class="api-hero-buttons">
+                <a href="#authentication" class="btn btn-primary">Get Started</a>
+                <a href="#endpoints" class="btn btn-outline">View Endpoints</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- API Documentation Section -->
+    <section class="api-docs">
+        <div class="container docs-container">
+            <!-- Sidebar Navigation -->
+            <div class="docs-sidebar">
+                <h3 class="sidebar-title">API Reference</h3>
+                <ul class="sidebar-nav">
+                    <li><a href="#authentication" class="active">Authentication</a></li>
+                    <li><a href="#service-providers">Service Providers</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#availability">Availability</a></li>
+                    <li><a href="#appointments">Appointments</a></li>
+                    <li><a href="#client-profiles">Client Profiles</a></li>
+                    <li><a href="#error-codes">Error Codes</a></li>
+                </ul>
+            </div>
+
+            <!-- Main Content -->
+            <div class="docs-content">
+                <!-- Authentication Section -->
+                <section class="api-section" id="authentication">
+                    <div class="section-header">
+                        <h2 class="section-title">Authentication</h2>
+                        <p class="section-description">
+                            Echoslot API uses token-based authentication. Include the token in the Authorization header of your requests.
+                        </p>
+                    </div>
+
+                    <div class="auth-section">
+                        <h3 class="auth-title">Getting Your API Token</h3>
+                        <p>To obtain an API token:</p>
+                        <ol style="margin: 1rem 0; padding-left: 1.5rem;">
+                            <li>Log into your Echoslot account</li>
+                            <li>Navigate to Settings → API Keys</li>
+                            <li>Generate a new API token</li>
+                            <li>Include it in your requests as shown below</li>
+                        </ol>
+
+                        <div class="code-block">
+                            <span class="code-comment"># Include token in request headers</span><br>
+                            curl -H <span class="code-string">"Authorization: Token your-api-token-here"</span> \<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;-H <span class="code-string">"Content-Type: application/json"</span> \<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;https://api.echoslot.com/api/providers/
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Service Providers Section -->
+                <section class="api-section" id="service-providers">
+                    <div class="section-header">
+                        <h2 class="section-title">Service Providers</h2>
+                        <p class="section-description">
+                            Manage service provider profiles, search for providers, and retrieve availability information.
+                        </p>
+                    </div>
+
+                    <!-- List Providers Endpoint -->
+                    <div class="endpoint-card">
+                        <div class="endpoint-header">
+                            <span class="endpoint-method method-get">GET</span>
+                            <code class="endpoint-path">/api/providers/</code>
+                        </div>
+                        <div class="endpoint-body">
+                            <p class="endpoint-description">
+                                Retrieve a list of service providers. Supports search and filtering.
+                            </p>
+                            
+                            <div class="endpoint-parameters">
+                                <h4 class="subsection-title">Query Parameters</h4>
+                                <table class="parameters-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Type</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code class="parameter-name">search</code></td>
+                                            <td><span class="parameter-type">string</span></td>
+                                            <td>Search providers by name, bio, or address</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code class="parameter-name">ordering</code></td>
+                                            <td><span class="parameter-type">string</span></td>
+                                            <td>Order results by fields (first_name, last_name)</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code class="parameter-name">name</code></td>
+                                            <td><span class="parameter-type">string</span></td>
+                                            <td>Filter by service name</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code class="parameter-name">location</code></td>
+                                            <td><span class="parameter-type">string</span></td>
+                                            <td>Filter by location/address</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="endpoint-responses">
+                                <h4 class="subsection-title">Example Response</h4>
+                                <div class="code-block">
+                                    {<br>
+                                    &nbsp;&nbsp;<span class="code-key">"count"</span>: <span class="code-number">42</span>,<br>
+                                    &nbsp;&nbsp;<span class="code-key">"next"</span>: <span class="code-string">"https://api.echoslot.com/api/providers/?page=2"</span>,<br>
+                                    &nbsp;&nbsp;<span class="code-key">"previous"</span>: <span class="code-key">null</span>,<br>
+                                    &nbsp;&nbsp;<span class="code-key">"results"</span>: [<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;{<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-key">"id"</span>: <span class="code-number">1</span>,<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-key">"first_name"</span>: <span class="code-string">"John"</span>,<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-key">"last_name"</span>: <span class="code-string">"Doe"</span>,<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-key">"bio"</span>: <span class="code-string">"Experienced service provider..."</span>,<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-key">"services"</span>: [...]<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                                    &nbsp;&nbsp;]<br>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Provider Availability Endpoint -->
+                    <div class="endpoint-card">
+                        <div class="endpoint-header">
+                            <span class="endpoint-method method-get">GET</span>
+                            <code class="endpoint-path">/api/providers/{id}/availability/</code>
+                        </div>
+                        <div class="endpoint-body">
+                            <p class="endpoint-description">
+                                Get available time slots for a specific provider and service.
+                            </p>
+                            
+                            <div class="endpoint-parameters">
+                                <h4 class="subsection-title">Query Parameters</h4>
+                                <table class="parameters-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Type</th>
+                                            <th>Required</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code class="parameter-name">service</code></td>
+                                            <td><span class="parameter-type">integer</span></td>
+                                            <td><span class="parameter-required">Required</span></td>
+                                            <td>Service ID to check availability for</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="endpoint-responses">
+                                <h4 class="subsection-title">Example Response</h4>
+                                <div class="code-block">
+                                    {<br>
+                                    &nbsp;&nbsp;<span class="code-key">"provider"</span>: <span class="code-number">1</span>,<br>
+                                    &nbsp;&nbsp;<span class="code-key">"service"</span>: <span class="code-number">5</span>,<br>
+                                    &nbsp;&nbsp;<span class="code-key">"available_slots"</span>: {<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-key">"2024-01-15"</span>: [<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-key">"time"</span>: <span class="code-string">"09:00:00"</span>,<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-key">"available"</span>: <span class="code-key">true</span><br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;]<br>
+                                    &nbsp;&nbsp;}<br>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Services Section -->
+                <section class="api-section" id="services">
+                    <div class="section-header">
+                        <h2 class="section-title">Services</h2>
+                        <p class="section-description">
+                            Manage services offered by providers, including pricing, duration, and descriptions.
+                        </p>
+                    </div>
+
+                    <!-- List Services Endpoint -->
+                    <div class="endpoint-card">
+                        <div class="endpoint-header">
+                            <span class="endpoint-method method-get">GET</span>
+                            <code class="endpoint-path">/api/services/</code>
+                        </div>
+                        <div class="endpoint-body">
+                            <p class="endpoint-description">
+                                Retrieve a list of available services with search and filtering capabilities.
+                            </p>
+                            
+                            <div class="endpoint-parameters">
+                                <h4 class="subsection-title">Query Parameters</h4>
+                                <table class="parameters-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Type</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code class="parameter-name">search</code></td>
+                                            <td><span class="parameter-type">string</span></td>
+                                            <td>Search services by name or description</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code class="parameter-name">provider</code></td>
+                                            <td><span class="parameter-type">integer</span></td>
+                                            <td>Filter by provider ID</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code class="parameter-name">price</code></td>
+                                            <td><span class="parameter-type">number</span></td>
+                                            <td>Filter by maximum price</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code class="parameter-name">duration</code></td>
+                                            <td><span class="parameter-type">number</span></td>
+                                            <td>Filter by maximum duration</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Appointments Section -->
+                <section class="api-section" id="appointments">
+                    <div class="section-header">
+                        <h2 class="section-title">Appointments</h2>
+                        <p class="section-description">
+                            Create, manage, and track appointments with comprehensive status handling.
+                        </p>
+                    </div>
+
+                    <!-- Create Appointment Endpoint -->
+                    <div class="endpoint-card">
+                        <div class="endpoint-header">
+                            <span class="endpoint-method method-post">POST</span>
+                            <code class="endpoint-path">/api/appointments/</code>
+                        </div>
+                        <div class="endpoint-body">
+                            <p class="endpoint-description">
+                                Create a new appointment. Requires service ID, date, and time.
+                            </p>
+                            
+                            <div class="endpoint-parameters">
+                                <h4 class="subsection-title">Request Body</h4>
+                                <table class="parameters-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Type</th>
+                                            <th>Required</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code class="parameter-name">service</code></td>
+                                            <td><span class="parameter-type">integer/string</span></td>
+                                            <td><span class="parameter-required">Required</span></td>
+                                            <td>Service ID or URL</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code class="parameter-name">appointment_date</code></td>
+                                            <td><span class="parameter-type">string</span></td>
+                                            <td><span class="parameter-required">Required</span></td>
+                                            <td>Date in YYYY-MM-DD format</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code class="parameter-name">start_time</code></td>
+                                            <td><span class="parameter-type">string</span></td>
+                                            <td><span class="parameter-required">Required</span></td>
+                                            <td>Time in HH:MM:SS format</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code class="parameter-name">first_name</code></td>
+                                            <td><span class="parameter-type">string</span></td>
+                                            <td><span class="parameter-required">Required</span></td>
+                                            <td>Client's first name</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code class="parameter-name">last_name</code></td>
+                                            <td><span class="parameter-type">string</span></td>
+                                            <td><span class="parameter-required">Required</span></td>
+                                            <td>Client's last name</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code class="parameter-name">email</code></td>
+                                            <td><span class="parameter-type">string</span></td>
+                                            <td><span class="parameter-required">Required</span></td>
+                                            <td>Client's email</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code class="parameter-name">phone</code></td>
+                                            <td><span class="parameter-type">string</span></td>
+                                            <td><span class="parameter-required">Required</span></td>
+                                            <td>Client's phone number</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code class="parameter-name">notes</code></td>
+                                            <td><span class="parameter-type">string</span></td>
+                                            <td><span class="parameter-optional">Optional</span></td>
+                                            <td>Additional notes</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="endpoint-responses">
+                                <h4 class="subsection-title">Custom Endpoints</h4>
+                                <p>The appointments API also includes these useful endpoints:</p>
+                                <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+                                    <li><code>GET /api/appointments/today/</code> - Today's appointments</li>
+                                    <li><code>GET /api/appointments/upcoming/</code> - Upcoming appointments</li>
+                                    <li><code>GET /api/appointments/past/</code> - Past appointments</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Error Codes Section -->
+                <section class="api-section" id="error-codes">
+                    <div class="section-header">
+                        <h2 class="section-title">Error Codes</h2>
+                        <p class="section-description">
+                            Common HTTP status codes and error responses you might encounter.
+                        </p>
+                    </div>
+
+                    <div class="endpoint-card">
+                        <div class="endpoint-body">
+                            <table class="parameters-table">
+                                <thead>
+                                    <tr>
+                                        <th>Status Code</th>
+                                        <th>Description</th>
+                                        <th>Possible Causes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>400</code></td>
+                                        <td>Bad Request</td>
+                                        <td>Invalid input data, missing required fields</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>401</code></td>
+                                        <td>Unauthorized</td>
+                                        <td>Missing or invalid authentication token</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>403</code></td>
+                                        <td>Forbidden</td>
+                                        <td>Insufficient permissions for the action</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>404</code></td>
+                                        <td>Not Found</td>
+                                        <td>Resource doesn't exist</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>429</code></td>
+                                        <td>Too Many Requests</td>
+                                        <td>Rate limit exceeded</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>500</code></td>
+                                        <td>Internal Server Error</td>
+                                        <td>Server-side issue</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <h2 class="cta-title" id="cta-title">Ready to Integrate?</h2>
+            <p class="cta-description" id="cta-description">
+                Start building with Echoslot API today. Get your API key and begin integrating appointment scheduling into your applications.
+            </p>
+            <a href="register.html" class="btn" id="cta-button">Get API Access</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Echoslot</h3>
+                    <p>A smart appointment scheduling system that eliminates the inefficiencies of traditional manual scheduling methods.</p>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Product</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html#features">Features</a></li>
+                        <li><a href="index.html#how-it-works">How It Works</a></li>
+                        <li><a href="index.html#use-cases">Use Cases</a></li>
+                        <li><a href="api.html">API Documentation</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Company</h3>
+                    <ul class="footer-links">
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Careers</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Echoslot. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        const mobileMenu = document.getElementById('mobile-menu');
+        const navLinks = document.getElementById('nav-links');
+        
+        mobileMenu.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+        
+        // Navbar scroll effect
+        const navbar = document.getElementById('navbar');
+        let lastScrollY = window.scrollY;
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+            
+            // Hide navbar on scroll down, show on scroll up
+            if (window.scrollY > lastScrollY && window.scrollY > 100) {
+                navbar.classList.add('hidden');
+            } else {
+                navbar.classList.remove('hidden');
+            }
+            lastScrollY = window.scrollY;
+            
+            // Trigger animations when elements come into view
+            animateOnScroll();
+            
+            // Update active sidebar link
+            updateActiveSidebarLink();
+        });
+        
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+        
+        // Smooth scroll for sidebar links
+        document.querySelectorAll('.sidebar-nav a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    const offsetTop = targetElement.offsetTop - 100;
+                    window.scrollTo({
+                        top: offsetTop,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // Update active sidebar link based on scroll position
+        function updateActiveSidebarLink() {
+            const sections = document.querySelectorAll('.api-section');
+            const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
+            
+            let currentSection = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 150;
+                const sectionHeight = section.clientHeight;
+                
+                if (window.scrollY >= sectionTop && window.scrollY < sectionTop + sectionHeight) {
+                    currentSection = '#' + section.getAttribute('id');
+                }
+            });
+            
+            sidebarLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === currentSection) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        // Scroll animation function
+        function animateOnScroll() {
+            const elements = document.querySelectorAll('.api-section, .cta-title, .cta-description, .cta .btn');
+            
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 150;
+                
+                if (elementTop < window.innerHeight - elementVisible) {
+                    element.classList.add('in-view');
+                }
+            });
+        }
+        
+        // Initial check on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            animateOnScroll();
+            updateActiveSidebarLink();
+        });
+    </script>
+</body>
+</html>

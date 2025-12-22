@@ -1,0 +1,79 @@
+<div class="modal-overlay" 
+     id="status-modal-{{ appointment.appointment_id }}"
+     onclick="if(event.target === this) this.remove()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h3>Update Appointment Status</h3>
+            <button class="modal-close" onclick="document.getElementById('status-modal-{{ appointment.appointment_id }}').remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <form 
+            method="post"
+            hx-post="{% url 'serviceapp:update_status' appointment.appointment_id %}"
+            hx-target="#status-form-{{ appointment.appointment_id }}"
+            hx-swap="innerHTML"
+            hx-on::after-request="document.getElementById('status-modal-{{ appointment.appointment_id }}').remove()"
+        >
+            {% csrf_token %}
+            
+            <div class="modal-body">
+                <!-- Current Status Display -->
+                <div class="current-status-display">
+                    <div class="label">Current Status</div>
+                    <div class="status">
+                        {% if appointment.status == 'scheduled' %}
+                             Scheduled
+                        {% elif appointment.status == 'confirmed' %}
+                            Confirmed
+                        {% elif appointment.status == 'completed' %}
+                            Completed
+                        {% elif appointment.status == 'cancelled' %}
+                             Cancelled
+                        {% elif appointment.status == 'no_show' %}
+                             No Show
+                        {% else %}
+                            {{ appointment.status|capfirst }}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Appointment Details -->
+                <div style="margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border);">
+                    <div style="font-size: 13px; color: var(--text-sub); margin-bottom: 4px;">
+                        {{ appointment.appointment_date|date:"l, F j, Y" }}
+                    </div>
+                    <div style="font-size: 15px; font-weight: 600; color: var(--text-main);">
+                        {{ appointment.service.name }}
+                    </div>
+                    <div style="font-size: 14px; color: var(--text-sub); margin-top: 4px;">
+                        {{ appointment.start_time|time:"g:i A" }} - {{ appointment.end_time|time:"g:i A" }}
+                    </div>
+                </div>
+
+                <!-- Status Selection -->
+                <div class="status-form-group">
+                    <label for="id_status_{{ appointment.appointment_id }}">Select New Status</label>
+                    {{ form.status }}
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button 
+                    type="button" 
+                    class="btn-modal-secondary"
+                    onclick="document.getElementById('status-modal-{{ appointment.appointment_id }}').remove()"
+                >
+                    Cancel
+                </button>
+                <button 
+                    type="submit" 
+                    class="btn-modal-primary"
+                >
+                    <i class="fas fa-check"></i> Update Status
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

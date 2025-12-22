@@ -43,7 +43,6 @@ def send_custom_email(subject, message, recipient_email):
     except Exception:
         raise ValidationError("An unexpected error occurred. Please try again later.")
 
-
 def send_verification_email(user, request):
     token = default_token_generator.make_token(user)
     uid = urlsafe_base64_encode(force_bytes(user.pk))
@@ -52,15 +51,18 @@ def send_verification_email(user, request):
         reverse("accounts:verifyemail", kwargs={"uidb64":uid, "token":token})
     )
 
-    subject = "Verify your account"
-    message = f"""Hello {user.username},
-    
-    Thank you for registering. Please verify your email by clicking the link below:
-    
+    subject = "Verify your SmartAppointments account"
+    message = f"""Hi {user.first_name},
+
+    Thanks for creating an account with SmartAppointments!
+
+    To verify your email, please click the link below:
     {verification_link}
 
-    If you did not register, please ignore this email.
+    If you didn’t create an account, you can safely ignore this email.
 
+    Best regards,
+    The SmartAppointments Team
     """
     send_custom_email(subject, message, user.email)
 
@@ -120,7 +122,7 @@ def send_password_reset_link(user, request):
     )
 
     subject = "Password Reset"
-    message = f"""Hello {user.username}
+    message = f"""Hello {user.first_name}
     You requested a password reset for your account. Please click the link below to reset your password:
 
     {reset_link}
@@ -223,8 +225,8 @@ def handle_ratelimited(request, exception):
     return render(request, "account/password_reset_form.html", status=429)
 
 # register users
-@ratelimit(key='ip', rate='10/h', block=True)
-@ratelimit(key='post:email', rate='3/h', block=True)
+#@ratelimit(key='ip', rate='10/h', block=True)
+#@ratelimit(key='post:email', rate='3/h', block=True)
 def registeraccount(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
@@ -286,7 +288,7 @@ def loginaccount(request):
                 request.session.set_expiry(0)  # session ends on browser close
             else:
                 request.session.set_expiry(60 * 60 * 24 * 30)
-            messages.success(request, f"Welcome back, {user.username}")
+            messages.success(request, f"Welcome back, {user.first_name}")
             return redirect('serviceapp:dashboard')
     else:
         form = LoginForm()
@@ -294,9 +296,9 @@ def loginaccount(request):
 
 # logout users
 def logoutuser(request):
-    username = request.user.username  
+    first_name = request.user.first_name  
     logout(request)
-    messages.success(request, f'{username} logged out')
+    messages.success(request, f'{first_name} logged out')
     return redirect("accounts:login")
 
 @login_required(login_url='accounts:login')
@@ -342,9 +344,9 @@ def post_login(request):
 def delete_account(request):
     user = request.user
     if request.method == "POST":
-        username = user.username
+        first_name = user.first_name
         user.delete()
-        messages.success(request, f"Account '{username}' has been deleted.")
+        messages.success(request, f"Account '{first_name}' has been deleted.")
         return redirect("accounts:register")
     else:
         messages.error(request, "Invalid request method.")

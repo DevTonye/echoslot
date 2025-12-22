@@ -1,0 +1,163 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Echoslot | Smart Appointment Scheduling</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'echoslot/about.css'%}">
+</head>
+<body>
+    <!-- Navigation -->
+     {% include 'partials/echoslot/navbar.html'%}
+
+    <!-- About Hero Section -->
+    <section class="about-hero">
+        <div class="container about-hero-content">
+            <h1 class="about-hero-title">Our Story</h1>
+            <p class="about-hero-description">
+                We're on a mission to eliminate the inefficiencies of traditional scheduling and help businesses focus on what matters most - serving their clients.
+            </p>
+        </div>
+    </section>
+
+    <!-- Mission Section -->
+    <section class="mission" id="mission">
+        <div class="container">
+            <div class="mission-content">
+                <div class="mission-text">
+                    <h2>Our Mission</h2>
+                    <p>
+                        At Echoslot, we believe that time is our most valuable resource. Yet, businesses worldwide waste countless hours on manual scheduling, phone tag, and administrative tasks that could be automated.
+                    </p>
+                    <p>
+                        Our mission is to create intelligent scheduling solutions that eliminate these inefficiencies, allowing service providers to focus on delivering exceptional experiences to their clients.
+                    </p>
+                    <p>
+                        Founded in 2025, Echoslot has grown from a simple idea to a platform trusted by thousands of businesses across various industries.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Values Section -->
+    <section class="values" id="values">
+        <div class="container">
+            <div class="section-header" id="values-header">
+                <h2 class="section-title">Our Values</h2>
+                <p class="section-subtitle">
+                    The principles that guide everything we do at Echoslot.
+                </p>
+            </div>
+            
+            <div class="values-grid">
+                <div class="value-card" id="value-1">
+                    <div class="value-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h3 class="value-title">Innovation</h3>
+                    <p class="value-description">
+                        We constantly push boundaries to create smarter, more intuitive scheduling solutions that anticipate our users' needs.
+                    </p>
+                </div>
+                
+                <div class="value-card" id="value-2">
+                    <div class="value-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3 class="value-title">Customer Focus</h3>
+                    <p class="value-description">
+                        Our users' success is our success. We listen carefully and build features that solve real problems for real businesses.
+                    </p>
+                </div>
+                
+                <div class="value-card" id="value-3">
+                    <div class="value-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="value-title">Reliability</h3>
+                    <p class="value-description">
+                        We build robust, secure systems that our customers can depend on every day to run their businesses smoothly.
+                    </p>
+                </div>
+                
+                <div class="value-card" id="value-4">
+                    <div class="value-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3 class="value-title">Excellence</h3>
+                    <p class="value-description">
+                        We strive for excellence in everything we do, from our product design to our customer support.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <!-- Team Section -->
+<section class="team" id="team">
+    <div class="container">
+        <div class="section-header" id="team-header">
+            <h2 class="section-title">Built by One Passionate Developer</h2>
+            <p class="section-subtitle">
+                Echoslot was created from the ground up by a single developer determined to solve scheduling problems.
+            </p>
+        </div>
+        
+        <div class="team-grid">
+            <div class="team-member" id="team-1">
+                <div class="member-image">
+                    <!-- Placeholder for team member image -->
+                    <div style="width:100%; height:100%; background:var(--blue); display:flex; align-items:center; justify-content:center; color:white; font-size:2rem;">
+                        TT
+                    </div>
+                </div>
+                <h3 class="member-name">Tonye Tobin</h3>
+                <p class="member-role">Solo Founder & Developer</p>
+                <p class="member-bio">
+                    From concept to code to launch, Tonye built every aspect of Echoslot—transforming personal frustration into a powerful scheduling solution used by businesses today.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <!-- Story Section -->
+<section class="story">
+    <div class="container">
+        <div class="story-content">
+            <h2>Our Journey</h2>
+            <p>
+                Echoslot was born when I, Tonye Tobin, grew tired of wasting hours in queues for simple appointments like haircuts. Frustrated by the inefficiency, I decided to build a solution myself.
+            </p>
+            <p>
+                Working solo, I designed, coded, and launched Echoslot from the ground up. What started as a personal project to solve my own scheduling frustrations has grown into a platform that now helps businesses save time and serve their clients better.
+            </p>
+            <p>
+                Today, Echoslot continues to evolve as I work directly with users to improve features and ensure it remains the simplest, most effective scheduling solution available.
+            </p>
+        </div>
+    </div>
+</section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <h2 class="cta-title" id="cta-title">Join Thousands of Happy Businesses</h2>
+            <p class="cta-description" id="cta-description">
+                Start using Echoslot today and transform how you manage appointments.
+            </p>
+            <a href="{% url 'accounts:register' %}" class="btn" id="cta-button">Get Started Free</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    {% include 'partials/echoslot/footer.html' %}
+    
+    <script src="{% static 'js/index.js'%}"></script>
+</body>
+</html>

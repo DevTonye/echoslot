@@ -4,6 +4,12 @@
     box-sizing: border-box;
 }
 
+:root {
+    --primary: #2563eb;
+    --primary-hover: #1e4ec9;
+    --primary-text: #ffffff;
+}
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     background: white;
@@ -75,8 +81,8 @@ body {
 }
 
 .upload-btn {
-    background: #000;
-    color: white;
+    background: var(--primary);
+    color: var(--primary-text);
     border: none;
     font-size: 14px;
     font-weight: 500;
@@ -87,7 +93,7 @@ body {
 }
 
 .upload-btn:hover {
-    background: #333;
+    background: var(--primary-hover);
 }
 
 .hidden-input {
@@ -136,7 +142,7 @@ body {
 
 .input-field:focus {
     outline: none;
-    border-bottom-color: #000;
+    border-bottom-color: var(--primary);
 }
 
 .input-field.error {
@@ -162,11 +168,12 @@ body {
     font-weight: 400;
 }
 
+/* Main Submit Button */
 .action-btn {
     width: 100%;
     padding: 14px;
-    background: #000;
-    color: white;
+    background: var(--primary);
+    color: var(--primary-text);
     border: none;
     font-size: 16px;
     font-weight: 500;
@@ -177,7 +184,7 @@ body {
 }
 
 .action-btn:hover {
-    background: #333;
+    background: var(--primary-hover);
 }
 
 select.input-field {
@@ -189,7 +196,7 @@ select.input-field {
     padding-right: 25px;
 }
 
-    .secondary-link {
+.secondary-link {
     text-align: center;
 }
 
@@ -202,10 +209,12 @@ select.input-field {
 }
 
 .secondary-link a:hover {
-    color: #000;
+    color: var(--primary);
 }
 
+/* Mobile */
 @media (max-width: 480px) {
+
 .profile-container {
     width: 100%;
     max-width: 100%;
@@ -224,7 +233,7 @@ select.input-field {
     margin-bottom: 5px;
 }
 
-/* Image Upload Styles */
+/* Image Upload */
 .image-upload-group {
     margin: 0 auto 25px;
     display: flex;
@@ -247,41 +256,19 @@ select.input-field {
     border: 1px solid #eee;
 }
 
-.image-preview img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: none;
-}
-
 .image-preview .initials {
     font-size: 30px;
     color: #999;
 }
 
 .upload-btn {
-    background: #000;
-    color: white;
-    border: none;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    padding: 10px 20px;
+    background: var(--primary);
     border-radius: 20px;
-    transition: background 0.2s ease;
     width: 100%;
     max-width: 180px;
 }
 
-.upload-btn:hover {
-    background: #333;
-}
-
-.hidden-input {
-    display: none;
-}
-
-/* Form Styles */
+/* Form */
 .form-section {
     margin-bottom: 25px;
 }
@@ -300,71 +287,8 @@ select.input-field {
     margin-bottom: 20px;
 }
 
-.input-group label {
-    display: block;
-    font-size: 15px;
-    color: #333;
-    margin-bottom: 6px;
-    font-weight: 500;
-}
-
-.input-field {
-    width: 100%;
-    padding: 10px 0;
-    border: none;
-    border-bottom: 1px solid #ddd;
-    background: transparent;
-    font-size: 16px;
-    color: #000;
-    transition: border-color 0.3s ease;
-    resize: vertical;
-}
-
-.input-field:focus {
-    outline: none;
-    border-bottom-color: #000;
-}
-
-.field-error {
-    font-size: 13px;
-    color: #d32f2f;
-    margin-top: 4px;
-    font-weight: 400;
-    display: block;
-}
-
-.input-field::placeholder {
-    color: #999;
-}
-
-.form-text {
-    font-size: 13px;
-    color: #666;
-    margin-top: 6px;
-    font-weight: 400;
-}
-
 .action-btn {
-    width: 100%;
-    padding: 14px;
-    background: #000;
-    color: white;
-    border: none;
-    font-size: 16px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.25s ease;
     border-radius: 20px;
-    margin: 20px 0;
-}
-
-select.input-field {
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right center;
-    background-size: 16px;
-    padding-right: 25px;
 }
 
 }

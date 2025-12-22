@@ -1,57 +1,124 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}My Service - EchoSlot{% endblock %}
+{% block title %}{{ service.name }} - EchoSlot{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'services/service.css' %}">
+{% endblock %}
 
 {% block content %}
-<div class="service-dashboard">
-    <section class="service-overview">
-        {% if services %}
-            {% for service in services %}
-            <div class="service-header">
-                <div class="service-title-section">
-                    <h1 class="service-title">{{ service.name }}</h1>
-                    <div class="service-meta">
-                        <span class="price">${{ service.price }}</span>
-                        <span class="divider">•</span>
-                        <span class="duration">{{ service.duration }} min</span>
-                    </div>
-                </div>
-                
-                <!-- Stats moved to header, inline with title -->
-                <div class="header-stats">
-                    <div class="stat-card accent">
-                        <div class="stat-value">{{services.count}}</div>
-                        <div class="stat-label">Total Bookings</div>
-                    </div>
-                </div>
-            </div>
+<main class="main">
+    <div class="header-section">
 
-            <div class="service-content">
-                <div class="description-section">
-                    <h3>Service Description</h3>
-                    <p>{{ service.description|truncatechars:100 }}</p>
-                    
-                    <!-- Action buttons -->
-                    <div class="service-actions">
-                        <a href="{% url 'serviceapp:editservice' service.service_id %}" class="edit-service">
-                            <i class="fas fa-pencil-alt"></i> Edit Service
-                        </a>
-                        <a href="{% url 'serviceapp:deleteservice' service.service_id %}" class="delete-service">
-                            <i class="fas fa-trash-alt"></i> Delete
-                        </a>
+        {% if services %}
+        {% for service in services %}
+        <div class="service-header">
+            <div class="header-title-row">
+                <h1 class="header-title">
+                    {{ service.name }}
+                    <span class="status-badge">Active</span>
+                </h1>
+
+                <div class="header-actions">
+                    <a href="{% url 'serviceapp:deleteservice' service.service_id %}" class="btn-outline">
+                        Delete
+                    </a>
+                    <a href="{% url 'serviceapp:editservice' service.service_id %}" class="btn-black">
+                        <i class="fa-solid fa-pen"></i> Edit Service
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="view-grid">
+            <!-- LEFT COLUMN -->
+            <div class="left-col">
+                <div class="info-card">
+                    <h3>Service Details</h3>
+
+                    <div class="data-row">
+                        <div class="data-label">Description</div>
+                        <div class="data-value">
+                            {{ service.description|default:"No description provided"|truncatechars:100 }}
+                        </div>
+                    </div>
+
+                    <div class="duration-price-grid">
+                        <div class="data-row">
+                            <div class="data-label">Duration</div>
+                            <div class="data-value large">
+                                {{ service.duration }} <span class="unit">min</span>
+                            </div>
+                        </div>
+
+                        <div class="data-row">
+                            <div class="data-label">Price</div>
+                            <div class="data-value large">
+                                ₦{{ service.price }}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            {% endfor %}
-        {% else %}
-            <div class="no-services-message">
-                <i class="fas fa-clipboard-list text-muted fa-3x"></i>
-                <p>No services available at the moment.</p>
-                <a href="{% url 'serviceapp:addservice' %}" class="btn btn-outline-success mt-3">
-                    <i class="fas fa-plus"></i> Add Your First Service
-                </a>
+        {% endfor %}
+        
+        
+        <!-- RIGHT COLUMN -->
+            <div class="right-col">
+                <div class="info-card">
+                    <h3>Configuration</h3>
+
+                    <div class="data-row">
+                        <div class="data-label">Category</div>
+                        <div class="data-value">
+                            {{ services.name |default:"No service" }}
+                        </div>
+                    </div>
+
+                    <div class="data-row">
+                        <div class="data-label">Online Booking</div>
+                        <div class="data-value">
+                            <i class="fa-solid fa-check" style="color: var(--green);"></i> Enabled
+                        </div>
+                    </div>
+
+                    <div class="data-row">
+                        <div class="data-label">Staff Assigned</div>
+                        <div class="data-value">1 Provider</div>
+                    </div>
+                </div>
             </div>
+        </div>
+
+        <div class="info-card">
+                    <h3>Performance</h3>
+                    <div style="display: flex; gap: 40px;">
+                        <div>
+                            <div class="data-label">Total Bookings</div>
+                            <div class="data-value large">{{services.count}}</div>
+                        </div>
+                        <div>
+                            <div class="data-label">Revenue Generated</div>
+                            <div class="data-value large">0</div>
+                        </div>
+                        <div>
+                            <div class="data-label">Avg. Rating</div>
+                            <div class="data-value large">0 <span style="font-size: 14px; color: #F59E0B;">★</span></div>
+                        </div>
+                    </div>
+                </div>
+
+        {% else %}
+        <div class="no-services-message">
+            <i class="fas fa-clipboard-list text-muted fa-3x"></i>
+            <p>No service found.</p>
+            <a href="{% url 'serviceapp:addservice' %}" class="btn btn-outline-success mt-3">
+                <i class="fas fa-plus"></i> Add Your First Service
+            </a>
+        </div>
         {% endif %}
-    </section>
-</div>   
+
+    </div>
+</main>
 {% endblock %}

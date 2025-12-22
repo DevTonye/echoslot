@@ -1,124 +1,94 @@
-<div class="card-header">
-    <h5><i class="fas fa-calendar-alt"></i> Upcoming Appointments</h5>
-    <span class="badge badge-info">{{ upcoming_appointments.count }} Appointment{{ upcoming_appointments.count|pluralize }}</span>
-</div>
-<div class="card-body">
-    {% if upcoming_appointments %}
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>image</th>
-                    <th>Client</th>
-                    <th>Service</th>
-                    <th>Duration</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for appointment in page_obj %}
-                <tr>
-                    <td>
-                        <strong>{{ appointment.appointment_date|date:"M d, Y" }}</strong>
-                        <br>
-                        <small class="text-muted">{{ appointment.appointment_date|date:"l" }}</small>
-                    </td>
-                    <td>
-                        <strong>{{ appointment.start_time|time:"h:i A" }}</strong>
-                    </td>
-                    {% if appointment.client.clientprofile %}
-                        {% with profile=appointment.client.clientprofile %}
-                            <td>
-                                <a href="{{ profile.profile_image.url }}" data-lightbox="client-{{ appointment.appointment_id }}">
-                                    <img src="{{ profile.profile_image.url }}" alt="{{ profile.first_name }}" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover; margin-right: 5px;">
-                                </a>
-                            </td>
-                        {% endwith %}
-                        {% else %}
-                            <div class="client-avatar-placeholder">
-                                <i class="fas fa-user"></i>
-                            </div>    
+{% if page_obj %}  <!-- Check page_obj instead of upcoming_appointments -->
+    {% for appointment in page_obj %}
+    <div class="appt-card">
+        <div class="appt-left">
+            <div class="date-badge">
+                <div class="db-month">{{ appointment.appointment_date|date:"b"|upper }}</div>
+                <div class="db-day">{{ appointment.appointment_date|date:"d" }}</div>
+            </div>
+            
+            <div class="appt-info">
+                <h4>{{ appointment.service.name }}
+                    <span id="status-form-{{ appointment.appointment_id }}">
+                    {% if appointment.status == 'confirmed' %}
+                        <span class="status-pill status-completed">CONFIRMED</span>
+                    {% elif appointment.status == 'scheduled' %}
+                        <span class="status-pill status-warning">SCHEDULED</span>
                     {% endif %}
-                    <td>
-                        <div>
-                            <strong>{{ appointment.first_name }} {{ appointment.last_name }}</strong>
-                        </div>
-                    </td>
-                    <td>{{ appointment.service.name }}</td>
-                    <td>{{ appointment.service.duration }} min</td>
-                    <td id="status-form-{{ appointment.appointment_id }}">
-                        {% if appointment.status == 'scheduled' %}
-                            <span class="badge badge-warning">Scheduled</span>
-                        {% elif appointment.status == 'confirmed' %}
-                            <span class="badge badge-info">Confirmed</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <div class="d-flex" style="gap: 8px;">
-                            <button class="btn btn-sm btn-outline-primary"
-                                hx-get="{% url 'serviceapp:status_form' appointment.appointment_id %}"
-                                hx-target="#status-form-{{ appointment.appointment_id}}"
-                                hx-swap="innerHTML"
-                            >
-                                <i class="fas fa-edit"></i> Update
-                            </button>
-                            <a href="{% url 'serviceapp:appointment_details' appointment.appointment_id %}" class="btn btn-sm btn-outline-primary">
-                                <i class="fas fa-eye"></i> View
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                    </span>
+                </h4>
+            
+                <div class="appt-meta">
+                    <span><i class="fa-regular fa-clock"></i> {{ appointment.start_time|time:"h:i A" }} - {{ appointment.end_time|time:"h:i A" }}</span>
+                    <span>•</span>
+                    <span><i class="fa-regular fa-user"></i> {{ appointment.first_name }} {{ appointment.last_name }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="appt-actions">
+             <button 
+                    class="btn-status-edit"
+                    hx-get="{% url 'serviceapp:status_modal' appointment.appointment_id %}"
+                    hx-target="#modal-container"
+                    hx-swap="innerHTML"
+                >
+                    <i class="fas fa-pen"></i> Update Status
+                </button>
+            <button 
+                class="btn-sm"
+                hx-get="{% url 'serviceapp:checkin_modal' appointment.appointment_id %}"
+                hx-target="#modal-container"
+                hx-swap="innerHTML"
+            >
+                Details
+        </button>
+        </div>
     </div>
-    <!--  Pagination Section -->
-      {% if page_obj.has_previous or page_obj.has_next %} 
-      <div class="d-flex justify-content-center mt-3">
+    {% endfor %}
+
+    <!-- Pagination -->
+    {% if page_obj.has_previous or page_obj.has_next %}
+    <div style="display: flex; justify-content: center; margin-top: 20px;">
         <nav>
             <ul class="pagination pagination-sm">
                 {% if page_obj.has_previous %}
-                <li class="page-item">
-                    <a class="page-link" 
-                        hx-get="upcoming-appointments/?page=1"
-                        hx-target="#appointment-content"
-                        hx-swap="innerHTML"
-                        aria-label="First">
-                        &laquo; First>
-                    </a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link"
-                        hx-get="upcoming-appointments/?page={{ page_obj.previous_page_number }}"
-                        hx-target="#appointment-content" 
-                        hx-swap="innerHTML"
-                        aria-label="Previous">    
-                        Previous 
-                    </a>
-                </li>
+                    <li class="page-item">
+                        <a class="page-link" 
+                           hx-get="upcoming-appointments/?page=1" 
+                           hx-target="#appointment-content" 
+                           hx-swap="innerHTML"
+                           aria-label="First">
+                            &laquo; First
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" 
+                           hx-get="upcoming-appointments/?page={{ page_obj.previous_page_number }}" 
+                           hx-target="#appointment-content" 
+                           hx-swap="innerHTML"
+                           aria-label="Previous">
+                            Previous
+                        </a>
+                    </li>
                 {% endif %}
 
-                <!-- Current page info -->
                 <li class="page-item active">
                     <span class="page-link">
                         {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
                     </span>
                 </li>
-                
+
                 {% if page_obj.has_next %}
                     <li class="page-item">
-                        <a class="page-link"
-                            hx-get="upcoming-appointments/?page={{ page_obj.next_page_number }}"
-                            hx-target="#appointment-content" 
-                            hx-swap="innerHTML"
-                            aria-label="Next">
+                        <a class="page-link" 
+                           hx-get="upcoming-appointments/?page={{ page_obj.next_page_number }}" 
+                           hx-target="#appointment-content" 
+                           hx-swap="innerHTML"
+                           aria-label="Next">
                             Next
                         </a>
                     </li>
-                     <li class="page-item">
+                    <li class="page-item">
                         <a class="page-link" 
                            hx-get="upcoming-appointments/?page={{ page_obj.paginator.num_pages }}" 
                            hx-target="#appointment-content" 
@@ -132,17 +102,10 @@
         </nav>
     </div>
     {% endif %}
-
-    {% else %}
+{% else %}
     <div class="empty-state">
-        <i class="fas fa-calendar-week"></i>
+        <i class="fas fa-calendar-times"></i>
         <p>No upcoming appointments scheduled</p>
         <p class="text-muted">Your schedule is clear for the upcoming days.</p>
-        <!--
-            <button class="btn btn-outline-primary mt-3">
-                <i class="fas fa-plus"></i> Schedule New Appointment
-            </button>
-        -->
     </div>
-    {% endif %}
-</div>
+{% endif %}

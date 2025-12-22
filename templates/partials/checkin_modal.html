@@ -1,0 +1,119 @@
+<!-- Modal Overlay -->
+<div class="modal-overlay" 
+     id="appointment-details-modal"
+     hx-on:click="if(event.target === this) { this.remove() }">
+    <div class="modal-dialog">
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h5 class="modal-title">
+                <i class="fas fa-calendar-alt"></i>
+                Appointment Details
+            </h5>
+            <button class="modal-close" 
+                    type="button"
+                    hx-on:click="document.getElementById('appointment-details-modal').remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="modal-body">
+            <!-- Status Badge -->
+            <div class="modal-status-section">
+                <span class="modal-status-badge status-{{ appointment.status }}">
+                    {% if appointment.status == 'confirmed' %}
+                        <i class="fas fa-check-circle"></i> CONFIRMED
+                    {% elif appointment.status == 'scheduled' %}
+                        <i class="fas fa-clock"></i> SCHEDULED
+                    {% elif appointment.status == 'cancelled' %}
+                        <i class="fas fa-times-circle"></i> CANCELLED
+                    {% elif appointment.status == 'completed' %}
+                        <i class="fas fa-check-double"></i> COMPLETED
+                    {% endif %}
+                </span>
+            </div>
+
+            <!-- Client Information Section -->
+            <div class="modal-section">
+                <h6 class="section-title">
+                    <i class="fas fa-user"></i>
+                    Client Information
+                </h6>
+                <div class="detail-grid">
+                    <div class="detail-row">
+                        <span class="detail-label">Client Name</span>
+                        <span class="detail-value">{{ appointment.first_name }} {{ appointment.last_name }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Email</span>
+                        <span class="detail-value">{{ appointment.email }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Phone</span>
+                        <span class="detail-value">{{ appointment.phone }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appointment Details Section -->
+            <div class="modal-section">
+                <h6 class="section-title">
+                    <i class="fas fa-calendar-day"></i>
+                    Appointment Details
+                </h6>
+                <div class="detail-grid">
+                    <div class="detail-row">
+                        <span class="detail-label">Service</span>
+                        <span class="detail-value strong">{{ appointment.service.name }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Date</span>
+                        <span class="detail-value">{{ appointment.appointment_date|date:"l, F d, Y" }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Time</span>
+                        <span class="detail-value">{{ appointment.start_time|time:"h:i A" }} - {{ appointment.end_time|time:"h:i A" }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Duration</span>
+                        <span class="detail-value">{{ appointment.service.duration }} minutes</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Price</span>
+                        <span class="detail-value strong">${{ appointment.service.price }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Booking Information Section -->
+            <div class="modal-section">
+                <h6 class="section-title">
+                    <i class="fas fa-bookmark"></i>
+                    Booking Information
+                </h6>
+                <div class="detail-grid">
+                    <div class="detail-row">
+                        <span class="detail-label">Booked On</span>
+                        <span class="detail-value">{{ appointment.created_at|date:"F j, Y" }} at {{ appointment.created_at|time:"g:i A" }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes Section -->
+            {% if appointment.notes %}
+            <div class="modal-section">
+                <h6 class="section-title">
+                    <i class="fas fa-notes-medical"></i>
+                    Notes
+                </h6>
+                <div class="notes-box">
+                    {{ appointment.notes|linebreaks }}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Modal Footer -->
+       
+    </div>
+</div>

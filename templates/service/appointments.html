@@ -1,14 +1,15 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}Appointments - Service Provider Dashboard{% endblock %}
-
+{% block extra_css %}<link rel="stylesheet" href="{% static 'services/appointments.css' %}">{% endblock %}
 {% block content %}
-<div class="page-header">
-    <h1 class="page-title">Appointments</h1>
-</div>
+
+<div id="modal-container"></div>
+<main class="main">
+    <h1 class="header-title">Appointments</h1>
 
      <!-- Appointment Tabs -->
-    <div class="appointment-tabs">
+    <div class="tabs-container">
     <button 
         class="tab-button active" 
         hx-get="today-appointments/" 
@@ -53,13 +54,14 @@
 </div>
     <div class="card">
         <div id="appointment-content">
-            <div class="loading">
-                <i class="fas fa-spinner"></i>
-                <p>Loading appointments...</p>
+           <div class="loading-container">
+                <div class="spinner"></div>
+                <p>Loading schedule...</p>
             </div>
         </div>
     </div>
 {% endblock %}
+</main>
 
 {% block extra_js %}
 <script src="{% static 'js/appointments.js'%}"></script>

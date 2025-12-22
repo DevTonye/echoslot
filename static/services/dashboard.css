@@ -1,0 +1,356 @@
+
+/* ===============================
+   MAIN DASHBOARD GRID
+================================ */
+
+.main {
+    flex: 1;
+    margin-left: 240px;
+    padding: 50px 80px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: grid;
+    grid-template-columns: minmax(600px, 2fr) minmax(350px, 1fr);
+    gap: 100px;
+    align-items: start;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+
+/* ===============================
+   TODAY COLUMN
+================================ */
+
+.today-column {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    width: 100%;
+}
+
+
+/* Hero Card */
+.now-playing-card {
+    border: 1px solid var(--text-main);
+    border-radius: 24px;
+    padding: 30px;
+    position: relative;
+    background: #fff;
+}
+
+.badge-live {
+    position: absolute;
+    top: 30px; 
+    right: 30px;
+    background: #000; 
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+
+.np-time {
+    font-size: 14px; 
+    font-weight: 600; 
+    color: var(--text-sub); 
+    margin-bottom: 8px;
+}
+
+.np-title {
+    font-size: 32px; 
+    font-weight: 800; 
+    margin-bottom: 10px; 
+    line-height: 1.1;
+}
+
+.np-client {
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    margin-bottom: 30px;
+}
+
+.np-client a {
+    display: contents;
+    text-decoration: none;
+    color: inherit;
+}
+
+.np-client img {
+    width: 24px; 
+    height: 24px; 
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.np-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Timeline */
+.timeline-list {
+    display: flex; 
+    flex-direction: column; 
+    gap: 0;
+    border-left: 1px solid var(--border);
+    padding-left: 30px;
+    margin-left: 10px;
+}
+
+.timeline-item {
+    padding: 20px 0;
+    position: relative;
+}
+
+.timeline-dot {
+    position: absolute; 
+    left: -35px; 
+    top: 26px;
+    width: 9px; 
+    height: 9px; 
+    background: #fff; 
+    border: 2px solid var(--text-sub); 
+    border-radius: 50%;
+}
+
+.t-time { 
+    font-size: 13px; 
+    font-weight: 600; 
+    color: var(--text-sub); 
+    width: 80px; 
+}
+
+.t-card {
+    background: var(--tag-bg);
+    padding: 16px 20px;
+    border-radius: 12px;
+    width: 100%;
+    transition: 0.2s;
+}
+
+.t-card:hover { 
+    background: #F1F5F9; 
+}
+
+.t-header { 
+    display: flex; 
+    justify-content: space-between; 
+    margin-bottom: 4px; 
+}
+
+.t-service { 
+    font-weight: 700; 
+    font-size: 15px; 
+}
+
+.t-client { 
+    font-size: 13px; 
+    color: var(--text-sub); 
+}
+
+/* ===============================
+   UPCOMING COLUMN
+================================ */
+
+.upcoming-column {
+    padding-top: 0;
+    width: 100%;
+    position: sticky;
+    top: 50px;
+}
+
+.upcoming-header {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 24px;
+}
+
+.grouped-list {
+    display: flex; 
+    flex-direction: column; 
+    gap: 30px;
+}
+
+.date-group-title {
+    font-size: 12px; 
+    text-transform: uppercase; 
+    letter-spacing: 1px; 
+    font-weight: 700; 
+    color: var(--text-sub); 
+    margin-bottom: 16px;
+}
+
+.upcoming-card {
+    display: flex; 
+    align-items: flex-start; 
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    text-decoration: none !important;
+    color: inherit;
+    transition: 0.2s;
+}
+
+.upcoming-card:hover {
+    transform: translateX(4px);
+}
+
+/* Remove border from last card in each group */
+.grouped-list > div > .upcoming-card:last-child {
+    border-bottom: none;
+}
+
+.uc-date-box {
+    background: var(--tag-bg);
+    width: 50px; 
+    height: 50px; 
+    border-radius: 10px;
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.uc-day { 
+    font-size: 10px; 
+    font-weight: 600; 
+    color: var(--text-sub); 
+    text-transform: uppercase; 
+    letter-spacing: 0.5px;
+}
+
+
+.uc-num { 
+    font-size: 18px; 
+    font-weight: 700; 
+    line-height: 1;
+    margin-top: 2px;
+}
+
+.uc-info { 
+    flex: 1;
+    padding-top: 2px;
+}
+
+.uc-service { 
+    font-weight: 700; 
+    font-size: 15px; 
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.uc-meta { 
+    font-size: 13px; 
+    color: var(--text-sub);
+    line-height: 1.4;
+}
+
+.uc-arrow { 
+    opacity: 0; 
+    transition: 0.2s; 
+}
+
+.upcoming-card:hover .uc-arrow { 
+    opacity: 1; 
+    transform: translateX(4px); 
+}
+
+/* ===============================
+   DASHBOARD EMPTY STATES
+================================ */
+
+.today-empty {
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 50px 30px;
+}
+/* ===============================
+   MOBILE DASHBOARD
+================================ */
+
+@media (max-width: 768px) {
+.sidebar {
+    bottom: 0;
+    top: auto;
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    border-top: 1px solid var(--border);
+}
+
+.logo,
+.user-mini {
+    display: none;
+}
+
+.main {
+    margin-left: 0;
+    grid-template-columns: 1fr;
+    padding: 20px 16px 100px;
+    gap: 40px;
+}
+
+.upcoming-column {
+    position: static;
+    width: 100%;
+    padding-bottom: 20px;
+}
+
+.now-playing-card {
+    padding: 20px;
+    border-radius: 16px;
+}
+
+.np-title {
+    font-size: 20px;
+}
+    .np-time {
+    font-size: 13px;
+}
+
+.upcoming-card {
+    padding: 12px 0;
+}
+
+.uc-date-box {
+    width: 44px;
+    height: 44px;
+}
+
+.uc-service {
+    font-size: 14px;
+}
+
+.uc-meta {
+    font-size: 12px;
+}
+
+.uc-arrow {
+    opacity: 0.3;
+}
+.today-empty {
+    padding: 30px 16px;
+}
+
+    .today-empty .btn {
+    flex: 1 1 45% !important;       /* Equal width for both buttons */
+    padding: 10px 12px !important;
+    font-size: 13px !important;
+    text-align: center;
+}
+
+.today-empty div[style*="display: flex"] {
+    width: 100%;
+    justify-content: center;
+    gap: 10px;
+}
+}

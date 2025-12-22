@@ -1,0 +1,108 @@
+/* ===== DASHBOARD GRID ===== */
+.main {
+    display: grid;
+    grid-template-columns: minmax(600px, 2fr) minmax(350px, 1fr);
+    gap: 100px;
+}
+
+/* ===== TODAY COLUMN ===== */
+.today-column {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+/* Hero Card */
+.now-playing-card {
+    border: 1px solid var(--text-main);
+    border-radius: 24px;
+    padding: 30px;
+    position: relative;
+}
+
+.badge-live {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    background: #000;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 100px;
+    font-size: 12px;
+}
+
+/* Timeline */
+.timeline-list {
+    border-left: 1px solid var(--border);
+    padding-left: 30px;
+}
+
+.timeline-item {
+    padding: 20px 0;
+    position: relative;
+}
+
+.timeline-dot {
+    position: absolute;
+    left: -35px;
+    top: 26px;
+    width: 9px;
+    height: 9px;
+    border: 2px solid var(--text-sub);
+    border-radius: 50%;
+}
+
+/* ===== UPCOMING COLUMN ===== */
+.upcoming-column {
+    position: sticky;
+    top: 50px;
+}
+
+.upcoming-card {
+    display: flex;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+    transition: 0.2s;
+}
+
+.upcoming-card:hover {
+    transform: translateX(4px);
+}
+
+.uc-date-box {
+    width: 50px;
+    height: 50px;
+    background: var(--tag-bg);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.uc-arrow {
+    opacity: 0;
+    transition: 0.2s;
+}
+
+.upcoming-card:hover .uc-arrow {
+    opacity: 1;
+}
+
+/* ===== DASHBOARD EMPTY STATES ===== */
+.today-empty {
+    padding: 50px 30px;
+}
+
+/* ===== DASHBOARD MOBILE ===== */
+@media (max-width: 768px) {
+    .main {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+
+    .upcoming-column {
+        position: static;
+    }
+}
