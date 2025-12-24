@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-
+{% load static %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'services/availability.css' %}">{% endblock %}
 {% block content %}
 <div class="row">
     <div class="col-md-12">

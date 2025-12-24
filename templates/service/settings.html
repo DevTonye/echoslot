@@ -2,108 +2,65 @@
 {% load static %}
 
 {% block title %}Settings{% endblock %}
-
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/settings.css' %}">
+<link rel="stylesheet" href="{% static 'services/settings.css' %}">{% endblock %}
+{% block content %}
+
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="fas fa-cog"></i>
+        Settings
+    </h1>
+</div>
+
+<!-- Settings tab -->
+
+<div class="settings-tabs">
+<button
+    class="settings-tab active"
+    hx-get="{% url 'serviceapp:settings-profile' %}"
+    hx-target="#setting-content"
+    hx-swap="innerHTML"
+    hx-trigger="click"
+    hx-on:click="document.querySelectorAll('.settings-tab').forEach(tab => tab.classList.remove('active')); this.classList.add('active')">
+    <i class="fas fa-user"></i>
+    Profile 
+</button>
+
+<button 
+    class="settings-tab"
+    hx-get="{% url 'serviceapp:security-settings' %}"
+    hx-target="#setting-content"
+    hx-swap="innerHTML"
+    hx-trigger="click"
+    hx-on:click="document.querySelectorAll('.settings-tab').forEach(tab => tab.classList.remove('active')); this.classList.add('active')">
+    <i class="fas fa-shield-alt"></i>
+    Security
+</button>
+
+<button 
+    class="settings-tab"
+    hx-get="{% url 'serviceapp:account-settings' %}"
+    hx-target="#setting-content"
+    hx-swap="innerHTML"
+    hx-trigger="click"
+    hx-on:click="document.querySelectorAll('.settings-tab').forEach(tab => tab.classList.remove('active')); this.classList.add('active')">
+    <i class="fas fa-user-cog"></i>
+    Account
+</button>
+</div>
+
+<div id="setting-content">
+</div>
+
 {% endblock %}
 
-{% block content %}
-<h1 class="header-title">Settings</h1>
+{% block extra_js %}
+<script>
+    // Pass data from Django to JS
+    const settingsProfileurl = "{% url 'serviceapp:settings-profile' %}"
+    const csrfToken = "{{ csrf_token }}";
+</script>
+<script src="{% static 'js/settings.js' %}"></script>
 
-<div class="settings-container">
-    
-    <div class="settings-menu">
-        <div class="settings-tab active"><i class="fa-regular fa-user"></i> Profile</div>
-        <div class="settings-tab"><i class="fa-solid fa-store"></i> Business Info</div>
-        <div class="settings-tab"><i class="fa-regular fa-bell"></i> Notifications</div>
-        <div class="settings-tab"><i class="fa-solid fa-shield-halved"></i> Security</div>
-        <div class="settings-tab" style="color: var(--danger); margin-top: 20px;">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i> Log Out
-        </div>
-    </div>
-
-    <div class="settings-content">
-        
-        <div class="section-box">
-            <div class="section-header">
-                <div class="section-title">Public Profile</div>
-                <div class="section-desc">This information will be displayed on your booking page.</div>
-            </div>
-
-            <div class="avatar-upload">
-                <div class="avatar-large"></div>
-                <div>
-                    <button class="btn-outline" style="margin-right: 10px;">Change Photo</button>
-                    <button class="btn-text-danger">Remove</button>
-                </div>
-            </div>
-
-            <div class="form-grid">
-                <div class="form-group">
-                    <label class="form-label">First Name</label>
-                    <input type="text" class="form-input" value="Ray">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Last Name</label>
-                    <input type="text" class="form-input" value="Stantz">
-                </div>
-                <div class="form-group full-width">
-                    <label class="form-label">Professional Title</label>
-                    <input type="text" class="form-input" value="Senior Physical Therapist">
-                </div>
-                <div class="form-group full-width">
-                    <label class="form-label">Bio</label>
-                    <textarea class="form-input" rows="4">Specializing in sports injury recovery and deep tissue therapy with over 10 years of experience.</textarea>
-                </div>
-            </div>
-        </div>
-
-        <div class="section-box">
-            <div class="section-header">
-                <div class="section-title">Contact Information</div>
-                <div class="section-desc">How clients can reach you.</div>
-            </div>
-
-            <div class="form-grid">
-                <div class="form-group">
-                    <label class="form-label">Email Address</label>
-                    <input type="email" class="form-input" value="ray.stantz@monoslot.com">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Phone Number</label>
-                    <input type="tel" class="form-input" value="+1 (555) 012-3456">
-                </div>
-            </div>
-        </div>
-
-        <div class="section-box">
-            <div class="section-header">
-                <div class="section-title">Preferences</div>
-                <div class="section-desc">Manage your account behavior.</div>
-            </div>
-
-            <div class="toggle-row">
-                <div>
-                    <div style="font-weight: 600; font-size: 14px;">Email Notifications</div>
-                    <div style="font-size: 13px; color: var(--text-sub);">Receive emails about new bookings.</div>
-                </div>
-                <div class="toggle-switch active"><div class="toggle-dot"></div></div>
-            </div>
-
-            <div class="toggle-row">
-                <div>
-                    <div style="font-weight: 600; font-size: 14px;">SMS Reminders</div>
-                    <div style="font-size: 13px; color: var(--text-sub);">Receive text alerts 15 min before appointments.</div>
-                </div>
-                <div class="toggle-switch"><div class="toggle-dot"></div></div>
-            </div>
-        </div>
-
-        <div style="display: flex; justify-content: flex-end; gap: 15px; padding-top: 20px;">
-            <button class="btn-outline">Cancel</button>
-            <button class="btn-black">Save Changes</button>
-        </div>
-
-    </div>
-</div>
 {% endblock %}

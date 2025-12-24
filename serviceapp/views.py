@@ -280,9 +280,6 @@ def past_appointments(request):
     
     return render(request, "partials/past.html", context)
 
-
-# cancel
-
 # allow service providers to set and view their availability
 @login_required(login_url="accounts:login")
 @service_provider_required
