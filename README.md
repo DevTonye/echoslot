@@ -100,7 +100,7 @@ Create a `.env` file in the root directory:
 ```env
 SECRET_KEY=your_secret_key_here
 DEBUG=True
-DATABASE_NAME=echoslot_db
+DATABASE_NAME=db_name
 DATABASE_USER=your_mysql_user
 DATABASE_PASSWORD=your_mysql_password
 ```
