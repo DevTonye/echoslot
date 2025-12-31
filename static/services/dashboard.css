@@ -1,17 +1,45 @@
 .main {
     flex: 1;
     margin-left: 240px;
-    padding: 50px 80px;
+    padding: 50px 60px; /* Added horizontal padding */
     overflow-y: auto;
     overflow-x: hidden;
     display: grid;
-    grid-template-columns: minmax(600px, 2fr) minmax(350px, 1fr);
-    gap: 100px;
+    grid-template-columns: minmax(min(500px, 100%), 2fr) minmax(min(300px, 100%), 1fr);
+    gap: 80px;
     align-items: start;
     max-width: 100%;
     box-sizing: border-box;
 }
 
+/* Laptop breakpoints */
+@media (max-width: 1440px) {
+    .main {
+        padding: 40px 50px;
+        gap: 60px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .main {
+        padding: 40px 40px;
+        gap: 50px;
+        grid-template-columns: 1.5fr 1fr;
+    }
+}
+
+@media (max-width: 1024px) {
+    .main {
+        grid-template-columns: 1fr;
+        padding: 30px 24px 100px;
+        gap: 40px;
+        margin-left: 0;
+    }
+    
+    .upcoming-column {
+        position: static;
+    }
+}
 
 /* ===============================
    TODAY COLUMN
@@ -268,84 +296,87 @@
     border-radius: 24px;
     padding: 50px 30px;
 }
+
 /* ===============================
-   MOBILE DASHBOARD
+   TABLET BREAKPOINT
 ================================ */
-
 @media (max-width: 768px) {
-.sidebar {
-    bottom: 0;
-    top: auto;
-    width: 100%;
-    height: auto;
-    flex-direction: row;
-    border-top: 1px solid var(--border);
-}
+    .sidebar {
+        bottom: 0;
+        top: auto;
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        border-top: 1px solid var(--border);
+        position: fixed;
+    }
 
-.logo,
-.user-mini {
-    display: none;
-}
+    .logo,
+    .user-mini {
+        display: none;
+    }
 
-.main {
-    margin-left: 0;
-    grid-template-columns: 1fr;
-    padding: 20px 16px 100px;
-    gap: 40px;
-}
+    .main {
+        margin-left: 0;
+        grid-template-columns: 1fr;
+        padding: 20px 16px 100px;
+        gap: 40px;
+    }
 
-.upcoming-column {
-    position: static;
-    width: 100%;
-    padding-bottom: 20px;
-}
+    .upcoming-column {
+        position: static;
+        width: 100%;
+        padding-bottom: 20px;
+    }
 
-.now-playing-card {
-    padding: 20px;
-    border-radius: 16px;
-}
+    .now-playing-card {
+        padding: 20px;
+        border-radius: 16px;
+    }
 
-.np-title {
-    font-size: 20px;
-}
+    .np-title {
+        font-size: 20px;
+    }
+    
     .np-time {
-    font-size: 13px;
-}
+        font-size: 13px;
+    }
 
-.upcoming-card {
-    padding: 12px 0;
-}
+    .upcoming-card {
+        padding: 12px 0;
+    }
 
-.uc-date-box {
-    width: 44px;
-    height: 44px;
-}
+    .uc-date-box {
+        width: 44px;
+        height: 44px;
+    }
 
-.uc-service {
-    font-size: 14px;
-}
+    .uc-service {
+        font-size: 14px;
+    }
 
-.uc-meta {
-    font-size: 12px;
-}
+    .uc-meta {
+        font-size: 12px;
+    }
 
-.uc-arrow {
-    opacity: 0.3;
-}
-.today-empty {
-    padding: 30px 16px;
-}
+    .uc-arrow {
+        opacity: 0.3;
+    }
+    
+    .today-empty {
+        padding: 30px 16px;
+    }
 
     .today-empty .btn {
-    flex: 1 1 45% !important;       /* Equal width for both buttons */
-    padding: 10px 12px !important;
-    font-size: 13px !important;
-    text-align: center;
-}
+        flex: 1 1 45% !important;
+        padding: 10px 12px !important;
+        font-size: 13px !important;
+        text-align: center;
+    }
 
-.today-empty div[style*="display: flex"] {
-    width: 100%;
-    justify-content: center;
-    gap: 10px;
-}
+    .today-empty div[style*="display: flex"] {
+        width: 100%;
+        justify-content: center;
+        gap: 10px;
+    }
 }

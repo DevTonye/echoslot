@@ -20,33 +20,26 @@
                 <div style="width: 20px; height: 20px; background: #000; border-radius: 4px;"></div>
                 Echoslot
             </div>
-            <div class="nav-item active">
-                <a href="{% url 'serviceapp:dashboard' %}"  {% if active_tab == 'dashboard' %}active{% endif %}>
-                    <i class="fa-regular fa-calendar" style="width: 20px;"></i> Dashboard
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="{% url 'serviceapp:appointment' %}"  {% if active_tab == 'dashboard' %}active{% endif %}>
-                    <i class="fa-solid fa-list-check" style="width: 20px;"></i> Appointment</div>
-                </a>
-
-            <div class="nav-item">
-                <a href="{% url 'serviceapp:service' %}"  {% if active_tab == 'dashboard' %}active{% endif %}>
-                    <i class="fas fa-list-alt" style="width: 20px;"></i>Services</div>
-                </a>
-                
-                <div class="nav-item">
-                    <a href="{% url 'serviceapp:my_availability' %}"  {% if active_tab == 'dashboard' %}active{% endif %}>
-                        <i class="fa-regular fa-user" style="width: 20px;"></i> My Availability</div>
-                    </a>
-            <div class="nav-item">
-                <a href="{% url 'serviceapp:settings' %}"  {% if active_tab == 'dashboard' %}active{% endif %}>
-                    <i class="fa-solid fa-chart-simple" style="width: 20px;"></i> Settings</div>
-                </a>
-            </div>
+            <a href="{% url 'serviceapp:dashboard' %}" class="nav-item {% if active_tab == 'dashboard' %}active{% endif %}">
+                <i class="fa-regular fa-calendar"></i> Dashboard
+            </a>
+            <a href="{% url 'serviceapp:appointment' %}" class="nav-item {% if active_tab == 'appointment' %}active{% endif %}">
+                <i class="fa-solid fa-list-check"></i> Appointment
+            </a>
+            <a href="{% url 'serviceapp:service' %}" class="nav-item {% if active_tab == 'service' %}active{% endif %}">
+                <i class="fas fa-list-alt"></i> Services
+            </a>
+            <a href="{% url 'serviceapp:my_availability' %}" class="nav-item {% if active_tab == 'availability' %}active{% endif %}">
+                <i class="fa-regular fa-user"></i> My Availability
+            </a>
+            <a href="{% url 'serviceapp:settings' %}" class="nav-item {% if active_tab == 'settings' %}active{% endif %}">
+                <i class="fa-solid fa-chart-simple"></i> Settings
+            </a>
+        </div>
         <div class="user-mini">
             <div class="user-avatar"></div>
-            <span style="font-size: 14px; font-weight: 600;">{{ provider.first_name}} {{ provider.last_name}}</span>
+            
+            <span style="font-size: 14px; font-weight: 600;">{{ provider.first_name }} {{ provider.last_name }}</span>
         </div>
     </nav>
 
@@ -60,4 +53,3 @@
     {% endblock %}
 </body>
 </html>
-

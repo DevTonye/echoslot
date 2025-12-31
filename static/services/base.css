@@ -33,14 +33,6 @@ body {
 
 }
 
-/* Add these to your base.css at the end 
-.main-content {
-    flex: 1;
-    margin-left: 240px;
-    min-height: 100vh;
-}
-*/
-
 /* Wrapper for sidebar + main content */
 .dashboard-wrapper {
     display: flex;
@@ -125,6 +117,7 @@ h2 {
 
 a {
     text-decoration: none !important;
+
 }
 
 a:hover {
@@ -138,12 +131,6 @@ a:hover {
         overflow-x: hidden;
     }
 
-    /*
-    .main-content {
-        margin-left: 0;
-        padding-bottom: 80px; 
-    }
-*/
     /* Fixed bottom navigation */
     .sidebar {
         position: fixed;
