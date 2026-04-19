@@ -19,6 +19,7 @@ class ServiceProvider(models.Model):
     def __str__(self):
         return self.user.username
     
+    
 # services models
 class Service(models.Model):
     service_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)

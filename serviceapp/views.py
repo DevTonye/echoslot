@@ -22,6 +22,8 @@ from django.core.paginator import Paginator
 from django.urls import reverse
 from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
+from django.core.mail import EmailMultiAlternatives
+
 # service provider views
 User = get_user_model()
 
@@ -402,35 +404,71 @@ def book_appointments(request, provider_id):
 
                 subject = "New Appointment Booked"
                 message_provider = f"""
-                            Hello {appointment.service.provider.user.first_name}, 
+<html>
+  <body style="font-family: Arial, sans-serif;">
 
-                            A new appointment has been booked by {appointment.client.first_name }, 
+    <h2>New Appointment Booked</h2>
+    <p>Hello <strong>{appointment.service.provider.user.first_name}</strong>,</p>
+    <p>A new appointment has been booked by <strong>{appointment.client.get_full_name()}</strong>. Here are the details:</p>
 
-                            📅 Date: {appointment.appointment_date}
-                            🕐 Time: {appointment.start_time.strftime('%I:%M %p')}
-                            🧾 Service: {appointment.service.name}
-                            💬 Note: {appointment.notes or 'None'}
+    <table style="margin: 20px 0; border-collapse: collapse;">
+      <tr>
+        <td style="padding: 8px 16px 8px 0; color: #666;">📅 Date</td>
+        <td style="padding: 8px 0;"><strong>{appointment.appointment_date}</strong></td>
+      </tr>
+      <tr>
+        <td style="padding: 8px 16px 8px 0; color: #666;">🕐 Time</td>
+        <td style="padding: 8px 0;"><strong>{appointment.start_time.strftime('%I:%M %p')}</strong></td>
+      </tr>
+      <tr>
+        <td style="padding: 8px 16px 8px 0; color: #666;">🧾 Service</td>
+        <td style="padding: 8px 0;"><strong>{appointment.service.name}</strong></td>
+      </tr>
+      <tr>
+        <td style="padding: 8px 16px 8px 0; color: #666;">💬 Note</td>
+        <td style="padding: 8px 0;"><strong>{appointment.notes or 'None'}</strong></td>
+      </tr>
+    </table>
 
-                            Login to your dashboard to view more details.
-                            {login_url}
-                        """
+    <div style="margin: 30px 0;">
+      <a href="{login_url}"
+         style="background-color: #4f46e5;
+                color: white;
+                padding: 14px 20px;
+                text-decoration: none;
+                border-radius: 4px;
+                display: inline-block;">
+        Go to Dashboard
+      </a>
+    </div>
+
+    <p style="color: #999; font-size: 12px; margin-top: 30px;">
+      This is an automated message — please do not reply directly to this email.
+    </p>
+
+  </body>
+</html>
+"""
                 message_client = f"""
-                            Hi {appointment.client.first_name},
+                Hi {appointment.client.first_name},
 
-                            Your appointment with {appointment.service.provider.user.get_full_name()} has been successfully booked.
+                Your appointment with {appointment.service.provider.user.get_full_name()} has been successfully booked.
 
-                            📅 Date: {appointment.appointment_date}
-                            🕐 Time: {appointment.start_time.strftime('%I:%M %p')}
-                            🧾 Service: {appointment.service.name}
+                📅 Date: {appointment.appointment_date}
+                🕐 Time: {appointment.start_time.strftime('%I:%M %p')}
+                🧾 Service: {appointment.service.name}
 
-                            You can log in here if needed:
-                            {login_url}
+                You can log in here if needed:
+                {login_url}
 
-                            We'll remind you 24 hours before it starts.
-                        """
+                We'll remind you 24 hours before it starts.
+            """
                 # print("SETTINGS:", settings)
                 # print("DEFAULT_FROM_EMAIL:", settings.DEFAULT_FROM_EMAIL)
-                send_mail(subject, message_provider, settings.DEFAULT_FROM_EMAIL, [appointment.service.provider.user.email])
+                # send_mail(subject, message_provider, settings.DEFAULT_FROM_EMAIL, [appointment.service.provider.user.email])
+                msg = EmailMultiAlternatives(subject, "", settings.DEFAULT_FROM_EMAIL, [appointment.service.provider.user.email])
+                msg.attach_alternative(message_provider, "text/html")
+                msg.send()
                 send_mail(subject, message_client, settings.DEFAULT_FROM_EMAIL, [appointment.client.email])
                 
                 appt_datetime = timezone.make_aware(
